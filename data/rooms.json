@@ -1,0 +1,105 @@
+[
+  {
+    "id": "3ZQN2K",
+    "name": "cp12r",
+    "hostId": "a8893172-459d-490d-8315-47fe2d6f242a",
+    "status": "finished",
+    "currentQuestion": 5,
+    "roundEndsAt": null,
+    "config": {
+      "categories": [
+        "culture",
+        "science",
+        "web"
+      ],
+      "questionCount": 50,
+      "timePerQuestion": 30,
+      "bonusTimer": true
+    },
+    "players": [
+      {
+        "id": "a8893172-459d-490d-8315-47fe2d6f242a",
+        "name": "hj",
+        "score": 0,
+        "ready": true,
+        "connected": true
+      }
+    ],
+    "answers": [],
+    "questions": [
+      {
+        "id": "q8",
+        "category": "culture",
+        "text": "Dans quel pays se trouve Kyoto ?",
+        "answers": [
+          "Chine",
+          "Coree du Sud",
+          "Japon",
+          "Thailande"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "id": "q7",
+        "category": "web",
+        "text": "Quel outil est utilise par SvelteKit pour le build local ?",
+        "answers": [
+          "Webpack",
+          "Vite",
+          "Parcel",
+          "Rollup CLI"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "id": "q6",
+        "category": "science",
+        "text": "Quelle unite mesure la resistance electrique ?",
+        "answers": [
+          "Volt",
+          "Watt",
+          "Ohm",
+          "Ampere"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "id": "q3",
+        "category": "web",
+        "text": "Quel protocole securise les connexions web modernes ?",
+        "answers": [
+          "FTP",
+          "HTTPS",
+          "SMTP",
+          "DNS"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "id": "q2",
+        "category": "science",
+        "text": "Quelle planete est la plus proche du Soleil ?",
+        "answers": [
+          "Venus",
+          "Mars",
+          "Mercure",
+          "Jupiter"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "id": "q1",
+        "category": "culture",
+        "text": "Quelle ville est surnommee la Ville Lumiere ?",
+        "answers": [
+          "Lyon",
+          "Paris",
+          "Bruxelles",
+          "Geneve"
+        ],
+        "correctIndex": 1
+      }
+    ],
+    "createdAt": "2026-06-25T18:23:05.185Z"
+  }
+]

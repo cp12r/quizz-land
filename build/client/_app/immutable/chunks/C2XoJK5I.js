@@ -1,0 +1,1 @@
+import{h as r,a as s,aX as d}from"./DW_Ws3l1.js";function c(i,e,l,f,o){var t;r&&s();var a=(t=e.$$slots)==null?void 0:t[l],n=!1;a===!0&&(a=e.children,n=!0),a===void 0||a(i,n?()=>f:f)}d();export{c as s};

@@ -1,0 +1,20 @@
+{
+	"/": [
+		"src/routes/+page.server.js"
+	],
+	"/api/rooms": [
+		"src/routes/api/rooms/+server.js"
+	],
+	"/api/rooms/[roomId]/answer": [
+		"src/routes/api/rooms/[roomId]/answer/+server.js"
+	],
+	"/api/rooms/[roomId]/join": [
+		"src/routes/api/rooms/[roomId]/join/+server.js"
+	],
+	"/results/[roomId]": [
+		"src/routes/results/[roomId]/+page.server.js"
+	],
+	"/room/[roomId]": [
+		"src/routes/room/[roomId]/+page.server.js"
+	]
+}

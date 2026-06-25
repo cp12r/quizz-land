@@ -1,0 +1,69 @@
+@import './theme.css';
+@import './typography.css';
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--gray-50);
+  color: var(--color-ink);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+}
+
+.page {
+  min-height: 100vh;
+  padding: max(16px, env(safe-area-inset-top)) var(--space-page) max(24px, env(safe-area-inset-bottom));
+}
+
+.shell {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+}
+
+.card {
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.field span {
+  color: var(--gray-600);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.field input,
+.field select {
+  min-height: 48px;
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  padding: 0 12px;
+  color: var(--gray-900);
+  background: white;
+}
