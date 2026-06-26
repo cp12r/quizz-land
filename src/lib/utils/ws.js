@@ -23,6 +23,12 @@ export function connectRoom(roomId, handlers = {}) {
     const message = JSON.parse(event.data);
     handlers[message.type]?.(message.payload);
   });
+  ws.addEventListener('error', () => {
+    handlers.socket_error?.({ message: 'Connexion temps reel impossible.' });
+  });
+  ws.addEventListener('close', () => {
+    handlers.socket_close?.({ message: 'Connexion temps reel fermee.' });
+  });
   ws.sendJson = send;
   return ws;
 }

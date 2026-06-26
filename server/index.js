@@ -1,6 +1,6 @@
 import { createServer } from 'node:http';
 import { handler } from '../build/handler.js';
-import { WebSocketServer } from 'ws';
+import { WebSocket, WebSocketServer } from 'ws';
 import { advanceRound, getRoom, joinRoom, startGame, submitAnswer } from '../src/server/services/roomManager.js';
 import { log } from '../src/server/services/logger.js';
 
@@ -10,7 +10,7 @@ const wss = new WebSocketServer({ server, path: '/ws' });
 const clients = new Map();
 
 function send(ws, type, payload) {
-  if (ws.readyState === ws.OPEN) ws.send(JSON.stringify({ type, payload }));
+  if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type, payload }));
 }
 
 function broadcast(roomId, type, payload) {

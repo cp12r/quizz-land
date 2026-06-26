@@ -14,6 +14,7 @@
   let playerName = '';
   let joined = false;
   let joining = false;
+  let connectionError = '';
   let selected = null;
   let remaining = room.config.timePerQuestion;
   let ws;
@@ -40,6 +41,21 @@
         room = payload.room;
         joined = true;
         joining = false;
+        connectionError = '';
+      },
+      error: (payload) => {
+        joining = false;
+        connectionError = payload.message;
+      },
+      socket_error: (payload) => {
+        joining = false;
+        connectionError = payload.message;
+      },
+      socket_close: () => {
+        if (joining) {
+          joining = false;
+          connectionError = 'Connexion temps reel fermee avant de rejoindre.';
+        }
       }
     });
     return () => ws?.close();
@@ -47,6 +63,7 @@
 
   function join() {
     joining = true;
+    connectionError = '';
     localStorage.setItem('quizz-player-name', playerName || 'Joueur');
     ws.sendJson('join_room', { playerId: getPlayerId(), name: playerName || 'Joueur' });
   }
@@ -81,6 +98,7 @@
           <span>Pseudo</span>
           <input bind:value={playerName} maxlength="24" placeholder="Ton nom" />
         </label>
+        {#if connectionError}<p class="error">{connectionError}</p>{/if}
         <Button type="submit" disabled={joining}>{joining ? 'Connexion...' : 'Rejoindre'}</Button>
       </form>
     {:else if room.status === 'waiting'}
@@ -136,6 +154,12 @@
     display: grid;
     gap: 16px;
     padding: 24px;
+  }
+
+  .error {
+    margin: 0;
+    color: var(--color-danger);
+    font-weight: 700;
   }
 
   .grid {
