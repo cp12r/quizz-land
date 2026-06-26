@@ -67,3 +67,11 @@ a {
   color: var(--gray-900);
   background: white;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}

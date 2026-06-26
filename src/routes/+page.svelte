@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte';
   import Button from '$lib/components/Button.svelte';
   import { createRoom } from '$lib/utils/api.js';
 
@@ -9,7 +10,17 @@
   let questionCount = 8;
   let timePerQuestion = 30;
   let bonusTimer = true;
+  let chillMode = false;
   let error = '';
+
+  onMount(() => {
+    chillMode = localStorage.getItem('quizz-chill') === 'true';
+  });
+
+  function setChillMode(value) {
+    chillMode = value;
+    localStorage.setItem('quizz-chill', value ? 'true' : 'false');
+  }
 
   async function submit() {
     error = '';
@@ -66,6 +77,11 @@
       <label class="toggle">
         <input type="checkbox" bind:checked={bonusTimer} />
         Bonus temps
+      </label>
+
+      <label class="toggle">
+        <input type="checkbox" checked={chillMode} on:change={(e) => setChillMode(e.currentTarget.checked)} />
+        Mode chill (interface plus calme)
       </label>
 
       {#if error}<p class="error">{error}</p>{/if}

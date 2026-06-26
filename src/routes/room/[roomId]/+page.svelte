@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import Button from '$lib/components/Button.svelte';
   import PlayerList from '$lib/components/PlayerList.svelte';
   import QuestionCard from '$lib/components/QuestionCard.svelte';
@@ -19,6 +19,11 @@
   let remaining = room.config.timePerQuestion;
   let ws;
 
+  let startCountdownSeconds = 0;
+  let countdownActive = false;
+  let countdownRemaining = 0;
+  let countdownTimer = null;
+
   $: currentQuestion = room.status === 'playing' ? room.questions[room.currentQuestion] : null;
   $: shareUrl = typeof location === 'undefined' ? '' : `${location.origin}/room/${room.id}`;
   $: isHost = player && room.hostId === player.id;
@@ -26,11 +31,32 @@
   function handleRoomState(next) {
     room = next;
     selected = null;
+
+    // Si on repasse en attente / on lance la partie côté serveur, on stop le countdown.
+    if (room.status !== 'waiting') clearCountdown();
+
     if (room.status === 'finished') location.href = `/results/${room.id}`;
+  }
+
+  function applyChillClass() {
+    const root = document.documentElement;
+    const enabled = localStorage.getItem('quizz-chill') === 'true';
+    root.classList.toggle('chill', enabled);
+  }
+
+  function clearCountdown() {
+    countdownActive = false;
+    countdownRemaining = 0;
+    if (countdownTimer) {
+      clearInterval(countdownTimer);
+      countdownTimer = null;
+    }
   }
 
   onMount(() => {
     playerName = localStorage.getItem('quizz-player-name') || '';
+    applyChillClass();
+
     ws = connectRoom(room.id, {
       room_state: handleRoomState,
       question_start: handleRoomState,
@@ -58,8 +84,11 @@
         }
       }
     });
+
     return () => ws?.close();
   });
+
+  onDestroy(() => clearCountdown());
 
   function join() {
     joining = true;
@@ -69,7 +98,26 @@
   }
 
   function start() {
-    ws.sendJson('start_game', { playerId: player.id });
+    if (!player) return;
+    if (countdownActive) return;
+
+    if (!startCountdownSeconds || startCountdownSeconds <= 0) {
+      ws.sendJson('start_game', { playerId: player.id });
+      return;
+    }
+
+    countdownActive = true;
+    countdownRemaining = startCountdownSeconds;
+
+    // Laisse le temps de “brancher” tout le monde, surtout en voc Discord.
+    countdownTimer = setInterval(() => {
+      countdownRemaining -= 1;
+
+      if (countdownRemaining <= 0) {
+        clearCountdown();
+        ws.sendJson('start_game', { playerId: player.id });
+      }
+    }, 1000);
   }
 
   function answer(index) {
@@ -106,7 +154,39 @@
         <div class="card lobby">
           <h2>Salon d attente</h2>
           <p>Partage le lien et lance quand tout le monde est pret.</p>
-          <Button disabled={!isHost || room.players.length < 1} onclick={start}>Lancer</Button>
+
+          {#if isHost}
+            <label class="field countdown">
+              <span>
+                Countdown avant lancement:&nbsp;
+                <b class="mono">{startCountdownSeconds}s</b>
+              </span>
+              <input
+                type="range"
+                min="0"
+                max="10"
+                step="1"
+                bind:value={startCountdownSeconds}
+                aria-label="Countdown avant lancement"
+              />
+            </label>
+
+            {#if countdownActive}
+              <p class="countdown-status">
+                Demarrage dans <b class="mono">{countdownRemaining}</b>...
+              </p>
+            {/if}
+          {/if}
+
+          <div class="actions">
+            <Button
+              disabled={!isHost || room.players.length < 1 || countdownActive}
+              onclick={start}
+            >
+              Lancer
+            </Button>
+            <Button variant="secondary" onclick={copyLink}>Copier le lien</Button>
+          </div>
         </div>
         <PlayerList players={room.players} hostId={room.hostId} />
       </section>
@@ -160,6 +240,25 @@
     margin: 0;
     color: var(--color-danger);
     font-weight: 700;
+  }
+
+  .countdown span {
+    color: var(--gray-600);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .countdown-status {
+    margin: 0;
+    color: var(--color-blue);
+    font-weight: 800;
+  }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 10px;
   }
 
   .grid {
