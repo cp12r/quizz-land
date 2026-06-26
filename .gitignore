@@ -1,0 +1,8 @@
+node_modules/
+.svelte-kit/
+build/
+data/
+server.log
+.env
+.DS_Store
+npm-debug.log*
