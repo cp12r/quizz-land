@@ -1,12 +1,9 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { pickQuestions } from './questions.js';
 
-const root = dirname(dirname(dirname(dirname(fileURLToPath(import.meta.url)))));
-const dataFile = join(root, 'data', 'rooms.json');
+const dataFile = join(process.cwd(), 'data', 'rooms.json');
 const rooms = new Map();
-let hydrated = false;
 
 function roomCode() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
@@ -25,12 +22,11 @@ async function persist() {
 }
 
 export async function hydrateRooms() {
-  if (hydrated) return;
-  hydrated = true;
   try {
     const raw = await readFile(dataFile, 'utf8');
     const saved = JSON.parse(raw);
     const cutoff = Date.now() - Number(process.env.ROOM_RETENTION_DAYS || 7) * 24 * 60 * 60 * 1000;
+    rooms.clear();
     for (const room of saved) {
       if (new Date(room.createdAt).getTime() > cutoff) rooms.set(room.id, room);
     }
@@ -91,6 +87,7 @@ export async function joinRoom(roomId, playerName, playerId = crypto.randomUUID(
 }
 
 export async function startGame(roomId, playerId) {
+  await hydrateRooms();
   const room = rooms.get(roomId);
   if (!room || room.hostId !== playerId || room.players.length < 1) return null;
   room.status = 'playing';
@@ -102,6 +99,7 @@ export async function startGame(roomId, playerId) {
 }
 
 export async function submitAnswer(roomId, playerId, answerIndex) {
+  await hydrateRooms();
   const room = rooms.get(roomId);
   if (!room || room.status !== 'playing') return null;
   const question = room.questions[room.currentQuestion];
@@ -118,6 +116,7 @@ export async function submitAnswer(roomId, playerId, answerIndex) {
 }
 
 export async function advanceRound(roomId) {
+  await hydrateRooms();
   const room = rooms.get(roomId);
   if (!room) return null;
   if (room.currentQuestion + 1 >= room.questions.length) {

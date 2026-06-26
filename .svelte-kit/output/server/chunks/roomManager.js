@@ -1,11 +1,8 @@
 import { readFile, mkdir, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join, dirname } from "node:path";
 import { p as pickQuestions } from "./questions.js";
-const root = dirname(dirname(dirname(dirname(fileURLToPath(import.meta.url)))));
-const dataFile = join(root, "data", "rooms.json");
+const dataFile = join(process.cwd(), "data", "rooms.json");
 const rooms = /* @__PURE__ */ new Map();
-let hydrated = false;
 function roomCode() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
 }
@@ -20,12 +17,11 @@ async function persist() {
   await writeFile(dataFile, JSON.stringify([...rooms.values()], null, 2));
 }
 async function hydrateRooms() {
-  if (hydrated) return;
-  hydrated = true;
   try {
     const raw = await readFile(dataFile, "utf8");
     const saved = JSON.parse(raw);
     const cutoff = Date.now() - Number(process.env.ROOM_RETENTION_DAYS || 7) * 24 * 60 * 60 * 1e3;
+    rooms.clear();
     for (const room of saved) {
       if (new Date(room.createdAt).getTime() > cutoff) rooms.set(room.id, room);
     }
@@ -82,6 +78,7 @@ async function joinRoom(roomId, playerName, playerId = crypto.randomUUID()) {
   return { room: publicRoom(room), player };
 }
 async function submitAnswer(roomId, playerId, answerIndex) {
+  await hydrateRooms();
   const room = rooms.get(roomId);
   if (!room || room.status !== "playing") return null;
   const question = room.questions[room.currentQuestion];
