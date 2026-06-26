@@ -1,9 +1,12 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { pickQuestions } from './questions.js';
+import { log } from './logger.js';
 
 const dataFile = join(process.cwd(), 'data', 'rooms.json');
+const tempDataFile = `${dataFile}.tmp`;
 const rooms = new Map();
+let writeQueue = Promise.resolve();
 
 function roomCode() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
@@ -17,8 +20,12 @@ function publicRoom(room) {
 }
 
 async function persist() {
-  await mkdir(dirname(dataFile), { recursive: true });
-  await writeFile(dataFile, JSON.stringify([...rooms.values()], null, 2));
+  writeQueue = writeQueue.then(async () => {
+    await mkdir(dirname(dataFile), { recursive: true });
+    await writeFile(tempDataFile, JSON.stringify([...rooms.values()], null, 2));
+    await rename(tempDataFile, dataFile);
+  });
+  return writeQueue;
 }
 
 export async function hydrateRooms() {
@@ -30,7 +37,11 @@ export async function hydrateRooms() {
     for (const room of saved) {
       if (new Date(room.createdAt).getTime() > cutoff) rooms.set(room.id, room);
     }
-  } catch {
+  } catch (error) {
+    if (error.code !== 'ENOENT') {
+      log('error', 'rooms_storage_read_failed', { error: error.message });
+    }
+    rooms.clear();
     await persist();
   }
 }

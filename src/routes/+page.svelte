@@ -17,7 +17,8 @@
       const { room } = await createRoom({ name, categories: selectedCategories, questionCount, timePerQuestion, bonusTimer });
       location.href = `/room/${room.id}`;
     } catch (err) {
-      error = err.message;
+      console.error('Room creation failed', err);
+      error = 'Impossible de creer la room pour le moment.';
     }
   }
 
