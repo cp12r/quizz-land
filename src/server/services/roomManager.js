@@ -113,15 +113,27 @@ export async function submitAnswer(roomId, playerId, answerIndex) {
   await hydrateRooms();
   const room = rooms.get(roomId);
   if (!room || room.status !== 'playing') return null;
+
+  // Guard anti-race: si la fenêtre de temps est déjà terminée côté serveur,
+  // on ignore la réponse (ça évite de scorer la mauvaise question quand
+  // le timer passe au round suivant).
+  const now = Date.now();
+  if (!room.roundEndsAt || now > room.roundEndsAt) {
+    return publicRoom(room);
+  }
+
   const question = room.questions[room.currentQuestion];
   const already = room.answers.find((answer) => answer.playerId === playerId && answer.questionId === question.id);
   if (already) return publicRoom(room);
+
   const correct = Number(answerIndex) === question.correctIndex;
-  const remaining = Math.max(0, room.roundEndsAt - Date.now());
+  const remaining = Math.max(0, room.roundEndsAt - now);
   const points = correct ? 100 + Math.round(remaining / 1000) : 0;
-  room.answers.push({ playerId, questionId: question.id, answerIndex: Number(answerIndex), correct, points, ms: Date.now() });
+
+  room.answers.push({ playerId, questionId: question.id, answerIndex: Number(answerIndex), correct, points, ms: now });
   const player = room.players.find((item) => item.id === playerId);
   if (player) player.score += points;
+
   await persist();
   return publicRoom(room);
 }
