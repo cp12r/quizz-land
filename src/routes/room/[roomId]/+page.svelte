@@ -13,6 +13,7 @@
   let player = null;
   let playerName = '';
   let joined = false;
+  let joining = false;
   let selected = null;
   let remaining = room.config.timePerQuestion;
   let ws;
@@ -37,15 +38,17 @@
       player_joined: (payload) => {
         player = payload.player;
         room = payload.room;
+        joined = true;
+        joining = false;
       }
     });
     return () => ws?.close();
   });
 
   function join() {
+    joining = true;
     localStorage.setItem('quizz-player-name', playerName || 'Joueur');
     ws.sendJson('join_room', { playerId: getPlayerId(), name: playerName || 'Joueur' });
-    joined = true;
   }
 
   function start() {
@@ -78,7 +81,7 @@
           <span>Pseudo</span>
           <input bind:value={playerName} maxlength="24" placeholder="Ton nom" />
         </label>
-        <Button type="submit">Rejoindre</Button>
+        <Button type="submit" disabled={joining}>{joining ? 'Connexion...' : 'Rejoindre'}</Button>
       </form>
     {:else if room.status === 'waiting'}
       <section class="grid">
