@@ -33,6 +33,7 @@
   $: currentQuestion = room.status === 'playing' ? room.questions[room.currentQuestion] : null;
   $: shareUrl = typeof location === 'undefined' ? '' : `${location.origin}/room/${room.id}`;
   $: isHost = player && room.hostId === player.id;
+  $: canStart = Boolean(isHost && room.players.length >= 2 && !countdownActive);
   $: answeredCount = room.answers?.length || 0;
   $: title = pageTitle(`${room.name} - Salon quiz`);
   $: description = `Rejoins le salon ${room.name} sur ${siteMeta.name} et réponds au quiz en direct, sans compte.`;
@@ -295,12 +296,18 @@
           {/if}
 
           <div class="actions">
-            <Button disabled={!isHost || room.players.length < 1 || countdownActive} onclick={start}>
+            <Button disabled={!canStart} onclick={start}>
               {countdownActive ? 'Attente…' : 'Lancer la partie'}
             </Button>
 
             <Button variant="secondary" onclick={copyLink}>Inviter</Button>
           </div>
+
+          {#if isHost && room.players.length < 2}
+            <p class="start-hint" role="status">
+              Il faut au moins 2 joueurs pour lancer une partie.
+            </p>
+          {/if}
         </div>
 
         <PlayerList players={room.players} hostId={room.hostId} title="Dans le salon" />
@@ -479,6 +486,15 @@
   .actions {
     flex-wrap: wrap;
     margin-top: 4px;
+  }
+
+  .start-hint {
+    margin: 0;
+    border-radius: 12px;
+    background: rgba(217, 45, 85, 0.10);
+    color: var(--color-danger);
+    padding: 10px 12px;
+    font-weight: 900;
   }
 
   .grid {

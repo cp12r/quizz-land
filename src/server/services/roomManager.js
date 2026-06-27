@@ -131,7 +131,7 @@ export async function joinRoom(roomId, playerName, playerId = crypto.randomUUID(
 export async function startGame(roomId, playerId) {
   await hydrateRooms();
   const room = rooms.get(roomId);
-  if (!room || room.hostId !== playerId || room.players.length < 1) return null;
+  if (!room || room.hostId !== playerId || room.players.length < 2) return null;
   room.status = 'playing';
   room.currentQuestion = 0;
   room.roundEndsAt = Date.now() + room.config.timePerQuestion * 1000;
