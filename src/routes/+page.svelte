@@ -17,37 +17,37 @@
 
   const themeMeta = {
     neon: {
-      name: 'Néon Pop',
-      label: 'Laser kiss',
+      name: 'Néon',
+      label: 'Rose et bleu',
       colors: ['#ff3e8a', '#43e8ff'],
-      mark: 'NP'
+      mark: 'NE'
     },
     candy: {
-      name: 'Bonbon',
-      label: 'Sucre chrome',
+      name: 'Coloré',
+      label: 'Orange et jaune',
       colors: ['#ff7a3d', '#f8f34a'],
-      mark: 'BB'
+      mark: 'CO'
     },
     arcade: {
       name: 'Arcade',
-      label: 'Cabine minuit',
+      label: 'Vert et bleu',
       colors: ['#68f06f', '#43e8ff'],
       mark: 'AR'
     },
     studio: {
-      name: 'Studio',
-      label: 'Club privé',
+      name: 'Simple',
+      label: 'Noir et rose',
       colors: ['#ffffff', '#ff3e8a'],
-      mark: 'ST'
+      mark: 'SI'
     }
   };
 
   const categoryMeta = [
-    { mark: 'Culture', label: 'Culture', stamp: 'POP' },
-    { mark: 'Science', label: 'Science', stamp: 'LAB' },
-    { mark: 'Web', label: 'Web', stamp: 'NET' },
-    { mark: 'Cinéma', label: 'Cinéma', stamp: 'CUT' },
-    { mark: 'Sport', label: 'Sport', stamp: 'GO' }
+    { mark: 'Culture', label: 'Culture', stamp: '01' },
+    { mark: 'Science', label: 'Science', stamp: '02' },
+    { mark: 'Web', label: 'Web', stamp: '03' },
+    { mark: 'Cinéma', label: 'Cinéma', stamp: '04' },
+    { mark: 'Sport', label: 'Sport', stamp: '05' }
   ];
 
   let draftId = 1;
@@ -63,12 +63,12 @@
   let pointerX = 50;
   let pointerY = 42;
   let activeDraftId;
-  let customDrafts = [createQuestionDraft('Qui lance la première vanne de la soirée ?', ['Le host', 'Le retardataire', 'Le stratège', 'La table entière'], 2)];
+  let customDrafts = [createQuestionDraft('Quelle équipe gagne ce quiz ?', ['Équipe A', 'Équipe B', 'Équipe C', 'Équipe D'], 0)];
 
   activeDraftId = customDrafts[0].id;
 
   $: selectedThemeMeta = getThemeMeta(selectedTheme);
-  $: roomName = name.trim() || 'Minuit Quiz Club';
+  $: roomName = name.trim() || 'Quiz entre amis';
   $: estimatedDuration = Math.max(1, Math.ceil((questionCount * timePerQuestion) / 60));
   $: readyCustomQuestions = buildCustomQuestions(customDrafts);
   $: customCount = readyCustomQuestions.length;
@@ -76,7 +76,7 @@
   $: activeDraftState = activeDraft ? getDraftState(activeDraft) : null;
   $: categoryLabel = selectedCategories.length
     ? selectedCategories.map((category) => readableCategory(category)).join(' + ')
-    : 'questions maison';
+    : 'questions perso';
   $: questionDial = progressDeg(questionCount, QUESTION_MIN, QUESTION_MAX);
   $: timeDial = progressDeg(timePerQuestion, TIME_MIN, TIME_MAX);
   $: syncPreview = readyCustomQuestions.length
@@ -242,7 +242,7 @@
 
   function getDraftState(draft) {
     if (!draft?.text.trim()) {
-      return { ready: false, label: 'draft', detail: 'Question vide' };
+      return { ready: false, label: 'brouillon', detail: 'Question vide' };
     }
 
     const filledAnswers = draft.answers
@@ -250,14 +250,14 @@
       .filter(({ answer }) => answer);
 
     if (filledAnswers.length < 2) {
-      return { ready: false, label: 'draft', detail: 'Deux réponses minimum' };
+      return { ready: false, label: 'brouillon', detail: 'Deux réponses minimum' };
     }
 
     if (!filledAnswers.some(({ answerIndex }) => answerIndex === draft.correctIndex)) {
-      return { ready: false, label: 'draft', detail: 'Bonne réponse manquante' };
+      return { ready: false, label: 'brouillon', detail: 'Bonne réponse manquante' };
     }
 
-    return { ready: true, label: 'ready', detail: 'Cartouche prête' };
+    return { ready: true, label: 'prêt', detail: 'Question prête' };
   }
 
   function trackPointer(event) {
@@ -270,7 +270,7 @@
     error = '';
 
     if (!selectedCategories.length && !readyCustomQuestions.length) {
-      error = 'Ajoute une catégorie ou au moins une question maison prête.';
+      error = 'Choisis une catégorie ou ajoute une question prête.';
       return;
     }
 
@@ -325,15 +325,15 @@
   <form class="party-stage" on:submit|preventDefault={submit} aria-describedby="creator-status">
     <header class="hero">
       <div class="hero-copy">
-        <p class="brand-line">QUIZZ LAND / PRIVATE PARTY OS</p>
+        <p class="brand-line">QUIZZ LAND / QUIZ ENTRE AMIS</p>
         <h1>
-          <span>Prépare</span>
-          <span>la soirée.</span>
+          <span>Crée</span>
+          <span>ton quiz.</span>
         </h1>
         <div class="hero-marquee" aria-hidden="true">
           <span>{categoryLabel}</span>
           <span>{estimatedDuration} minutes</span>
-          <span>{customCount} questions maison</span>
+          <span>{customCount} questions perso</span>
           <span>{selectedThemeMeta.name}</span>
         </div>
       </div>
@@ -346,7 +346,7 @@
           aria-label={$soundMuted ? 'Activer le son' : 'Couper le son'}
           aria-pressed={!$soundMuted}
         >
-          <span>{$soundMuted ? 'OFF' : 'ON'}</span>
+          <span>{$soundMuted ? 'Non' : 'Oui'}</span>
           <strong>son</strong>
         </button>
 
@@ -358,7 +358,7 @@
         <div class="pod-readout" aria-hidden="true">
           <span>{questionCount}Q</span>
           <span>{timePerQuestion}s</span>
-          <span>{bonusTimer ? 'bonus' : 'flat'}</span>
+          <span>{bonusTimer ? 'bonus' : 'normal'}</span>
         </div>
       </div>
     </header>
@@ -372,8 +372,8 @@
           <p class="screen-kicker">{selectedThemeMeta.label}</p>
           <h2>{roomName}</h2>
           <div class="question-broadcast">
-            <span>Round 03</span>
-            <strong>Qui retourne le classement avant le reveal final ?</strong>
+            <span>Question 03</span>
+            <strong>Qui marque le plus de points sur cette question ?</strong>
           </div>
           <div class="answer-stack" aria-hidden="true">
             <span class="answer-hot">A / Camille</span>
@@ -398,10 +398,10 @@
 
     <section class="control-table" aria-label="Préparation du salon">
       <div class="name-console console-panel">
-        <div class="panel-tag">Badge de soirée</div>
+        <div class="panel-tag">Nom</div>
         <label class="name-field">
           <span>Nom du salon</span>
-          <input bind:value={name} maxlength="36" placeholder="Minuit Quiz Club" autocomplete="off" />
+          <input bind:value={name} maxlength="36" placeholder="Quiz entre amis" autocomplete="off" />
         </label>
         <div class="ticket-edge" aria-hidden="true">
           <span>{roomName}</span>
@@ -410,7 +410,7 @@
       </div>
 
       <div class="vibe-console console-panel">
-        <div class="panel-tag">Ambiance</div>
+        <div class="panel-tag">Thème</div>
         <div class="theme-rack">
           {#each data.themes as theme}
             {@const meta = getThemeMeta(theme.id)}
@@ -431,7 +431,7 @@
       </div>
 
       <div class="category-console console-panel">
-        <div class="panel-tag">Mix de sujets</div>
+        <div class="panel-tag">Catégories</div>
         <div class="category-deck">
           {#each data.categories as category, index}
             {@const meta = getCategoryMeta(index)}
@@ -445,14 +445,14 @@
             >
               <span>{meta.stamp}</span>
               <strong>{readableCategory(category)}</strong>
-              <em>{selectedCategories.includes(category) ? 'dans le mix' : meta.mark}</em>
+              <em>{selectedCategories.includes(category) ? 'choisi' : meta.mark}</em>
             </button>
           {/each}
         </div>
       </div>
 
       <div class="tempo-console console-panel">
-        <div class="panel-tag">Tempo</div>
+        <div class="panel-tag">Temps</div>
         <div class="dial-grid">
           <div class="dial-control" style={`--progress:${questionDial};`}>
             <button type="button" on:click={() => setNumberValue('questions', -1)} aria-label="Moins de questions">
@@ -513,8 +513,8 @@
     <section class="question-lab" aria-label="Éditeur de questions maison">
       <div class="lab-header">
         <div>
-          <p class="panel-tag">Cartouches maison</p>
-          <h2>Cartouches prêtes à jouer</h2>
+          <p class="panel-tag">Questions perso</p>
+          <h2>Questions personnalisées</h2>
         </div>
         <button type="button" class="add-card" on:click={addDraft}>
           <span>+</span>
@@ -550,7 +550,7 @@
               value={activeDraft.text}
               on:input={(event) => updateDraft(activeDraft.id, { text: event.currentTarget.value })}
               maxlength="220"
-              placeholder="Écris la question qui fera crier la table..."
+              placeholder="Écris ta question..."
             ></textarea>
           </label>
 
@@ -588,7 +588,7 @@
             </label>
 
             <label>
-              <span>Image URL</span>
+              <span>URL de l'image</span>
               <input
                 value={activeDraft.image}
                 on:input={(event) => updateDraft(activeDraft.id, { image: event.currentTarget.value })}
@@ -598,7 +598,7 @@
             </label>
 
             <label>
-              <span>Texte image</span>
+              <span>Description image</span>
               <input
                 value={activeDraft.imageAlt}
                 on:input={(event) => updateDraft(activeDraft.id, { imageAlt: event.currentTarget.value })}
@@ -609,7 +609,7 @@
           </div>
 
           <div class="draft-actions">
-            <button type="button" on:click={() => duplicateDraft(activeDraft.id)}>Cloner</button>
+            <button type="button" on:click={() => duplicateDraft(activeDraft.id)}>Dupliquer</button>
             <button type="button" on:click={() => removeDraft(activeDraft.id)}>Retirer</button>
           </div>
         </div>
@@ -617,7 +617,7 @@
 
       <details class="json-sync">
         <summary>
-          <span>Données envoyées</span>
+          <span>Aperçu des questions</span>
           <strong>{customCount} prête{customCount > 1 ? 's' : ''}</strong>
         </summary>
         <pre>{syncPreview}</pre>
