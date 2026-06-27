@@ -1,6 +1,5 @@
 <script>
   import { onMount } from 'svelte';
-  import Button from '$lib/components/Button.svelte';
   import { pageTitle, siteMeta } from '$lib/config/site.js';
   import { createRoom } from '$lib/utils/api.js';
   import { initSound, playSound, soundMuted, toggleSound } from '$lib/utils/sound.js';
@@ -8,6 +7,50 @@
 
   export let data;
 
+  const QUESTION_MIN = 5;
+  const QUESTION_MAX = 50;
+  const TIME_MIN = 10;
+  const TIME_MAX = 120;
+  const answerLabels = ['A', 'B', 'C', 'D'];
+  const title = pageTitle('Créer un quiz multijoueur');
+  const description = siteMeta.description;
+
+  const themeMeta = {
+    neon: {
+      name: 'Néon Pop',
+      label: 'Laser kiss',
+      colors: ['#ff3e8a', '#43e8ff'],
+      mark: 'NP'
+    },
+    candy: {
+      name: 'Bonbon',
+      label: 'Sucre chrome',
+      colors: ['#ff7a3d', '#f8f34a'],
+      mark: 'BB'
+    },
+    arcade: {
+      name: 'Arcade',
+      label: 'Cabine minuit',
+      colors: ['#68f06f', '#43e8ff'],
+      mark: 'AR'
+    },
+    studio: {
+      name: 'Studio',
+      label: 'Club privé',
+      colors: ['#ffffff', '#ff3e8a'],
+      mark: 'ST'
+    }
+  };
+
+  const categoryMeta = [
+    { mark: 'Culture', label: 'Culture', stamp: 'POP' },
+    { mark: 'Science', label: 'Science', stamp: 'LAB' },
+    { mark: 'Web', label: 'Web', stamp: 'NET' },
+    { mark: 'Cinéma', label: 'Cinéma', stamp: 'CUT' },
+    { mark: 'Sport', label: 'Sport', stamp: 'GO' }
+  ];
+
+  let draftId = 1;
   let name = '';
   let selectedCategories = data.categories.slice(0, 3);
   let questionCount = 8;
@@ -15,20 +58,30 @@
   let bonusTimer = true;
   let chillMode = false;
   let selectedTheme = data.themes[0]?.id || 'neon';
-  let customJson = '';
-  let customCount = 0;
-  let error = '';
-  let jsonError = '';
   let creating = false;
+  let error = '';
+  let pointerX = 50;
+  let pointerY = 42;
+  let activeDraftId;
+  let customDrafts = [createQuestionDraft('Qui lance la première vanne de la soirée ?', ['Le host', 'Le retardataire', 'Le stratège', 'La table entière'], 2)];
 
-  const jsonPlaceholder =
-    '[{"text":"Question ?","answers":["A","B"],"correctIndex":0,"category":"perso","image":"https://..."}]';
-  const title = pageTitle('Créer un quiz multijoueur');
-  const description = siteMeta.description;
+  activeDraftId = customDrafts[0].id;
 
-  $: selectedThemeName = data.themes.find((theme) => theme.id === selectedTheme)?.name || 'Thème';
+  $: selectedThemeMeta = getThemeMeta(selectedTheme);
+  $: roomName = name.trim() || 'Minuit Quiz Club';
   $: estimatedDuration = Math.max(1, Math.ceil((questionCount * timePerQuestion) / 60));
-  $: categoryLabel = selectedCategories.length ? selectedCategories.join(' · ') : 'JSON uniquement';
+  $: readyCustomQuestions = buildCustomQuestions(customDrafts);
+  $: customCount = readyCustomQuestions.length;
+  $: activeDraft = customDrafts.find((draft) => draft.id === activeDraftId) || customDrafts[0];
+  $: activeDraftState = activeDraft ? getDraftState(activeDraft) : null;
+  $: categoryLabel = selectedCategories.length
+    ? selectedCategories.map((category) => readableCategory(category)).join(' + ')
+    : 'questions maison';
+  $: questionDial = progressDeg(questionCount, QUESTION_MIN, QUESTION_MAX);
+  $: timeDial = progressDeg(timePerQuestion, TIME_MIN, TIME_MAX);
+  $: syncPreview = readyCustomQuestions.length
+    ? JSON.stringify({ questions: readyCustomQuestions }, null, 2)
+    : '{\n  "questions": []\n}';
 
   onMount(() => {
     initSound();
@@ -38,6 +91,18 @@
     applyTheme(selectedTheme);
   });
 
+  function createQuestionDraft(text = '', answers = ['', '', '', ''], correctIndex = 0) {
+    return {
+      id: `draft-${draftId++}`,
+      text,
+      category: 'perso',
+      image: '',
+      imageAlt: '',
+      answers: [...answers, '', '', '', ''].slice(0, 4),
+      correctIndex
+    };
+  }
+
   function applyChillClass() {
     document.documentElement.classList.toggle('chill', chillMode);
   }
@@ -46,6 +111,7 @@
     chillMode = value;
     localStorage.setItem('quizz-chill', value ? 'true' : 'false');
     applyChillClass();
+    playSound('ui');
   }
 
   function setTheme(themeId) {
@@ -55,46 +121,162 @@
     playSound('ui');
   }
 
-  function parseCustomQuestions() {
-    jsonError = '';
-    customCount = 0;
-    if (!customJson.trim()) return [];
-
-    try {
-      const parsed = JSON.parse(customJson);
-      const questions = Array.isArray(parsed) ? parsed : parsed.questions;
-      if (!Array.isArray(questions)) throw new Error('Format JSON non reconnu.');
-
-      const valid = questions.filter((question) => {
-        const answers = question.answers || question.choices;
-        const correctIndex = Number(question.correctIndex ?? question.correct ?? question.answerIndex);
-        return question.text && Array.isArray(answers) && answers.length >= 2 && Number.isInteger(correctIndex);
-      });
-
-      customCount = valid.length;
-      if (!valid.length) throw new Error('Aucune question valide.');
-      return valid;
-    } catch (err) {
-      jsonError = err.message || 'JSON invalide.';
-      return null;
-    }
+  function toggleCategory(category) {
+    selectedCategories = selectedCategories.includes(category)
+      ? selectedCategories.filter((item) => item !== category)
+      : [...selectedCategories, category];
+    playSound('ui');
   }
 
-  function previewJson() {
-    parseCustomQuestions();
+  function buildCustomQuestions(drafts) {
+    return drafts
+      .map((draft, index) => {
+        const filledAnswers = draft.answers
+          .map((answer, answerIndex) => ({ answer: answer.trim(), answerIndex }))
+          .filter(({ answer }) => answer);
+        const answers = filledAnswers.map(({ answer }) => answer);
+        const correctIndex = filledAnswers.findIndex(({ answerIndex }) => answerIndex === draft.correctIndex);
+
+        if (!draft.text.trim() || answers.length < 2 || correctIndex < 0) return null;
+
+        return {
+          id: `custom-${index + 1}`,
+          text: draft.text.trim(),
+          answers,
+          correctIndex,
+          category: draft.category.trim() || 'perso',
+          ...(draft.image.trim() ? { image: draft.image.trim() } : {}),
+          ...(draft.imageAlt.trim() ? { imageAlt: draft.imageAlt.trim() } : {})
+        };
+      })
+      .filter(Boolean);
+  }
+
+  function updateDraft(id, patch) {
+    customDrafts = customDrafts.map((draft) => (draft.id === id ? { ...draft, ...patch } : draft));
+  }
+
+  function updateAnswer(id, answerIndex, value) {
+    customDrafts = customDrafts.map((draft) => {
+      if (draft.id !== id) return draft;
+      const answers = draft.answers.map((answer, index) => (index === answerIndex ? value : answer));
+      return { ...draft, answers };
+    });
+  }
+
+  function setCorrectAnswer(id, answerIndex) {
+    updateDraft(id, { correctIndex: answerIndex });
+    playSound('ui');
+  }
+
+  function addDraft() {
+    const draft = createQuestionDraft();
+    customDrafts = [...customDrafts, draft];
+    activeDraftId = draft.id;
+    playSound('ui');
+  }
+
+  function duplicateDraft(id) {
+    const source = customDrafts.find((draft) => draft.id === id);
+    if (!source) return;
+    const copy = createQuestionDraft(source.text, source.answers, source.correctIndex);
+    copy.category = source.category;
+    copy.image = source.image;
+    copy.imageAlt = source.imageAlt;
+    customDrafts = [...customDrafts, copy];
+    activeDraftId = copy.id;
+    playSound('ui');
+  }
+
+  function removeDraft(id) {
+    if (customDrafts.length === 1) {
+      customDrafts = [createQuestionDraft()];
+      activeDraftId = customDrafts[0].id;
+      return;
+    }
+
+    const nextDrafts = customDrafts.filter((draft) => draft.id !== id);
+    customDrafts = nextDrafts;
+    activeDraftId = nextDrafts[0]?.id;
+    playSound('ui');
+  }
+
+  function setNumberValue(key, delta) {
+    if (key === 'questions') {
+      questionCount = clamp(questionCount + delta, QUESTION_MIN, QUESTION_MAX);
+    } else {
+      timePerQuestion = clamp(timePerQuestion + delta, TIME_MIN, TIME_MAX);
+    }
+    playSound('ui');
+  }
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function progressDeg(value, min, max) {
+    return `${((value - min) / (max - min)) * 360}deg`;
+  }
+
+  function getThemeMeta(themeId) {
+    return themeMeta[themeId] || themeMeta.neon;
+  }
+
+  function themeStyle(themeId) {
+    const meta = getThemeMeta(themeId);
+    return `--tone-a:${meta.colors[0]}; --tone-b:${meta.colors[1]};`;
+  }
+
+  function categoryStyle(index) {
+    const tilts = [-5, 3, -2, 5, -4, 2];
+    return `--tilt:${tilts[index % tilts.length]}deg; --delay:${index * 80}ms;`;
+  }
+
+  function readableCategory(category) {
+    return categoryMeta.find((item) => item.label.toLowerCase() === category.toLowerCase())?.label || category;
+  }
+
+  function getCategoryMeta(index) {
+    return categoryMeta[index % categoryMeta.length];
+  }
+
+  function getDraftState(draft) {
+    if (!draft?.text.trim()) {
+      return { ready: false, label: 'draft', detail: 'Question vide' };
+    }
+
+    const filledAnswers = draft.answers
+      .map((answer, answerIndex) => ({ answer: answer.trim(), answerIndex }))
+      .filter(({ answer }) => answer);
+
+    if (filledAnswers.length < 2) {
+      return { ready: false, label: 'draft', detail: 'Deux réponses minimum' };
+    }
+
+    if (!filledAnswers.some(({ answerIndex }) => answerIndex === draft.correctIndex)) {
+      return { ready: false, label: 'draft', detail: 'Bonne réponse manquante' };
+    }
+
+    return { ready: true, label: 'ready', detail: 'Cartouche prête' };
+  }
+
+  function trackPointer(event) {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    pointerX = ((event.clientX - bounds.left) / bounds.width) * 100;
+    pointerY = ((event.clientY - bounds.top) / bounds.height) * 100;
   }
 
   async function submit() {
     error = '';
-    const customQuestions = parseCustomQuestions();
-    if (customQuestions === null) return;
-    if (!selectedCategories.length && !customQuestions.length) {
-      error = 'Sélectionne une catégorie ou ajoute un JSON valide.';
+
+    if (!selectedCategories.length && !readyCustomQuestions.length) {
+      error = 'Ajoute une catégorie ou au moins une question maison prête.';
       return;
     }
 
     creating = true;
     playSound('start');
+
     try {
       const { room } = await createRoom({
         name,
@@ -103,7 +285,7 @@
         timePerQuestion,
         bonusTimer,
         themeId: selectedTheme,
-        customQuestions
+        customQuestions: readyCustomQuestions
       });
       location.href = `/room/${room.id}`;
     } catch (err) {
@@ -111,13 +293,6 @@
       error = 'Impossible de créer le salon pour le moment.';
       creating = false;
     }
-  }
-
-  function toggleCategory(category) {
-    selectedCategories = selectedCategories.includes(category)
-      ? selectedCategories.filter((item) => item !== category)
-      : [...selectedCategories, category];
-    playSound('ui');
   }
 </script>
 
@@ -136,686 +311,1853 @@
   <meta name="twitter:description" content={description} />
 </svelte:head>
 
-<main class="page">
-  <section class="shell home">
-    <div class="hero-panel">
+<main
+  class="party-page"
+  on:mousemove={trackPointer}
+  style={`--pointer-x:${pointerX}%; --pointer-y:${pointerY}%;`}
+>
+  <div class="ambient-field" aria-hidden="true">
+    <span class="light-ribbon ribbon-a"></span>
+    <span class="light-ribbon ribbon-b"></span>
+    <span class="pixel-dust"></span>
+  </div>
+
+  <form class="party-stage" on:submit|preventDefault={submit} aria-describedby="creator-status">
+    <header class="hero">
       <div class="hero-copy">
-        <p class="mono kicker">QUIZZ LAND</p>
-        <h1>Crée un salon quiz en 30 secondes.</h1>
-        <p class="lede">
-          Une partie rapide à partager, sans compte, avec des questions prêtes ou ton propre JSON.
-        </p>
+        <p class="brand-line">QUIZZ LAND / PRIVATE PARTY OS</p>
+        <h1>
+          <span>Prépare</span>
+          <span>la soirée.</span>
+        </h1>
+        <div class="hero-marquee" aria-hidden="true">
+          <span>{categoryLabel}</span>
+          <span>{estimatedDuration} minutes</span>
+          <span>{customCount} questions maison</span>
+          <span>{selectedThemeMeta.name}</span>
+        </div>
       </div>
 
-      <section class="game-preview" aria-label="Aperçu d’une partie Quizz Land">
-        <div class="preview-top">
-          <div>
-            <span class="mono">Salon privé</span>
-            <strong>{name.trim() || 'Soirée quiz'}</strong>
-          </div>
-          <span class="live-pill">En direct</span>
-        </div>
-
-        <div class="question-preview">
-          <p class="mono">Manche 03 · {selectedThemeName}</p>
-          <h2>Qui prend la tête avant le dernier reveal ?</h2>
-          <div class="answer-grid" aria-hidden="true">
-            <span class="selected">A · Paris</span>
-            <span>B · Bruxelles</span>
-            <span>C · Lyon</span>
-            <span>D · Genève</span>
-          </div>
-        </div>
-
-        <div class="preview-scoreboard" aria-hidden="true">
-          <span class="mono">Classement</span>
-          <div><b>1</b><strong>Camille</strong><em>420 pts</em></div>
-          <div><b>2</b><strong>Sam</strong><em>390 pts</em></div>
-          <div><b>3</b><strong>Alex</strong><em>310 pts</em></div>
-        </div>
-      </section>
-
-      <div class="stats" aria-label="Résumé des réglages">
-        <span><b>{questionCount}</b> questions</span>
-        <span><b>{estimatedDuration}</b> min</span>
-        <span><b>{customCount}</b> perso</span>
-      </div>
-    </div>
-
-    <form class="creator" on:submit|preventDefault={submit} aria-describedby="creator-status">
-      <div class="creator-header">
-        <div>
-          <p class="mono">Configuration</p>
-          <h2>Prépare le salon</h2>
-        </div>
+      <div class="launch-pod">
         <button
           type="button"
-          class="sound-toggle"
+          class="sound-puck"
           on:click={toggleSound}
           aria-label={$soundMuted ? 'Activer le son' : 'Couper le son'}
           aria-pressed={!$soundMuted}
         >
-          {$soundMuted ? 'Son coupé' : 'Son activé'}
+          <span>{$soundMuted ? 'OFF' : 'ON'}</span>
+          <strong>son</strong>
+        </button>
+
+        <button class="launch-button" type="submit" disabled={creating}>
+          <span>{creating ? 'Ouverture' : 'Créer'}</span>
+          <strong>{creating ? '...' : 'le salon'}</strong>
+        </button>
+
+        <div class="pod-readout" aria-hidden="true">
+          <span>{questionCount}Q</span>
+          <span>{timePerQuestion}s</span>
+          <span>{bonusTimer ? 'bonus' : 'flat'}</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="live-scene" aria-label="Aperçu du salon">
+      <div class="screen-stack">
+        <div class="signal-strip" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="room-screen">
+          <p class="screen-kicker">{selectedThemeMeta.label}</p>
+          <h2>{roomName}</h2>
+          <div class="question-broadcast">
+            <span>Round 03</span>
+            <strong>Qui retourne le classement avant le reveal final ?</strong>
+          </div>
+          <div class="answer-stack" aria-hidden="true">
+            <span class="answer-hot">A / Camille</span>
+            <span>B / Sam</span>
+            <span>C / Alex</span>
+            <span>D / Nora</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="floating-score score-a" aria-hidden="true">
+        <span>01</span>
+        <strong>Camille</strong>
+        <em>420</em>
+      </div>
+      <div class="floating-score score-b" aria-hidden="true">
+        <span>02</span>
+        <strong>Sam</strong>
+        <em>390</em>
+      </div>
+    </section>
+
+    <section class="control-table" aria-label="Préparation du salon">
+      <div class="name-console console-panel">
+        <div class="panel-tag">Badge de soirée</div>
+        <label class="name-field">
+          <span>Nom du salon</span>
+          <input bind:value={name} maxlength="36" placeholder="Minuit Quiz Club" autocomplete="off" />
+        </label>
+        <div class="ticket-edge" aria-hidden="true">
+          <span>{roomName}</span>
+          <span>{estimatedDuration} min</span>
+        </div>
+      </div>
+
+      <div class="vibe-console console-panel">
+        <div class="panel-tag">Ambiance</div>
+        <div class="theme-rack">
+          {#each data.themes as theme}
+            {@const meta = getThemeMeta(theme.id)}
+            <button
+              type="button"
+              class:active={selectedTheme === theme.id}
+              class="theme-cartridge"
+              style={themeStyle(theme.id)}
+              on:click={() => setTheme(theme.id)}
+              aria-pressed={selectedTheme === theme.id}
+            >
+              <span>{meta.mark}</span>
+              <strong>{meta.name}</strong>
+              <em>{meta.label}</em>
+            </button>
+          {/each}
+        </div>
+      </div>
+
+      <div class="category-console console-panel">
+        <div class="panel-tag">Mix de sujets</div>
+        <div class="category-deck">
+          {#each data.categories as category, index}
+            {@const meta = getCategoryMeta(index)}
+            <button
+              type="button"
+              class:active={selectedCategories.includes(category)}
+              class="category-token"
+              style={categoryStyle(index)}
+              on:click={() => toggleCategory(category)}
+              aria-pressed={selectedCategories.includes(category)}
+            >
+              <span>{meta.stamp}</span>
+              <strong>{readableCategory(category)}</strong>
+              <em>{selectedCategories.includes(category) ? 'dans le mix' : meta.mark}</em>
+            </button>
+          {/each}
+        </div>
+      </div>
+
+      <div class="tempo-console console-panel">
+        <div class="panel-tag">Tempo</div>
+        <div class="dial-grid">
+          <div class="dial-control" style={`--progress:${questionDial};`}>
+            <button type="button" on:click={() => setNumberValue('questions', -1)} aria-label="Moins de questions">
+              -
+            </button>
+            <div class="dial-face">
+              <span>questions</span>
+              <strong>{questionCount}</strong>
+            </div>
+            <button type="button" on:click={() => setNumberValue('questions', 1)} aria-label="Plus de questions">
+              +
+            </button>
+          </div>
+
+          <div class="dial-control" style={`--progress:${timeDial};`}>
+            <button type="button" on:click={() => setNumberValue('time', -5)} aria-label="Moins de temps">
+              -
+            </button>
+            <div class="dial-face">
+              <span>secondes</span>
+              <strong>{timePerQuestion}</strong>
+            </div>
+            <button type="button" on:click={() => setNumberValue('time', 5)} aria-label="Plus de temps">
+              +
+            </button>
+          </div>
+        </div>
+
+        <div class="toggle-row">
+          <button
+            type="button"
+            class:active={bonusTimer}
+            class="flip-toggle"
+            on:click={() => {
+              bonusTimer = !bonusTimer;
+              playSound('ui');
+            }}
+            aria-pressed={bonusTimer}
+          >
+            <span></span>
+            <strong>Bonus temps</strong>
+          </button>
+
+          <button
+            type="button"
+            class:active={chillMode}
+            class="flip-toggle"
+            on:click={() => setChillMode(!chillMode)}
+            aria-pressed={chillMode}
+          >
+            <span></span>
+            <strong>Mode calme</strong>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="question-lab" aria-label="Éditeur de questions maison">
+      <div class="lab-header">
+        <div>
+          <p class="panel-tag">Cartouches maison</p>
+          <h2>Cartouches prêtes à jouer</h2>
+        </div>
+        <button type="button" class="add-card" on:click={addDraft}>
+          <span>+</span>
+          <strong>Nouvelle question</strong>
         </button>
       </div>
 
-      <section class="settings-section">
-        <div class="section-title">
-          <span class="mono">01</span>
-          <h3>Identité</h3>
-        </div>
-        <label class="field">
-          <span>Nom du salon</span>
-          <input bind:value={name} maxlength="36" placeholder="Soirée quiz" autocomplete="off" />
-        </label>
-      </section>
-
-      <section class="settings-section">
-        <div class="section-title">
-          <span class="mono">02</span>
-          <h3>Ambiance</h3>
-        </div>
-        <fieldset>
-          <legend class="sr-only">Thème visuel</legend>
-          <div class="option-grid themes">
-            {#each data.themes as theme}
-              <button
-                type="button"
-                class:active={selectedTheme === theme.id}
-                class={`swatch theme-${theme.id}`}
-                on:click={() => setTheme(theme.id)}
-                aria-pressed={selectedTheme === theme.id}
-              >
-                <span></span>
-                <strong>{theme.name}</strong>
-              </button>
-            {/each}
-          </div>
-        </fieldset>
-      </section>
-
-      <section class="settings-section">
-        <div class="section-title">
-          <span class="mono">03</span>
-          <h3>Questions</h3>
-          <small>{categoryLabel}</small>
-        </div>
-        <fieldset>
-          <legend class="sr-only">Catégories</legend>
-          <div class="chips">
-            {#each data.categories as category}
-              <button
-                type="button"
-                class:active={selectedCategories.includes(category)}
-                on:click={() => toggleCategory(category)}
-                aria-pressed={selectedCategories.includes(category)}
-              >
-                {category}
-              </button>
-            {/each}
-          </div>
-        </fieldset>
-      </section>
-
-      <section class="settings-section">
-        <div class="section-title">
-          <span class="mono">04</span>
-          <h3>Rythme</h3>
-        </div>
-        <div class="sliders">
-          <label class="range-field">
-            <span>Questions</span>
-            <strong class="mono">{questionCount}</strong>
-            <input type="range" min="5" max="50" bind:value={questionCount} aria-label="Nombre de questions" />
-          </label>
-
-          <label class="range-field">
-            <span>Temps</span>
-            <strong class="mono">{timePerQuestion}s</strong>
-            <input
-              type="range"
-              min="10"
-              max="120"
-              step="5"
-              bind:value={timePerQuestion}
-              aria-label="Temps par question"
-            />
-          </label>
-        </div>
-
-        <div class="toggles">
-          <label class="toggle">
-            <input type="checkbox" bind:checked={bonusTimer} />
-            <span>Bonus temps</span>
-          </label>
-
-          <label class="toggle">
-            <input type="checkbox" checked={chillMode} on:change={(e) => setChillMode(e.currentTarget.checked)} />
-            <span>Mode calme</span>
-          </label>
-        </div>
-      </section>
-
-      <section class="settings-section json-section">
-        <div class="section-title">
-          <span class="mono">05</span>
-          <h3>Import JSON</h3>
-          <small>Optionnel</small>
-        </div>
-        <label class="field json-field">
-          <span>Questions temporaires</span>
-          <textarea
-            aria-describedby="creator-status json-help"
-            bind:value={customJson}
-            on:input={previewJson}
-            spellcheck="false"
-            placeholder={jsonPlaceholder}
-          ></textarea>
-        </label>
-        <p id="json-help" class="json-help">
-          Les questions importées restent liées au salon et sont supprimées avec la partie.
-        </p>
-      </section>
-
-      <div class="creator-footer">
-        <div id="creator-status" class:bad={jsonError} class="json-status" role="status" aria-live="polite">
-          <span class="mono">{jsonError || `${customCount} question(s) perso prêtes`}</span>
-        </div>
-
-        {#if error}<p class="error" role="alert">{error}</p>{/if}
-
-        <Button type="submit" disabled={creating}>
-          {creating ? 'Création…' : 'Créer le salon'}
-        </Button>
+      <div class="draft-strip" aria-label="Questions personnalisées">
+        {#each customDrafts as draft, index}
+          {@const state = getDraftState(draft)}
+          <button
+            type="button"
+            class:active={activeDraftId === draft.id}
+            class:ready={state.ready}
+            on:click={() => (activeDraftId = draft.id)}
+          >
+            <span>Q{index + 1}</span>
+            <strong>{state.label}</strong>
+          </button>
+        {/each}
       </div>
-    </form>
-  </section>
+
+      {#if activeDraft}
+        <div class:ready={activeDraftState?.ready} class="lab-status">
+          <span>{activeDraftState?.label}</span>
+          <strong>{activeDraftState?.detail}</strong>
+        </div>
+
+        <div class="builder-grid">
+          <label class="question-field">
+            <span>Question</span>
+            <textarea
+              value={activeDraft.text}
+              on:input={(event) => updateDraft(activeDraft.id, { text: event.currentTarget.value })}
+              maxlength="220"
+              placeholder="Écris la question qui fera crier la table..."
+            ></textarea>
+          </label>
+
+          <div class="answer-board">
+            {#each activeDraft.answers as answer, index}
+              <div class:correct={activeDraft.correctIndex === index} class="answer-slot">
+                <button
+                  type="button"
+                  class="answer-key"
+                  on:click={() => setCorrectAnswer(activeDraft.id, index)}
+                  aria-label={`Marquer la réponse ${answerLabels[index]} comme correcte`}
+                  aria-pressed={activeDraft.correctIndex === index}
+                >
+                  {answerLabels[index]}
+                </button>
+                <input
+                  value={answer}
+                  on:input={(event) => updateAnswer(activeDraft.id, index, event.currentTarget.value)}
+                  maxlength="90"
+                  placeholder={`Réponse ${answerLabels[index]}`}
+                />
+              </div>
+            {/each}
+          </div>
+
+          <div class="metadata-board">
+            <label>
+              <span>Catégorie</span>
+              <input
+                value={activeDraft.category}
+                on:input={(event) => updateDraft(activeDraft.id, { category: event.currentTarget.value })}
+                maxlength="32"
+                placeholder="perso"
+              />
+            </label>
+
+            <label>
+              <span>Image URL</span>
+              <input
+                value={activeDraft.image}
+                on:input={(event) => updateDraft(activeDraft.id, { image: event.currentTarget.value })}
+                maxlength="600"
+                placeholder="https://..."
+              />
+            </label>
+
+            <label>
+              <span>Texte image</span>
+              <input
+                value={activeDraft.imageAlt}
+                on:input={(event) => updateDraft(activeDraft.id, { imageAlt: event.currentTarget.value })}
+                maxlength="140"
+                placeholder="description courte"
+              />
+            </label>
+          </div>
+
+          <div class="draft-actions">
+            <button type="button" on:click={() => duplicateDraft(activeDraft.id)}>Cloner</button>
+            <button type="button" on:click={() => removeDraft(activeDraft.id)}>Retirer</button>
+          </div>
+        </div>
+      {/if}
+
+      <details class="json-sync">
+        <summary>
+          <span>Données envoyées</span>
+          <strong>{customCount} prête{customCount > 1 ? 's' : ''}</strong>
+        </summary>
+        <pre>{syncPreview}</pre>
+      </details>
+    </section>
+
+    <footer class="creator-footer">
+      <div id="creator-status" class="creator-status" role="status" aria-live="polite">
+        <span>{selectedCategories.length} catégories</span>
+        <span>{customCount} questions maison</span>
+        <span>{estimatedDuration} minutes</span>
+      </div>
+
+      {#if error}<p class="error" role="alert">{error}</p>{/if}
+    </footer>
+  </form>
 </main>
 
 <style>
-  .home {
-    display: grid;
-    grid-template-columns: minmax(0, 1.04fr) minmax(380px, 500px);
-    gap: clamp(24px, 5vw, 56px);
-    align-items: start;
-    padding-block: clamp(18px, 4vh, 44px);
+  :global(body) {
+    overflow-x: hidden;
   }
 
-  .hero-panel {
-    position: sticky;
-    top: 24px;
+  button,
+  input,
+  textarea {
+    letter-spacing: 0;
+  }
+
+  .party-page {
+    --ink: #17151b;
+    --paper: #fffaf0;
+    --paper-dim: rgba(255, 250, 240, 0.72);
+    --line: rgba(255, 250, 240, 0.18);
+    --hot: #ff3e8a;
+    --cyan: #43e8ff;
+    --yellow: #f8f34a;
+    --lime: #68f06f;
+    --orange: #ff7a3d;
+    position: relative;
+    isolation: isolate;
+    min-height: 100svh;
+    overflow: hidden;
+    padding: 28px;
+    background:
+      linear-gradient(118deg, rgba(255, 62, 138, 0.18), transparent 32%),
+      linear-gradient(248deg, rgba(67, 232, 255, 0.16), transparent 36%),
+      conic-gradient(from 120deg at var(--pointer-x) var(--pointer-y), #25202d, #17151b, #0f0e12, #221926, #17151b);
+    color: var(--paper);
+  }
+
+  .party-page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.24'/%3E%3C/svg%3E"),
+      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 86px),
+      repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 86px);
+    mix-blend-mode: screen;
+    opacity: 0.46;
+  }
+
+  .party-page::after {
+    content: '';
+    position: fixed;
+    inset: auto -20% -24% -20%;
+    z-index: -1;
+    height: 52svh;
+    background:
+      linear-gradient(90deg, transparent, rgba(248, 243, 74, 0.14), transparent),
+      linear-gradient(118deg, rgba(255, 62, 138, 0.22), rgba(67, 232, 255, 0.16), rgba(104, 240, 111, 0.14));
+    filter: blur(42px);
+    transform: skewY(-8deg);
+    animation: floor-shift 12s ease-in-out infinite alternate;
+  }
+
+  .ambient-field {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .light-ribbon {
+    position: absolute;
+    width: 80vw;
+    height: 16vh;
+    border: 1px solid rgba(255, 250, 240, 0.14);
+    background: linear-gradient(90deg, transparent, rgba(255, 250, 240, 0.08), transparent);
+    filter: blur(4px);
+    transform-origin: center;
+  }
+
+  .ribbon-a {
+    top: 10%;
+    left: -20%;
+    transform: rotate(-12deg);
+    animation: ribbon-glide 11s ease-in-out infinite alternate;
+  }
+
+  .ribbon-b {
+    right: -28%;
+    bottom: 24%;
+    transform: rotate(18deg);
+    animation: ribbon-glide 14s ease-in-out infinite alternate-reverse;
+  }
+
+  .pixel-dust {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(90deg, rgba(255, 62, 138, 0.26) 2px, transparent 2px),
+      linear-gradient(90deg, rgba(67, 232, 255, 0.22) 2px, transparent 2px),
+      linear-gradient(90deg, rgba(248, 243, 74, 0.2) 2px, transparent 2px);
+    background-position:
+      7% 22%,
+      74% 18%,
+      53% 76%;
+    background-repeat: no-repeat;
+    background-size:
+      54px 3px,
+      88px 3px,
+      62px 3px;
+    animation: dust-tick 4s steps(2, end) infinite;
+  }
+
+  .party-stage {
+    position: relative;
+    z-index: 1;
     display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.78fr);
+    grid-template-areas:
+      'hero live'
+      'controls live'
+      'lab lab'
+      'footer footer';
     gap: 22px;
-    min-width: 0;
+    width: min(1420px, 100%);
+    margin: 0 auto;
+  }
+
+  .hero {
+    grid-area: hero;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 20px;
+    min-height: 430px;
+    align-items: end;
+    padding: 30px 0 10px;
   }
 
   .hero-copy {
     display: grid;
-    gap: 14px;
+    gap: 20px;
   }
 
-  .kicker,
-  .creator-header p {
+  .brand-line,
+  .panel-tag,
+  .screen-kicker {
     margin: 0;
-    color: var(--color-accent);
-    font-weight: 900;
+    color: var(--yellow);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 800;
     text-transform: uppercase;
   }
 
   h1,
   h2,
-  h3,
   p {
     margin: 0;
   }
 
   h1 {
-    max-width: 720px;
-    font-size: clamp(2.65rem, 7vw, 5.75rem);
-    letter-spacing: 0;
-  }
-
-  .lede {
-    max-width: 620px;
-    color: var(--color-muted);
-    font-size: clamp(1rem, 2vw, 1.18rem);
-    font-weight: 700;
-  }
-
-  .game-preview,
-  .creator {
-    border: 1px solid rgba(21, 19, 31, 0.10);
-    border-radius: 28px;
-    background:
-      linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.68)),
-      var(--surface);
-    box-shadow: 0 28px 80px rgba(34, 33, 58, 0.14);
-    backdrop-filter: blur(20px);
-  }
-
-  .game-preview {
-    position: relative;
-    overflow: hidden;
     display: grid;
-    gap: 18px;
-    padding: clamp(18px, 3vw, 26px);
+    max-width: 790px;
+    font-size: 6.9rem;
+    line-height: 0.84;
+    letter-spacing: 0;
+    text-transform: uppercase;
   }
 
-  .game-preview::before {
+  h1 span:nth-child(2) {
+    color: transparent;
+    -webkit-text-stroke: 2px var(--paper);
+    text-shadow: 0 20px 55px rgba(255, 62, 138, 0.32);
+  }
+
+  .hero-marquee {
+    display: flex;
+    width: min(720px, 100%);
+    min-height: 54px;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: rgba(255, 250, 240, 0.07);
+    box-shadow: inset 0 0 30px rgba(255, 250, 240, 0.04);
+    backdrop-filter: blur(20px);
+    clip-path: polygon(0 0, 96% 0, 100% 32%, 100% 100%, 4% 100%, 0 68%);
+  }
+
+  .hero-marquee span {
+    flex: 0 0 auto;
+    padding: 0 18px;
+    color: var(--paper);
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .hero-marquee span:not(:last-child) {
+    border-right: 1px solid var(--line);
+  }
+
+  .launch-pod {
+    display: grid;
+    justify-items: center;
+    gap: 14px;
+    transform: translateY(-18px) rotate(4deg);
+  }
+
+  .sound-puck,
+  .launch-button {
+    border: 0;
+    color: var(--ink);
+    transition:
+      transform 260ms cubic-bezier(0.16, 1.1, 0.3, 1),
+      filter 260ms ease,
+      box-shadow 260ms ease;
+  }
+
+  .sound-puck {
+    display: grid;
+    width: 96px;
+    aspect-ratio: 1;
+    place-items: center;
+    border: 1px solid rgba(255, 250, 240, 0.4);
+    border-radius: 50%;
+    background: var(--paper);
+    box-shadow: 0 22px 40px rgba(0, 0, 0, 0.22);
+  }
+
+  .sound-puck span,
+  .sound-puck strong {
+    grid-area: 1 / 1;
+    text-transform: uppercase;
+  }
+
+  .sound-puck span {
+    font-size: 1.8rem;
+    font-weight: 950;
+  }
+
+  .sound-puck strong {
+    align-self: end;
+    padding-bottom: 16px;
+    font-size: 0.68rem;
+  }
+
+  .launch-button {
+    position: relative;
+    display: grid;
+    width: 230px;
+    aspect-ratio: 1;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 50%;
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.88), transparent 42%),
+      conic-gradient(from 180deg, var(--yellow), var(--hot), var(--cyan), var(--lime), var(--yellow));
+    box-shadow:
+      0 36px 70px rgba(0, 0, 0, 0.32),
+      0 0 70px rgba(255, 62, 138, 0.28);
+    font-family: 'Bricolage Grotesque', Inter, system-ui, sans-serif;
+    text-transform: uppercase;
+  }
+
+  .launch-button::before {
+    content: '';
+    position: absolute;
+    inset: 16px;
+    border: 1px solid rgba(23, 21, 27, 0.22);
+    border-radius: 50%;
+    background: rgba(255, 250, 240, 0.86);
+  }
+
+  .launch-button span,
+  .launch-button strong {
+    position: relative;
+    z-index: 1;
+    line-height: 0.95;
+  }
+
+  .launch-button span {
+    align-self: end;
+    font-size: 2.05rem;
+    font-weight: 950;
+  }
+
+  .launch-button strong {
+    align-self: start;
+    font-size: 1.15rem;
+  }
+
+  .launch-button:hover:not(:disabled),
+  .sound-puck:hover {
+    transform: translate3d(0, -8px, 0) rotate(-3deg) scale(1.03);
+    filter: saturate(1.16);
+  }
+
+  .launch-button:active:not(:disabled),
+  .sound-puck:active {
+    transform: translateY(-2px) scale(0.97);
+  }
+
+  .launch-button:focus-visible,
+  .sound-puck:focus-visible,
+  .theme-cartridge:focus-visible,
+  .category-token:focus-visible,
+  .dial-control button:focus-visible,
+  .flip-toggle:focus-visible,
+  .add-card:focus-visible,
+  .draft-strip button:focus-visible,
+  .draft-actions button:focus-visible,
+  .answer-key:focus-visible {
+    outline: 2px solid var(--yellow);
+    outline-offset: 4px;
+  }
+
+  .launch-button:disabled {
+    cursor: wait;
+    filter: grayscale(0.35);
+  }
+
+  .pod-readout {
+    display: flex;
+    gap: 7px;
+    color: var(--paper);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .pod-readout span {
+    border: 1px solid var(--line);
+    padding: 6px 8px;
+    background: rgba(255, 250, 240, 0.06);
+  }
+
+  .live-scene {
+    position: sticky;
+    top: 28px;
+    grid-area: live;
+    min-height: 720px;
+    perspective: 1200px;
+  }
+
+  .screen-stack {
+    position: relative;
+    transform: rotateY(-10deg) rotateX(5deg) translateY(34px);
+    transform-style: preserve-3d;
+  }
+
+  .signal-strip {
+    position: absolute;
+    top: -24px;
+    right: 8%;
+    display: flex;
+    gap: 7px;
+    transform: translateZ(90px) rotate(5deg);
+  }
+
+  .signal-strip span {
+    width: 22px;
+    height: 70px;
+    border: 1px solid rgba(255, 250, 240, 0.2);
+    background: linear-gradient(180deg, var(--yellow), var(--hot));
+    animation: meter-pop 1.6s ease-in-out infinite alternate;
+  }
+
+  .signal-strip span:nth-child(2) {
+    height: 105px;
+    animation-delay: 120ms;
+  }
+
+  .signal-strip span:nth-child(3) {
+    height: 54px;
+    animation-delay: 240ms;
+  }
+
+  .signal-strip span:nth-child(4) {
+    height: 92px;
+    animation-delay: 360ms;
+  }
+
+  .signal-strip span:nth-child(5) {
+    height: 124px;
+    animation-delay: 480ms;
+  }
+
+  .room-screen {
+    position: relative;
+    display: grid;
+    min-height: 620px;
+    align-content: space-between;
+    gap: 24px;
+    border: 1px solid rgba(255, 250, 240, 0.22);
+    border-radius: 8px;
+    padding: 28px;
+    background:
+      linear-gradient(140deg, rgba(255, 250, 240, 0.16), rgba(255, 250, 240, 0.04)),
+      linear-gradient(180deg, rgba(255, 62, 138, 0.16), rgba(67, 232, 255, 0.08)),
+      rgba(255, 250, 240, 0.08);
+    box-shadow:
+      0 46px 90px rgba(0, 0, 0, 0.38),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(28px);
+    clip-path: polygon(0 0, 94% 0, 100% 7%, 100% 100%, 8% 100%, 0 92%);
+  }
+
+  .room-screen::before {
     content: '';
     position: absolute;
     inset: 0;
     pointer-events: none;
     background:
-      radial-gradient(circle at 12% 18%, rgba(255, 209, 102, 0.32), transparent 28%),
-      radial-gradient(circle at 88% 8%, rgba(2, 166, 166, 0.22), transparent 28%),
-      linear-gradient(150deg, rgba(255, 79, 121, 0.10), transparent 45%);
+      linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent),
+      repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.055) 0 1px, transparent 1px 8px);
+    mix-blend-mode: screen;
+    animation: scanline 5s linear infinite;
   }
 
-  .preview-top,
-  .question-preview,
-  .preview-scoreboard {
+  .room-screen h2 {
     position: relative;
-    z-index: 1;
-  }
-
-  .preview-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-  }
-
-  .preview-top div {
-    display: grid;
-    gap: 4px;
-  }
-
-  .preview-top span,
-  .question-preview p,
-  .preview-scoreboard > span {
-    color: var(--color-accent);
-    font-size: 12px;
-    font-weight: 900;
+    max-width: 440px;
+    font-size: 4rem;
+    line-height: 0.92;
     text-transform: uppercase;
   }
 
-  .preview-top strong {
-    font-size: 1.25rem;
+  .question-broadcast {
+    position: relative;
+    display: grid;
+    gap: 12px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 22px 0;
   }
 
-  .live-pill {
-    display: inline-grid;
-    min-height: 34px;
+  .question-broadcast span {
+    color: var(--cyan);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .question-broadcast strong {
+    max-width: 470px;
+    font-size: 1.55rem;
+    line-height: 1.05;
+  }
+
+  .answer-stack {
+    position: relative;
+    display: grid;
+    gap: 10px;
+  }
+
+  .answer-stack span {
+    display: block;
+    min-height: 48px;
+    border: 1px solid rgba(255, 250, 240, 0.18);
+    padding: 12px 14px;
+    background: rgba(23, 21, 27, 0.42);
+    font-weight: 900;
+    text-transform: uppercase;
+    transform: skewX(-7deg);
+  }
+
+  .answer-stack .answer-hot {
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: 0 0 34px rgba(248, 243, 74, 0.22);
+  }
+
+  .floating-score {
+    position: absolute;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    width: min(270px, 70%);
+    border: 1px solid rgba(255, 250, 240, 0.26);
+    border-radius: 8px;
+    padding: 12px;
+    background: rgba(255, 250, 240, 0.86);
+    color: var(--ink);
+    box-shadow: 0 28px 50px rgba(0, 0, 0, 0.25);
+    font-weight: 900;
+    transform-style: preserve-3d;
+  }
+
+  .floating-score span {
+    display: grid;
+    width: 42px;
+    aspect-ratio: 1;
     place-items: center;
-    border-radius: 999px;
-    background: var(--color-ink);
-    color: white !important;
-    padding: 0 12px;
-    box-shadow: var(--shadow-soft);
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'JetBrains Mono', monospace;
   }
 
-  .question-preview {
+  .floating-score em {
+    color: var(--hot);
+    font-style: normal;
+  }
+
+  .score-a {
+    top: 520px;
+    left: -46px;
+    transform: rotate(-8deg);
+    animation: float-card 5s ease-in-out infinite;
+  }
+
+  .score-b {
+    top: 176px;
+    right: -38px;
+    transform: rotate(7deg);
+    animation: float-card 6s ease-in-out infinite reverse;
+  }
+
+  .control-table {
+    grid-area: controls;
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .console-panel,
+  .question-lab {
+    position: relative;
+    border: 1px solid rgba(255, 250, 240, 0.18);
+    border-radius: 8px;
+    background:
+      linear-gradient(145deg, rgba(255, 250, 240, 0.16), rgba(255, 250, 240, 0.055)),
+      rgba(23, 21, 27, 0.36);
+    box-shadow: 0 26px 70px rgba(0, 0, 0, 0.22);
+    backdrop-filter: blur(24px);
+  }
+
+  .console-panel {
+    min-height: 250px;
+    padding: 18px;
+    transition:
+      transform 260ms cubic-bezier(0.16, 1.1, 0.3, 1),
+      border-color 260ms ease,
+      background 260ms ease;
+  }
+
+  .console-panel:hover {
+    border-color: rgba(248, 243, 74, 0.48);
+    transform: translateY(-6px) rotate(var(--hover-rotate, 0deg));
+  }
+
+  .name-console {
+    --hover-rotate: -1deg;
+    display: grid;
+    align-content: space-between;
+    gap: 16px;
+    background:
+      linear-gradient(145deg, rgba(248, 243, 74, 0.18), rgba(255, 250, 240, 0.05)),
+      rgba(23, 21, 27, 0.42);
+  }
+
+  .vibe-console {
+    --hover-rotate: 1deg;
     display: grid;
     gap: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.68);
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.72);
-    padding: clamp(18px, 3vw, 24px);
   }
 
-  .question-preview h2 {
-    font-size: clamp(1.55rem, 3vw, 2.35rem);
+  .category-console {
+    --hover-rotate: -1deg;
+    grid-column: span 2;
+    display: grid;
+    gap: 16px;
   }
 
-  .answer-grid {
+  .tempo-console {
+    --hover-rotate: 1deg;
+    grid-column: span 2;
+    display: grid;
+    gap: 18px;
+  }
+
+  .name-field,
+  .question-field,
+  .metadata-board label {
+    display: grid;
+    gap: 10px;
+  }
+
+  .name-field span,
+  .question-field span,
+  .metadata-board span {
+    color: var(--paper-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .name-field input {
+    min-width: 0;
+    width: 100%;
+    border: 0;
+    border-bottom: 3px solid var(--paper);
+    padding: 0 0 12px;
+    background: transparent;
+    color: var(--paper);
+    font-family: 'Bricolage Grotesque', Inter, system-ui, sans-serif;
+    font-size: 2.35rem;
+    font-weight: 950;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .name-field input::placeholder,
+  .question-field textarea::placeholder,
+  .answer-slot input::placeholder,
+  .metadata-board input::placeholder {
+    color: rgba(255, 250, 240, 0.42);
+  }
+
+  .name-field input:focus,
+  .question-field textarea:focus,
+  .answer-slot input:focus,
+  .metadata-board input:focus {
+    outline: none;
+    box-shadow: 0 8px 0 -5px var(--yellow);
+  }
+
+  .ticket-edge {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    border: 1px dashed rgba(255, 250, 240, 0.28);
+    padding: 12px;
+    color: var(--paper-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .theme-rack {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
 
-  .answer-grid span {
-    min-height: 44px;
-    border: 1px solid var(--border-soft);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.82);
-    padding: 11px 12px;
-    color: var(--color-muted);
-    font-weight: 900;
-  }
-
-  .answer-grid .selected {
-    border-color: transparent;
-    background: linear-gradient(135deg, var(--color-accent), var(--color-accent-strong));
-    color: white;
-    box-shadow: var(--shadow-pop);
-  }
-
-  .preview-scoreboard {
+  .theme-cartridge {
+    position: relative;
     display: grid;
-    gap: 8px;
-  }
-
-  .preview-scoreboard div {
-    display: grid;
-    grid-template-columns: 34px minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 10px;
-    min-height: 44px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.66);
-    padding: 7px 10px;
-  }
-
-  .preview-scoreboard b {
-    display: grid;
-    min-height: 30px;
-    place-items: center;
-    border-radius: 999px;
-    background: var(--color-ink);
-    color: white;
-  }
-
-  .preview-scoreboard em {
-    color: var(--color-muted);
-    font-style: normal;
-    font-weight: 900;
-  }
-
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
-  }
-
-  .stats span {
-    display: grid;
-    min-height: 74px;
-    align-content: center;
-    gap: 2px;
-    border: 1px solid var(--border-soft);
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.70);
+    min-height: 116px;
+    gap: 6px;
+    justify-items: start;
+    overflow: hidden;
+    border: 1px solid rgba(255, 250, 240, 0.18);
+    border-radius: 8px;
     padding: 12px;
-    color: var(--color-muted);
+    background:
+      linear-gradient(135deg, color-mix(in srgb, var(--tone-a) 24%, transparent), transparent 52%),
+      rgba(255, 250, 240, 0.07);
+    color: var(--paper);
+    text-align: left;
+    transition:
+      transform 260ms cubic-bezier(0.16, 1.1, 0.3, 1),
+      border-color 260ms ease,
+      background 260ms ease;
+  }
+
+  .theme-cartridge::after {
+    content: '';
+    position: absolute;
+    right: -18px;
+    bottom: -18px;
+    width: 74px;
+    aspect-ratio: 1;
+    border: 12px solid var(--tone-b);
+    border-radius: 50%;
+    opacity: 0.62;
+  }
+
+  .theme-cartridge span {
+    display: grid;
+    width: 44px;
+    aspect-ratio: 1;
+    place-items: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--tone-a), var(--tone-b));
+    color: var(--ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 900;
+  }
+
+  .theme-cartridge strong,
+  .theme-cartridge em {
+    position: relative;
+    z-index: 1;
+  }
+
+  .theme-cartridge strong {
+    font-size: 1.05rem;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .theme-cartridge em {
+    color: var(--paper-dim);
+    font-size: 0.75rem;
+    font-style: normal;
     font-weight: 800;
   }
 
-  .stats b {
-    color: var(--color-ink);
-    font-size: 1.45rem;
+  .theme-cartridge:hover,
+  .theme-cartridge.active {
+    border-color: color-mix(in srgb, var(--tone-b) 70%, white);
+    transform: translateY(-5px) rotate(-2deg);
   }
 
-  .creator {
+  .theme-cartridge.active {
+    background:
+      linear-gradient(135deg, color-mix(in srgb, var(--tone-a) 48%, transparent), transparent 56%),
+      rgba(255, 250, 240, 0.14);
+  }
+
+  .category-deck {
     display: grid;
-    gap: 0;
-    overflow: hidden;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
   }
 
-  .creator-header,
-  .settings-section,
-  .creator-footer {
+  .category-token {
+    display: grid;
+    min-height: 132px;
+    align-content: space-between;
+    justify-items: start;
+    border: 1px solid rgba(23, 21, 27, 0.2);
+    border-radius: 8px;
+    padding: 12px;
+    background:
+      linear-gradient(160deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.48)),
+      var(--paper);
+    color: var(--ink);
+    text-align: left;
+    transform: rotate(var(--tilt));
+    transition:
+      transform 260ms cubic-bezier(0.16, 1.1, 0.3, 1),
+      filter 260ms ease,
+      box-shadow 260ms ease;
+    animation: token-enter 600ms cubic-bezier(0.16, 1.1, 0.3, 1) both;
+    animation-delay: var(--delay);
+    clip-path: polygon(0 0, 92% 0, 100% 18%, 100% 100%, 8% 100%, 0 82%);
+  }
+
+  .category-token span {
+    display: inline-grid;
+    min-width: 44px;
+    min-height: 28px;
+    place-items: center;
+    background: var(--ink);
+    color: var(--yellow);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 900;
+  }
+
+  .category-token strong {
+    font-size: 1.2rem;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .category-token em {
+    color: rgba(23, 21, 27, 0.65);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    font-style: normal;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .category-token:hover {
+    filter: saturate(1.18);
+    transform: rotate(0deg) translateY(-8px) scale(1.03);
+    box-shadow: 0 26px 34px rgba(0, 0, 0, 0.2);
+  }
+
+  .category-token.active {
+    background:
+      linear-gradient(135deg, var(--yellow), var(--hot)),
+      var(--paper);
+    box-shadow: 0 0 36px rgba(248, 243, 74, 0.2);
+  }
+
+  .dial-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .dial-control {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    gap: 10px;
+    align-items: center;
+    border: 1px solid rgba(255, 250, 240, 0.14);
+    border-radius: 8px;
+    padding: 12px;
+    background: rgba(255, 250, 240, 0.06);
+  }
+
+  .dial-control button {
+    display: grid;
+    width: 44px;
+    aspect-ratio: 1;
+    place-items: center;
+    border: 1px solid rgba(255, 250, 240, 0.26);
+    border-radius: 50%;
+    background: rgba(255, 250, 240, 0.1);
+    color: var(--paper);
+    font-size: 1.4rem;
+    font-weight: 900;
+    transition:
+      transform 180ms ease,
+      background 180ms ease;
+  }
+
+  .dial-control button:hover {
+    background: var(--paper);
+    color: var(--ink);
+    transform: scale(1.08);
+  }
+
+  .dial-face {
+    display: grid;
+    min-height: 130px;
+    place-items: center;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, rgba(23, 21, 27, 0.92) 0 52%, transparent 53%),
+      conic-gradient(from -90deg, var(--cyan) 0 var(--progress), rgba(255, 250, 240, 0.13) var(--progress) 360deg);
+    box-shadow: inset 0 0 34px rgba(0, 0, 0, 0.34);
+    text-align: center;
+  }
+
+  .dial-face span {
+    align-self: end;
+    color: var(--paper-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .dial-face strong {
+    align-self: start;
+    font-size: 2.9rem;
+    line-height: 1;
+  }
+
+  .toggle-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .flip-toggle {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    min-height: 74px;
+    border: 1px solid rgba(255, 250, 240, 0.18);
+    border-radius: 8px;
+    padding: 10px;
+    background: rgba(255, 250, 240, 0.06);
+    color: var(--paper);
+    text-align: left;
+    transition:
+      transform 220ms ease,
+      background 220ms ease,
+      border-color 220ms ease;
+  }
+
+  .flip-toggle span {
+    position: relative;
+    display: block;
+    width: 64px;
+    height: 42px;
+    border: 1px solid rgba(255, 250, 240, 0.24);
+    border-radius: 999px;
+    background: rgba(23, 21, 27, 0.66);
+  }
+
+  .flip-toggle span::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 6px;
+    width: 30px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--paper);
+    transition:
+      transform 220ms cubic-bezier(0.16, 1.1, 0.3, 1),
+      background 220ms ease;
+  }
+
+  .flip-toggle strong {
+    font-size: 1rem;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .flip-toggle:hover {
+    transform: translateY(-4px);
+  }
+
+  .flip-toggle.active {
+    border-color: rgba(248, 243, 74, 0.5);
+    background: rgba(248, 243, 74, 0.12);
+  }
+
+  .flip-toggle.active span::after {
+    background: var(--yellow);
+    transform: translateX(22px);
+  }
+
+  .question-lab {
+    grid-area: lab;
+    display: grid;
+    gap: 18px;
     padding: 20px;
   }
 
-  .creator-header {
+  .lab-header {
     display: flex;
-    align-items: start;
+    align-items: center;
     justify-content: space-between;
     gap: 16px;
-    border-bottom: 1px solid var(--border-soft);
-    background: rgba(255, 255, 255, 0.58);
   }
 
-  .creator-header h2 {
-    font-size: 1.75rem;
+  .lab-header h2 {
+    margin-top: 8px;
+    font-size: 2.7rem;
+    line-height: 0.96;
+    text-transform: uppercase;
   }
 
-  .sound-toggle {
-    min-height: 40px;
-    border: 1px solid var(--border-soft);
-    border-radius: 999px;
-    background: white;
-    color: var(--color-ink);
-    padding: 0 13px;
-    font-weight: 900;
+  .add-card {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    min-height: 64px;
+    border: 1px solid rgba(255, 250, 240, 0.2);
+    border-radius: 8px;
+    padding: 10px 14px 10px 10px;
+    background: var(--paper);
+    color: var(--ink);
+    font-weight: 950;
+    text-align: left;
+    text-transform: uppercase;
     transition:
-      transform var(--duration-fast) var(--ease-pop),
-      border-color var(--duration-fast) ease;
+      transform 220ms cubic-bezier(0.16, 1.1, 0.3, 1),
+      box-shadow 220ms ease;
   }
 
-  .sound-toggle:hover,
-  .sound-toggle:focus-visible {
-    outline: none;
-    transform: translateY(-1px);
-    border-color: rgba(255, 79, 121, 0.42);
-  }
-
-  .settings-section {
+  .add-card span {
     display: grid;
+    width: 44px;
+    aspect-ratio: 1;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--yellow);
+    font-size: 1.6rem;
+  }
+
+  .add-card:hover {
+    transform: translateY(-5px) rotate(-2deg);
+    box-shadow: 0 24px 40px rgba(0, 0, 0, 0.26);
+  }
+
+  .draft-strip {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .draft-strip button {
+    flex: 0 0 108px;
+    min-height: 62px;
+    border: 1px solid rgba(255, 250, 240, 0.18);
+    border-radius: 8px;
+    padding: 10px;
+    background: rgba(255, 250, 240, 0.07);
+    color: var(--paper);
+    text-align: left;
+    transition:
+      transform 180ms ease,
+      background 180ms ease,
+      border-color 180ms ease;
+  }
+
+  .draft-strip span,
+  .draft-strip strong {
+    display: block;
+  }
+
+  .draft-strip span {
+    font-size: 1.2rem;
+    font-weight: 950;
+  }
+
+  .draft-strip strong {
+    color: var(--paper-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+  }
+
+  .draft-strip button:hover,
+  .draft-strip button.active {
+    border-color: rgba(67, 232, 255, 0.54);
+    background: rgba(67, 232, 255, 0.14);
+    transform: translateY(-3px);
+  }
+
+  .draft-strip button.ready strong {
+    color: var(--lime);
+  }
+
+  .lab-status {
+    display: flex;
+    min-height: 58px;
+    align-items: center;
+    justify-content: space-between;
     gap: 14px;
-    border-bottom: 1px solid rgba(21, 19, 31, 0.08);
+    border: 1px solid rgba(255, 250, 240, 0.16);
+    border-radius: 8px;
+    padding: 10px 14px;
+    background:
+      linear-gradient(90deg, rgba(255, 62, 138, 0.12), transparent),
+      rgba(255, 250, 240, 0.06);
+    color: var(--paper);
   }
 
-  .section-title {
+  .lab-status span,
+  .lab-status strong {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .lab-status span {
+    border: 1px solid rgba(255, 250, 240, 0.18);
+    border-radius: 999px;
+    padding: 7px 10px;
+    color: var(--paper-dim);
+  }
+
+  .lab-status strong {
+    color: var(--yellow);
+  }
+
+  .lab-status.ready {
+    border-color: rgba(104, 240, 111, 0.32);
+    background:
+      linear-gradient(90deg, rgba(104, 240, 111, 0.16), transparent),
+      rgba(255, 250, 240, 0.06);
+  }
+
+  .lab-status.ready strong {
+    color: var(--lime);
+  }
+
+  .builder-grid {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: baseline;
+    grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1fr);
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .question-field {
+    grid-row: span 2;
+    border: 1px solid rgba(255, 250, 240, 0.16);
+    border-radius: 8px;
+    padding: 16px;
+    background:
+      linear-gradient(145deg, rgba(248, 243, 74, 0.13), rgba(255, 250, 240, 0.045)),
+      rgba(23, 21, 27, 0.34);
+  }
+
+  .question-field textarea {
+    min-height: 250px;
+    width: 100%;
+    resize: vertical;
+    border: 0;
+    background: transparent;
+    color: var(--paper);
+    font-family: 'Bricolage Grotesque', Inter, system-ui, sans-serif;
+    font-size: 2.2rem;
+    font-weight: 850;
+    line-height: 1.05;
+  }
+
+  .answer-board {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .answer-slot {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    min-height: 82px;
+    border: 1px solid rgba(255, 250, 240, 0.16);
+    border-radius: 8px;
+    padding: 10px;
+    background: rgba(255, 250, 240, 0.07);
+    transition:
+      transform 180ms ease,
+      border-color 180ms ease,
+      background 180ms ease;
+  }
+
+  .answer-slot.correct {
+    border-color: rgba(248, 243, 74, 0.58);
+    background: rgba(248, 243, 74, 0.12);
+  }
+
+  .answer-slot:hover {
+    transform: translateY(-3px);
+  }
+
+  .answer-key {
+    display: grid;
+    width: 52px;
+    aspect-ratio: 1;
+    place-items: center;
+    border: 1px solid rgba(255, 250, 240, 0.24);
+    border-radius: 50%;
+    background: rgba(23, 21, 27, 0.52);
+    color: var(--paper);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 950;
+  }
+
+  .answer-slot.correct .answer-key {
+    background: var(--yellow);
+    color: var(--ink);
+  }
+
+  .answer-slot input,
+  .metadata-board input {
+    min-width: 0;
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid rgba(255, 250, 240, 0.28);
+    padding: 8px 0;
+    background: transparent;
+    color: var(--paper);
+    font-weight: 850;
+  }
+
+  .metadata-board {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    align-items: end;
+  }
+
+  .metadata-board label {
+    min-height: 94px;
+    border: 1px solid rgba(255, 250, 240, 0.13);
+    border-radius: 8px;
+    padding: 12px;
+    background: rgba(255, 250, 240, 0.055);
+  }
+
+  .draft-actions {
+    display: flex;
+    justify-content: flex-end;
     gap: 10px;
   }
 
-  .section-title > span {
-    color: var(--color-accent);
-    font-size: 12px;
+  .draft-actions button {
+    min-height: 44px;
+    border: 1px solid rgba(255, 250, 240, 0.2);
+    border-radius: 8px;
+    padding: 0 14px;
+    background: rgba(255, 250, 240, 0.08);
+    color: var(--paper);
     font-weight: 900;
+    text-transform: uppercase;
+    transition:
+      transform 180ms ease,
+      background 180ms ease;
   }
 
-  .section-title h3 {
-    font-size: 1rem;
+  .draft-actions button:hover {
+    background: var(--paper);
+    color: var(--ink);
+    transform: translateY(-3px);
   }
 
-  .section-title small {
-    overflow: hidden;
-    color: var(--color-muted);
-    font-weight: 800;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .json-sync {
+    border: 1px solid rgba(255, 250, 240, 0.14);
+    border-radius: 8px;
+    background: rgba(23, 21, 27, 0.36);
   }
 
-  fieldset {
-    min-width: 0;
-    border: 0;
+  .json-sync summary {
+    display: flex;
+    min-height: 54px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 14px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .json-sync strong {
+    color: var(--lime);
+  }
+
+  .json-sync pre {
+    max-height: 260px;
+    overflow: auto;
     margin: 0;
-    padding: 0;
+    border-top: 1px solid rgba(255, 250, 240, 0.12);
+    padding: 14px;
+    color: rgba(255, 250, 240, 0.78);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    line-height: 1.45;
   }
 
-  .option-grid,
-  .chips,
-  .toggles {
+  .creator-footer {
+    grid-area: footer;
+    display: grid;
+    gap: 12px;
+    padding-bottom: 16px;
+  }
+
+  .creator-status {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
   }
 
-  .swatch,
-  .chips button {
-    min-height: 44px;
-    border: 1px solid var(--border-soft);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.76);
-    color: var(--color-ink);
-    padding: 0 14px;
-    font-weight: 900;
-    transition:
-      transform var(--duration-fast) var(--ease-pop),
-      border-color var(--duration-fast) ease,
-      background var(--duration-fast) ease,
-      box-shadow var(--duration-fast) ease;
-  }
-
-  .swatch {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-  }
-
-  .swatch span {
-    width: 18px;
-    aspect-ratio: 1;
-    border-radius: 999px;
-    background: linear-gradient(135deg, var(--color-accent), var(--color-cyan));
-    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.72);
-  }
-
-  .swatch:hover,
-  .chips button:hover,
-  .swatch:focus-visible,
-  .chips button:focus-visible {
-    outline: none;
-    transform: translateY(-2px);
-    border-color: rgba(255, 79, 121, 0.44);
-    box-shadow: var(--shadow-soft);
-  }
-
-  .swatch.active,
-  .chips .active {
-    border-color: transparent;
-    background: var(--color-ink);
-    color: white;
-    box-shadow: 0 14px 30px rgba(21, 19, 31, 0.18);
-  }
-
-  .sliders {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-  }
-
-  .range-field {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 10px;
-    border: 1px solid var(--border-soft);
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.68);
-    padding: 14px;
-  }
-
-  .range-field span {
-    color: var(--color-muted);
-    font-weight: 900;
-  }
-
-  .range-field strong {
-    color: var(--color-accent);
-  }
-
-  .range-field input {
-    grid-column: 1 / -1;
-  }
-
-  .toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    min-height: 42px;
-    border: 1px solid var(--border-soft);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.72);
-    padding: 0 14px;
-    font-weight: 900;
-  }
-
-  .json-section {
-    background: rgba(255, 255, 255, 0.38);
-  }
-
-  .json-field textarea {
-    min-height: 138px;
-    border-radius: 14px;
+  .creator-status span {
+    border: 1px solid rgba(255, 250, 240, 0.16);
+    border-radius: 8px;
+    padding: 8px 10px;
+    background: rgba(255, 250, 240, 0.07);
+    color: var(--paper-dim);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-  }
-
-  .json-help {
-    color: var(--color-muted);
-    font-size: 0.9rem;
-    font-weight: 700;
-  }
-
-  .creator-footer {
-    display: grid;
-    gap: 12px;
-    background: rgba(255, 255, 255, 0.58);
-  }
-
-  .json-status {
-    display: inline-flex;
-    justify-self: start;
-    min-height: 32px;
-    align-items: center;
-    border-radius: 999px;
-    background: rgba(18, 130, 92, 0.10);
-    color: var(--color-success);
-    padding: 0 12px;
-    font-size: 12px;
+    font-size: 0.72rem;
     font-weight: 900;
-  }
-
-  .json-status.bad {
-    background: rgba(217, 45, 85, 0.10);
-    color: var(--color-danger);
+    text-transform: uppercase;
   }
 
   .error {
-    color: var(--color-danger);
+    color: var(--yellow);
     font-weight: 900;
   }
 
-  @media (max-width: 980px) {
-    .home {
-      grid-template-columns: 1fr;
+  @keyframes floor-shift {
+    from {
+      transform: translateX(-4%) skewY(-8deg);
     }
-
-    .hero-panel {
-      position: static;
+    to {
+      transform: translateX(4%) skewY(-10deg);
     }
   }
 
-  @media (max-width: 640px) {
-    .home {
-      padding-block: 8px 20px;
+  @keyframes ribbon-glide {
+    from {
+      translate: -2% -8%;
+    }
+    to {
+      translate: 4% 8%;
+    }
+  }
+
+  @keyframes dust-tick {
+    50% {
+      background-position:
+        10% 24%,
+        70% 15%,
+        58% 80%;
+    }
+  }
+
+  @keyframes meter-pop {
+    from {
+      transform: scaleY(0.55);
+      filter: hue-rotate(0deg);
+    }
+    to {
+      transform: scaleY(1);
+      filter: hue-rotate(38deg);
+    }
+  }
+
+  @keyframes scanline {
+    from {
+      background-position: -140% 0, 0 0;
+    }
+    to {
+      background-position: 140% 0, 0 70px;
+    }
+  }
+
+  @keyframes float-card {
+    50% {
+      translate: 0 -16px;
+    }
+  }
+
+  @keyframes token-enter {
+    from {
+      opacity: 0;
+      transform: translateY(22px) rotate(var(--tilt));
+    }
+    to {
+      opacity: 1;
+      transform: rotate(var(--tilt));
+    }
+  }
+
+  @media (max-width: 1180px) {
+    .party-stage {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        'hero'
+        'live'
+        'controls'
+        'lab'
+        'footer';
     }
 
-    .game-preview,
-    .creator {
-      border-radius: 22px;
+    .hero {
+      min-height: auto;
     }
 
-    .creator-header,
-    .settings-section,
-    .creator-footer {
+    .live-scene {
+      position: relative;
+      top: auto;
+      min-height: 620px;
+    }
+
+    .screen-stack {
+      transform: rotateY(-4deg) rotateX(3deg);
+    }
+  }
+
+  @media (max-width: 860px) {
+    .party-page {
       padding: 16px;
     }
 
-    .creator-header,
-    .sliders,
-    .section-title {
+    .hero {
       grid-template-columns: 1fr;
+    }
+
+    h1 {
+      font-size: 4.4rem;
+    }
+
+    .launch-pod {
+      justify-items: start;
+      transform: none;
+    }
+
+    .control-table,
+    .builder-grid,
+    .metadata-board {
+      grid-template-columns: 1fr;
+    }
+
+    .category-console,
+    .tempo-console {
+      grid-column: auto;
+    }
+
+    .category-deck {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .room-screen {
+      min-height: 540px;
+    }
+
+    .room-screen h2 {
+      font-size: 3.2rem;
+    }
+
+    .score-a {
+      left: 8px;
+    }
+
+    .score-b {
+      right: 8px;
+    }
+  }
+
+  @media (max-width: 620px) {
+    .party-page {
+      padding: 12px;
+    }
+
+    .party-stage {
+      gap: 14px;
+    }
+
+    h1 {
+      font-size: 3.05rem;
+    }
+
+    .brand-line,
+    .panel-tag,
+    .screen-kicker {
+      font-size: 0.68rem;
+    }
+
+    .hero-marquee {
+      min-height: auto;
+      flex-wrap: wrap;
+      padding: 8px;
+    }
+
+    .hero-marquee span {
+      border: 1px solid rgba(255, 250, 240, 0.12);
+      padding: 7px 9px;
+      font-size: 0.78rem;
+    }
+
+    .launch-button {
+      width: 178px;
+    }
+
+    .launch-button span {
+      font-size: 1.55rem;
+    }
+
+    .launch-button strong {
+      font-size: 0.94rem;
+    }
+
+    .live-scene {
+      min-height: 560px;
+    }
+
+    .room-screen {
+      min-height: 490px;
+      padding: 20px;
+    }
+
+    .room-screen h2 {
+      font-size: 2.4rem;
+    }
+
+    .question-broadcast strong {
+      font-size: 1.2rem;
+    }
+
+    .floating-score {
+      width: min(230px, 82%);
+    }
+
+    .score-a {
+      top: 454px;
+    }
+
+    .score-b {
+      top: 112px;
+    }
+
+    .theme-rack,
+    .dial-grid,
+    .toggle-row,
+    .answer-board,
+    .category-deck {
+      grid-template-columns: 1fr;
+    }
+
+    .name-field input,
+    .question-field textarea {
+      font-size: 1.8rem;
+    }
+
+    .lab-header {
       display: grid;
     }
 
-    .sound-toggle {
+    .lab-header h2 {
+      font-size: 2rem;
+    }
+
+    .add-card {
       width: 100%;
     }
+  }
 
-    .answer-grid,
-    .stats {
-      grid-template-columns: 1fr;
-    }
-
-    .section-title small {
-      white-space: normal;
+  @media (prefers-reduced-motion: reduce) {
+    .party-page *,
+    .party-page::before,
+    .party-page::after {
+      transition: none !important;
+      animation: none !important;
+      scroll-behavior: auto !important;
     }
   }
 </style>
