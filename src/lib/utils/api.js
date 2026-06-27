@@ -7,17 +7,17 @@ async function readResponse(response) {
       return text ? JSON.parse(text) : {};
     } catch (error) {
       console.error('Invalid JSON response', { status: response.status, text, error });
-      throw new Error('Le serveur a renvoye une reponse JSON invalide.');
+      throw new Error('Le serveur a renvoyé une réponse JSON invalide.');
     }
   }
 
   if (!response.ok) {
     console.error('Non JSON error response', { status: response.status, contentType, text });
-    throw new Error(`Erreur serveur ${response.status}. Verifie que Render a bien deploye la derniere version.`);
+    throw new Error(`Erreur serveur ${response.status}. Vérifie que Render a bien déployé la dernière version.`);
   }
 
   console.error('Unexpected non JSON response', { status: response.status, contentType, text });
-  throw new Error('Le serveur a renvoye une reponse inattendue.');
+  throw new Error('Le serveur a renvoyé une réponse inattendue.');
 }
 
 export async function createRoom(config) {
@@ -27,6 +27,6 @@ export async function createRoom(config) {
     body: JSON.stringify(config)
   });
   const data = await readResponse(response);
-  if (!response.ok) throw new Error(data.message || 'Impossible de creer la room.');
+  if (!response.ok) throw new Error(data.message || 'Impossible de créer le salon.');
   return data;
 }

@@ -10,10 +10,10 @@ export async function POST({ params, request, getClientAddress }) {
     }
     const body = await request.json();
     const joined = await joinRoom(params.roomId, body.name, body.playerId);
-    if (!joined) return json({ message: 'Room introuvable.' }, { status: 404 });
+    if (!joined) return json({ message: 'Salon introuvable.' }, { status: 404 });
     return json(joined);
   } catch (error) {
     log('error', 'join_room_failed', { roomId: params.roomId, error: error.message });
-    return json({ message: 'Impossible de rejoindre la room.' }, { status: 500 });
+    return json({ message: 'Impossible de rejoindre le salon.' }, { status: 500 });
   }
 }

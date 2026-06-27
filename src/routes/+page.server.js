@@ -1,5 +1,5 @@
-import { categories } from '$server/services/questions.js';
+import { categories, quizThemes } from '$server/services/questions.js';
 
 export function load() {
-  return { categories };
+  return { categories, themes: quizThemes };
 }

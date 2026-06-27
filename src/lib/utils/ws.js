@@ -24,10 +24,10 @@ export function connectRoom(roomId, handlers = {}) {
     handlers[message.type]?.(message.payload);
   });
   ws.addEventListener('error', () => {
-    handlers.socket_error?.({ message: 'Connexion temps reel impossible.' });
+    handlers.socket_error?.({ message: 'Connexion temps réel impossible.' });
   });
   ws.addEventListener('close', () => {
-    handlers.socket_close?.({ message: 'Connexion temps reel fermee.' });
+    handlers.socket_close?.({ message: 'Connexion temps réel fermée.' });
   });
   ws.sendJson = send;
   return ws;

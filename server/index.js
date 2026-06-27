@@ -46,7 +46,7 @@ wss.on('connection', (ws) => {
       const { type, payload } = JSON.parse(raw.toString());
       if (type === 'join_room') {
         const joined = await joinRoom(payload.roomId, payload.name, payload.playerId);
-        if (!joined) return send(ws, 'error', { message: 'Room introuvable.' });
+        if (!joined) return send(ws, 'error', { message: 'Salon introuvable.' });
         clients.set(ws, { roomId: payload.roomId, playerId: joined.player.id });
         send(ws, 'player_joined', joined);
         broadcast(payload.roomId, 'user_joined', joined.player);
@@ -58,8 +58,11 @@ wss.on('connection', (ws) => {
         await syncRoom(payload.roomId);
       }
       if (type === 'submit_answer') {
-        const room = await submitAnswer(payload.roomId, payload.playerId, payload.answerIndex);
-        if (room) broadcast(payload.roomId, 'answer_submitted', room);
+        const result = await submitAnswer(payload.roomId, payload.playerId, payload.answerIndex);
+        if (result) {
+          if (result.feedback) send(ws, 'answer_feedback', result.feedback);
+          broadcast(payload.roomId, 'answer_submitted', result.room);
+        }
         await syncRoom(payload.roomId);
       }
     } catch (error) {

@@ -1,6 +1,6 @@
 # Quizz Land
 
-Application SvelteKit SSR de quiz multijoueur temps reel.
+Application SvelteKit SSR de quiz multijoueur en temps réel.
 
 ## Setup
 
@@ -16,12 +16,13 @@ npm run build
 npm start
 ```
 
-Le serveur custom `server/index.js` sert le build SvelteKit et expose le WebSocket sur `/ws`.
+Le serveur personnalisé `server/index.js` sert le build SvelteKit et expose le WebSocket sur `/ws`.
 
 ## Render.com
 
 - Build command: `npm install && npm run build`
 - Start command: `npm start`
-- Environment: `PORT`, `PUBLIC_APP_URL`, `ROOM_RETENTION_DAYS`
+- Environment: `PORT`, `PUBLIC_APP_URL`, `ROOM_RETENTION_HOURS`, `RESULT_RETENTION_MINUTES`
 
-Les rooms sont persistees dans `data/rooms.json` pendant 7 jours par defaut.
+Les salons actifs sont persistés dans `data/rooms.json` pendant 12 heures par défaut.
+Les salons terminés restent disponibles 30 minutes pour afficher ou exporter les résultats, puis sont purgés automatiquement au prochain accès serveur.

@@ -1,23 +1,40 @@
 <script>
   export let players = [];
   export let hostId = null;
+  export let maskScores = false;
+  export let title = 'Joueurs';
+
+  $: rankedPlayers = [...players].sort((a, b) => b.score - a.score);
+
+  function rankLabel(index) {
+    if (index === 0) return '1er';
+    if (index === 1) return '2e';
+    if (index === 2) return '3e';
+    return String(index + 1);
+  }
 </script>
 
 <section class="card players" aria-label="Joueurs">
-  <h2>Joueurs</h2>
+  <div class="heading">
+    <h2>{title}</h2>
+    <span class="count mono">{players.length}</span>
+  </div>
+
   {#if players.length}
     <ol>
-      {#each [...players].sort((a, b) => b.score - a.score) as player, index}
-        <li>
-          <span class="rank mono">{index + 1}</span>
+      {#each rankedPlayers as player, index}
+        <li class:podium={index < 3}>
+          <span class="rank mono">{rankLabel(index)}</span>
           <strong>{player.name}</strong>
           {#if player.id === hostId}<small>Host</small>{/if}
-          <span class="score mono">{player.score}</span>
+          <span class:masked={maskScores} class="score mono">
+            {maskScores ? '---' : player.score}
+          </span>
         </li>
       {/each}
     </ol>
   {:else}
-    <p>Aucun joueur connecte.</p>
+    <p>En attente.</p>
   {/if}
 </section>
 
@@ -26,9 +43,29 @@
     padding: 20px;
   }
 
+  .heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
   h2 {
-    margin: 0 0 16px;
+    margin: 0;
     font-size: 20px;
+  }
+
+  .count {
+    display: grid;
+    min-width: 34px;
+    min-height: 30px;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--color-ink);
+    color: white;
+    font-size: 13px;
+    font-weight: 900;
   }
 
   ol {
@@ -41,22 +78,76 @@
 
   li {
     display: grid;
-    grid-template-columns: 32px 1fr auto auto;
+    grid-template-columns: 42px minmax(0, 1fr) auto auto;
     align-items: center;
     gap: 10px;
-    min-height: 48px;
+    min-height: 54px;
+    border: 1px solid rgba(21, 19, 31, 0.06);
     border-radius: 8px;
-    background: var(--gray-50);
-    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.68);
+    padding: 8px 12px;
+    animation: rise-in 260ms var(--ease-pop) both;
+  }
+
+  .podium {
+    background: linear-gradient(135deg, rgba(255, 209, 102, 0.24), rgba(255, 255, 255, 0.74));
+    box-shadow: 0 8px 18px rgba(21, 19, 31, 0.07);
+  }
+
+  strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   small {
+    display: inline-flex;
+    min-height: 24px;
+    align-items: center;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.10);
     color: var(--color-blue);
-    font-weight: 700;
+    padding: 0 8px;
+    font-weight: 900;
+    font-size: 12px;
   }
 
-  .rank,
+  .rank {
+    display: grid;
+    min-height: 34px;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--surface-tint);
+    color: var(--color-accent);
+    font-size: 12px;
+    font-weight: 900;
+  }
+
   .score {
-    color: var(--gray-600);
+    min-width: 54px;
+    color: var(--gray-900);
+    text-align: right;
+    font-weight: 900;
+  }
+
+  .masked {
+    filter: blur(3px);
+    opacity: 0.58;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-muted);
+    font-weight: 800;
+  }
+
+  @media (max-width: 520px) {
+    li {
+      grid-template-columns: 38px minmax(0, 1fr) auto;
+    }
+
+    small {
+      display: none;
+    }
   }
 </style>
