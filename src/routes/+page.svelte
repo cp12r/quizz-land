@@ -69,15 +69,19 @@
 
   $: selectedThemeMeta = getThemeMeta(selectedTheme);
   $: roomName = name.trim() || 'Quiz entre amis';
-  $: estimatedDuration = Math.max(1, Math.ceil((questionCount * timePerQuestion) / 60));
   $: readyCustomQuestions = buildCustomQuestions(customDrafts);
   $: customCount = readyCustomQuestions.length;
+  $: effectiveQuestionCount = selectedCategories.length ? questionCount : customCount;
+  $: estimatedDuration = Math.max(1, Math.ceil((Math.max(1, effectiveQuestionCount) * timePerQuestion) / 60));
+  $: customCountLabel = customCount === 1 ? '1 question perso' : `${customCount} questions perso`;
   $: activeDraft = customDrafts.find((draft) => draft.id === activeDraftId) || customDrafts[0];
   $: activeDraftState = activeDraft ? getDraftState(activeDraft) : null;
   $: categoryLabel = selectedCategories.length
     ? selectedCategories.map((category) => readableCategory(category)).join(' + ')
-    : 'questions perso';
-  $: questionDial = progressDeg(questionCount, QUESTION_MIN, QUESTION_MAX);
+    : customCount
+      ? customCountLabel
+      : 'questions perso';
+  $: questionDial = progressDeg(selectedCategories.length ? questionCount : customCount, QUESTION_MIN, QUESTION_MAX);
   $: timeDial = progressDeg(timePerQuestion, TIME_MIN, TIME_MAX);
   $: syncPreview = readyCustomQuestions.length
     ? JSON.stringify({ questions: readyCustomQuestions }, null, 2)
@@ -215,7 +219,7 @@
   }
 
   function progressDeg(value, min, max) {
-    return `${((value - min) / (max - min)) * 360}deg`;
+    return `${((clamp(value, min, max) - min) / (max - min)) * 360}deg`;
   }
 
   function getThemeMeta(themeId) {
@@ -281,10 +285,10 @@
       const { room } = await createRoom({
         name,
         categories: selectedCategories,
-        questionCount,
         timePerQuestion,
         bonusTimer,
         themeId: selectedTheme,
+        questionCount: selectedCategories.length ? questionCount : readyCustomQuestions.length,
         customQuestions: readyCustomQuestions
       });
       location.href = `/room/${room.id}`;
@@ -333,7 +337,7 @@
         <div class="hero-marquee" aria-hidden="true">
           <span>{categoryLabel}</span>
           <span>{estimatedDuration} minutes</span>
-          <span>{customCount} questions perso</span>
+          <span>{customCountLabel}</span>
           <span>{selectedThemeMeta.name}</span>
         </div>
       </div>
@@ -356,7 +360,7 @@
         </button>
 
         <div class="pod-readout" aria-hidden="true">
-          <span>{questionCount}Q</span>
+          <span>{effectiveQuestionCount}Q</span>
           <span>{timePerQuestion}s</span>
           <span>{bonusTimer ? 'bonus' : 'normal'}</span>
         </div>
@@ -455,14 +459,24 @@
         <div class="panel-tag">Temps</div>
         <div class="dial-grid">
           <div class="dial-control" style={`--progress:${questionDial};`}>
-            <button type="button" on:click={() => setNumberValue('questions', -1)} aria-label="Moins de questions">
+            <button
+              type="button"
+              on:click={() => setNumberValue('questions', -1)}
+              aria-label="Moins de questions"
+              disabled={!selectedCategories.length}
+            >
               -
             </button>
             <div class="dial-face">
-              <span>questions</span>
-              <strong>{questionCount}</strong>
+              <span>{selectedCategories.length ? 'questions' : 'perso prêtes'}</span>
+              <strong>{effectiveQuestionCount}</strong>
             </div>
-            <button type="button" on:click={() => setNumberValue('questions', 1)} aria-label="Plus de questions">
+            <button
+              type="button"
+              on:click={() => setNumberValue('questions', 1)}
+              aria-label="Plus de questions"
+              disabled={!selectedCategories.length}
+            >
               +
             </button>
           </div>
@@ -627,7 +641,7 @@
     <footer class="creator-footer">
       <div id="creator-status" class="creator-status" role="status" aria-live="polite">
         <span>{selectedCategories.length} catégories</span>
-        <span>{customCount} questions maison</span>
+        <span>{customCountLabel}</span>
         <span>{estimatedDuration} minutes</span>
       </div>
 

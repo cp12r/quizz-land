@@ -7,6 +7,7 @@ const dataFile = join(process.cwd(), 'data', 'rooms.json');
 const tempDataFile = `${dataFile}.tmp`;
 const rooms = new Map();
 let writeQueue = Promise.resolve();
+const DEFAULT_CATEGORIES = ['culture', 'science', 'web'];
 
 function roomCode() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
@@ -68,12 +69,13 @@ export async function hydrateRooms() {
 export async function createRoom(config = {}) {
   await hydrateRooms();
   const id = roomCode();
-  const questionCount = Number(config.questionCount || 8);
   const customQuestions = normalizeQuestions(config.customQuestions);
-  const theme = normalizeTheme(config.themeId);
   const selectedCategories = Array.isArray(config.categories)
-    ? config.categories.map(normalizeCategory)
-    : ['culture', 'science', 'web'];
+    ? config.categories.map(normalizeCategory).filter(Boolean)
+    : DEFAULT_CATEGORIES;
+  const customOnly = selectedCategories.length === 0 && customQuestions.length > 0;
+  const questionCount = customOnly ? customQuestions.length : Number(config.questionCount || 8);
+  const theme = normalizeTheme(config.themeId);
   const pickedQuestions = pickQuestions(selectedCategories, questionCount, customQuestions);
   const room = {
     id,

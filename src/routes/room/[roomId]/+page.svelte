@@ -24,6 +24,10 @@
   let copied = false;
   let finishing = false;
   let ws;
+  let notices = [];
+  let noticeId = 1;
+  let seenAnswerKeys = new Set();
+  let timerWarningKey = '';
 
   let startCountdownSeconds = 0;
   let countdownActive = false;
@@ -41,6 +45,11 @@
     room.status === 'playing'
       ? `${room.currentQuestion + 1}/${room.questions.length}`
       : `${room.questions.length} questions`;
+  $: customOnly = !room.config.categories?.length && room.config.customQuestionCount > 0;
+  $: mixLabel = customOnly
+    ? `${room.config.customQuestionCount} question${room.config.customQuestionCount > 1 ? 's' : ''} perso`
+    : `${room.config.categories?.length || 0} sujet${(room.config.categories?.length || 0) > 1 ? 's' : ''}`;
+  $: lobbyStatus = room.players.length < 2 ? 'En attente de joueurs' : 'Pret a jouer';
 
   function getDisplayName() {
     return (playerName || '').trim() || 'Joueur';
@@ -60,6 +69,38 @@
     }
   }
 
+  function addNotice(title, detail = '', tone = 'info') {
+    const id = noticeId++;
+    notices = [{ id, title, detail, tone }, ...notices].slice(0, 4);
+    setTimeout(() => {
+      notices = notices.filter((notice) => notice.id !== id);
+    }, 4200);
+  }
+
+  function addAnswerNotice(nextRoom) {
+    const latest = [...(nextRoom.answers || [])].sort((a, b) => (b.ms || 0) - (a.ms || 0))[0];
+    if (!latest) return;
+
+    const key = `${latest.playerId}:${latest.questionId}`;
+    if (seenAnswerKeys.has(key)) return;
+    seenAnswerKeys.add(key);
+
+    const author = nextRoom.players.find((item) => item.id === latest.playerId);
+    const title = latest.playerId === player?.id ? 'Ta reponse est notee' : `${author?.name || 'Un joueur'} a repondu`;
+    addNotice(title, `${nextRoom.answers.length}/${nextRoom.players.length} reponses`, 'answer');
+  }
+
+  function handleTimerTick(payload) {
+    remaining = payload.remaining;
+    if (room.status !== 'playing' || !currentQuestion) return;
+
+    const key = `${room.currentQuestion}:3`;
+    if (payload.remaining === 3 && timerWarningKey !== key) {
+      timerWarningKey = key;
+      addNotice('Dernieres secondes', '3 secondes restantes', 'warning');
+    }
+  }
+
   function updateRoom(next, options = {}) {
     if (!next) return;
     const previousStatus = room.status;
@@ -71,19 +112,23 @@
       selected = null;
       answerFeedback = null;
       remaining = room.config.timePerQuestion;
+      timerWarningKey = '';
     }
 
     if (room.status !== 'waiting') clearCountdown();
 
     if (previousStatus === 'waiting' && room.status === 'playing') {
       playSound('start');
+      addNotice('Partie lancee', `Question 1/${room.questions.length}`, 'start');
     } else if (changedRound && room.status === 'playing') {
       playSound('transition');
+      addNotice(`Question ${room.currentQuestion + 1}`, room.questions[room.currentQuestion]?.category || 'Nouvelle manche', 'round');
     }
 
     if (room.status === 'finished' && !finishing) {
       finishing = true;
       playSound('reveal');
+      addNotice('Classement final', 'Calcul des scores', 'finish');
       setTimeout(() => {
         location.href = `/results/${room.id}`;
       }, 700);
@@ -141,6 +186,7 @@
   async function copyLink() {
     await navigator.clipboard.writeText(shareUrl);
     copied = true;
+    addNotice('Lien copie', 'Invitation prete a partager', 'info');
     playSound('ui');
     setTimeout(() => {
       copied = false;
@@ -157,14 +203,21 @@
       room_state: (payload) => updateRoom(payload),
       question_start: (payload) => updateRoom(payload, { resetSelection: true }),
       round_end: (payload) => updateRoom(payload, { resetSelection: true }),
-      answer_submitted: (payload) => updateRoom(payload),
+      answer_submitted: (payload) => {
+        addAnswerNotice(payload);
+        updateRoom(payload);
+      },
       answer_feedback: (payload) => {
         answerFeedback = payload;
+        addNotice(payload.correct ? `+${payload.points} points` : 'Reponse verrouillee', payload.correct ? 'Bonne reponse' : 'Pas cette fois', payload.correct ? 'success' : 'warning');
         playSound(payload.correct ? 'correct' : 'wrong');
       },
-      timer_tick: (payload) => (remaining = payload.remaining),
+      timer_tick: handleTimerTick,
       user_joined: (payload) => {
-        if (joined && payload.id !== player?.id) playSound('join');
+        if (joined && payload.id !== player?.id) {
+          addNotice(`${payload.name} est entre`, `${room.players.length + 1} joueurs connectes`, 'join');
+          playSound('join');
+        }
       },
       player_joined: (payload) => {
         player = payload.player;
@@ -172,6 +225,7 @@
         joined = true;
         joining = false;
         connectionError = '';
+        addNotice('Salon rejoint', 'Tu es synchronise', 'success');
         playSound('join');
       },
       error: (payload) => {

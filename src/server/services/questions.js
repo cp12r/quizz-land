@@ -142,11 +142,14 @@ export function normalizeQuestions(input = []) {
 }
 
 export function pickQuestions(selectedCategories = categories, count = 10, customQuestions = []) {
-  const wanted = Array.isArray(selectedCategories) ? selectedCategories.map(normalizeCategory) : categories;
+  const hasExplicitCategories = Array.isArray(selectedCategories);
+  const wanted = hasExplicitCategories ? selectedCategories.map(normalizeCategory).filter(Boolean) : categories;
   const normalizedCustom = normalizeQuestions(customQuestions);
   const standardPool = wanted.length ? questions.filter((question) => wanted.includes(question.category)) : [];
   const source = [...standardPool, ...normalizedCustom];
   const fallback = source.length ? source : questions;
+  const customOnly = hasExplicitCategories && wanted.length === 0 && normalizedCustom.length > 0;
+  const limit = customOnly ? normalizedCustom.length : Math.max(1, Math.min(Number(count) || 10, fallback.length));
 
-  return [...fallback].sort(() => Math.random() - 0.5).slice(0, Math.max(1, Math.min(count, fallback.length)));
+  return [...fallback].sort(() => Math.random() - 0.5).slice(0, limit);
 }
