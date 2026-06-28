@@ -46,7 +46,6 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, lowPower ? 1 : 1.35));
     host.appendChild(renderer.domElement);
 
-    const ink = getCssColor('--color-ink', '#17151b');
     const hot = getCssColor('--color-accent', '#ff4f79');
     const cyan = getCssColor('--color-cyan', '#02a6a6');
     const yellow = getCssColor('--color-yellow', '#ffd166');
@@ -61,32 +60,73 @@
     key.position.set(-3, 4, 5);
     scene.add(key);
 
-    const matOptions = {
-      roughness: 0.74,
-      metalness: 0.12,
-      transparent: true,
-      opacity: lowPower ? 0.2 : 0.28
-    };
+    function svgTexture(svg) {
+      const texture = new THREE.TextureLoader().load(`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`);
+      if (THREE.SRGBColorSpace) texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = lowPower ? 1 : 4;
+      return texture;
+    }
 
+    function iconSvg(type, color, glow) {
+      const base = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+          <defs>
+            <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="4" result="blur"/>
+              <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.72 0"/>
+              <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+      `;
+      const end = '</svg>';
+      const common = `fill="none" stroke="${color}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"`;
+
+      if (type === 'bolt') {
+        return `${base}<path ${common} d="M72 10 28 70h31l-7 48 48-67H68l4-41Z"/><path fill="${glow}" opacity=".18" d="M72 10 28 70h31l-7 48 48-67H68l4-41Z"/>${end}`;
+      }
+
+      if (type === 'star') {
+        return `${base}<path ${common} d="m64 12 13 33 36 3-28 23 9 35-30-19-30 19 9-35-28-23 36-3 13-33Z"/><circle cx="64" cy="64" r="8" fill="${glow}" opacity=".5"/>${end}`;
+      }
+
+      if (type === 'bubble') {
+        return `${base}<path ${common} d="M24 31h80v52H73l-18 20V83H24V31Z"/><path ${common} d="M48 52h32M48 66h19"/><path fill="${glow}" opacity=".13" d="M24 31h80v52H73l-18 20V83H24V31Z"/>${end}`;
+      }
+
+      if (type === 'ring') {
+        return `${base}<circle ${common} cx="64" cy="64" r="38"/><path ${common} d="M36 37 92 91M92 37 36 91"/><circle cx="64" cy="64" r="21" fill="${glow}" opacity=".12"/>${end}`;
+      }
+
+      return `${base}<path ${common} d="M30 20h68v88H30V20Z"/><path ${common} d="M45 43h38M45 61h30M45 79h22"/><path fill="${glow}" opacity=".13" d="M30 20h68v88H30V20Z"/>${end}`;
+    }
+
+    const iconTypes = ['bolt', 'star', 'bubble', 'ring', 'card'];
+    const iconTextures = iconTypes.map((type, index) =>
+      svgTexture(iconSvg(type, palette[index % palette.length], index % 2 === 0 ? yellow : cyan))
+    );
+    const iconGeometry = new THREE.PlaneGeometry(0.95, 0.95);
     const shapes = lowPower ? 5 : 9;
-    const geometries = [
-      new THREE.BoxGeometry(0.5, 0.5, 0.12),
-      new THREE.OctahedronGeometry(0.34, 0),
-      new THREE.TorusGeometry(0.28, 0.035, 8, 24)
-    ];
 
     for (let index = 0; index < shapes; index += 1) {
-      const material = new THREE.MeshStandardMaterial({
-        ...matOptions,
-        color: palette[index % palette.length],
-        emissive: index % 3 === 0 ? palette[index % palette.length] : ink,
-        emissiveIntensity: index % 3 === 0 ? 0.08 : 0.02
+      const material = new THREE.MeshBasicMaterial({
+        map: iconTextures[index % iconTextures.length],
+        transparent: true,
+        opacity: lowPower ? 0.34 : 0.46,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        toneMapped: false
       });
-      const mesh = new THREE.Mesh(geometries[index % geometries.length], material);
+      const mesh = new THREE.Mesh(iconGeometry, material);
       const lane = index / Math.max(1, shapes - 1);
+      const scale = 0.64 + (index % 4) * 0.13;
       mesh.position.set((lane - 0.5) * settings.spread, Math.sin(index * 1.7) * 2.2, -1.2 - (index % 4) * 0.75);
-      mesh.rotation.set(index * 0.4, index * 0.72, index * 0.24);
-      mesh.userData = { speed: 0.16 + index * 0.018, sway: 0.22 + (index % 3) * 0.08 };
+      mesh.rotation.set(index * 0.16, index * 0.32, index * 0.58);
+      mesh.scale.set(scale * (index % 2 ? 1.16 : 0.94), scale, 1);
+      mesh.userData = {
+        speed: 0.16 + index * 0.018,
+        sway: 0.22 + (index % 3) * 0.08,
+        spin: index % 2 === 0 ? 1 : -1
+      };
       group.add(mesh);
     }
 
@@ -141,6 +181,7 @@
       group.children.forEach((mesh, index) => {
         mesh.rotation.x += mesh.userData.speed * 0.006;
         mesh.rotation.y += mesh.userData.speed * 0.008;
+        mesh.rotation.z += mesh.userData.spin * mesh.userData.speed * 0.004;
         mesh.position.y += Math.sin(time * 0.001 + index) * 0.0018 * mesh.userData.sway;
       });
 
@@ -161,7 +202,8 @@
       disposeObject(scene);
       particleGeometry.dispose();
       particleMaterial.dispose();
-      geometries.forEach((geometry) => geometry.dispose());
+      iconGeometry.dispose();
+      iconTextures.forEach((texture) => texture.dispose());
       renderer.dispose();
       renderer.domElement.remove();
     };

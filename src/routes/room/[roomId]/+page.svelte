@@ -14,17 +14,25 @@
 
   export let data;
 
+  const CLOSE_FALLBACK_MS = 4800;
+
   let room = data.room;
   let player = null;
   let playerName = '';
   let joined = false;
   let joining = false;
+  let questionCountUpdating = false;
   let connectionError = '';
   let selected = null;
   let answerFeedback = null;
   let remaining = room.config.timePerQuestion;
   let copied = false;
   let finishing = false;
+  let roomClosing = room.status === 'closing';
+  let closeRedirectTo = '/';
+  let closingProgress = 0;
+  let closingCountdown = 5;
+  let closingTimer = null;
   let ws;
   let notices = [];
   let noticeId = 1;
@@ -41,6 +49,13 @@
   $: isHost = player && room.hostId === player.id;
   $: canStart = Boolean(isHost && room.players.length >= 2 && !countdownActive);
   $: answeredCount = room.answers?.length || 0;
+  $: lobbyQuestionCount = Number(room.config.requestedQuestionCount || room.config.questionCount || room.questions.length || 1);
+  $: lobbyQuestionMin = Number(room.config.minQuestionCount || 1);
+  $: lobbyQuestionMax = Number(
+    room.config.availableQuestionCount || Math.max(lobbyQuestionCount, room.questions.length || 1)
+  );
+  $: canDecreaseQuestions = Boolean(isHost && !questionCountUpdating && lobbyQuestionCount > lobbyQuestionMin);
+  $: canIncreaseQuestions = Boolean(isHost && !questionCountUpdating && lobbyQuestionCount < lobbyQuestionMax);
   $: title = pageTitle(`${room.name} - Salon quiz`);
   $: description = `Rejoins le salon ${room.name} sur ${siteMeta.name} et réponds au quiz en direct, sans compte.`;
   $: progressText =
@@ -71,6 +86,17 @@
     }
   }
 
+  function clearClosingTimer() {
+    if (closingTimer) {
+      clearInterval(closingTimer);
+      closingTimer = null;
+    }
+  }
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
   function addNotice(title, detail = '', tone = 'info') {
     const id = noticeId++;
     notices = [{ id, title, detail, tone }, ...notices].slice(0, 4);
@@ -92,6 +118,36 @@
     addNotice(title, `${nextRoom.answers.length}/${nextRoom.players.length} réponses`, 'answer');
   }
 
+  function beginRoomClosing(payload = {}) {
+    const nextRoom = payload.room || payload;
+    const target = payload.redirectTo || '/';
+    const closesAt = new Date(nextRoom?.closesAt || Date.now() + CLOSE_FALLBACK_MS).getTime();
+    const startedAt = Date.now();
+    const duration = Math.max(1, closesAt - startedAt);
+
+    roomClosing = true;
+    closeRedirectTo = target;
+    if (nextRoom?.id) updateRoom(nextRoom);
+    clearCountdown();
+    clearClosingTimer();
+    addNotice('Fermeture du salon', payload.message || "Retour à l'accueil en cours", 'warning');
+    playSound('wrong');
+
+    function tick() {
+      const remainingMs = Math.max(0, closesAt - Date.now());
+      closingCountdown = Math.max(0, Math.ceil(remainingMs / 1000));
+      closingProgress = clamp(1 - remainingMs / duration, 0, 1);
+
+      if (remainingMs <= 0) {
+        clearClosingTimer();
+        location.href = closeRedirectTo;
+      }
+    }
+
+    tick();
+    closingTimer = setInterval(tick, 100);
+  }
+
   function handleTimerTick(payload) {
     remaining = payload.remaining;
     if (room.status !== 'playing' || !currentQuestion) return;
@@ -101,6 +157,17 @@
       timerWarningKey = key;
       addNotice('Dernières secondes', '3 secondes restantes', 'warning');
     }
+  }
+
+  function setLobbyQuestionCount(delta) {
+    if (!player || !isHost || questionCountUpdating || room.status !== 'waiting') return;
+    const nextCount = clamp(lobbyQuestionCount + delta, lobbyQuestionMin, lobbyQuestionMax);
+    if (nextCount === lobbyQuestionCount) return;
+
+    questionCountUpdating = true;
+    clearCountdown();
+    playSound('ui');
+    safeSend('update_question_count', { playerId: player.id, questionCount: nextCount });
   }
 
   function updateRoom(next, options = {}) {
@@ -118,6 +185,10 @@
     }
 
     if (room.status !== 'waiting') clearCountdown();
+
+    if (room.status === 'closing' && !roomClosing) {
+      beginRoomClosing({ room, redirectTo: '/' });
+    }
 
     if (previousStatus === 'waiting' && room.status === 'playing') {
       playSound('start');
@@ -214,6 +285,16 @@
         addNotice(payload.correct ? `+${payload.points} points` : 'Réponse verrouillée', payload.correct ? 'Bonne réponse' : 'Pas cette fois', payload.correct ? 'success' : 'warning');
         playSound(payload.correct ? 'correct' : 'wrong');
       },
+      question_count_updated: (payload) => {
+        questionCountUpdating = false;
+        updateRoom(payload);
+        addNotice('Questions mises à jour', `${payload.config.questionCount} questions`, 'info');
+      },
+      room_closing: beginRoomClosing,
+      room_closed: (payload) => {
+        closeRedirectTo = payload.redirectTo || '/';
+        location.href = closeRedirectTo;
+      },
       timer_tick: handleTimerTick,
       user_joined: (payload) => {
         if (joined && payload.id !== player?.id) {
@@ -232,14 +313,17 @@
       },
       error: (payload) => {
         joining = false;
+        questionCountUpdating = false;
         connectionError = payload.message;
         playSound('wrong');
       },
       socket_error: (payload) => {
         joining = false;
+        questionCountUpdating = false;
         connectionError = payload.message;
       },
       socket_close: () => {
+        questionCountUpdating = false;
         if (joining) {
           joining = false;
           connectionError = 'Connexion temps réel fermée avant de rejoindre.';
@@ -252,6 +336,7 @@
 
   onDestroy(() => {
     clearCountdown();
+    clearClosingTimer();
   });
 </script>
 
@@ -269,7 +354,7 @@
   <meta name="twitter:description" content={description} />
 </svelte:head>
 
-<main class="page room-page">
+<main class="page room-page" class:closing={roomClosing || room.status === 'closing'}>
   <SceneBackground3D variant={room.status === 'playing' ? 'game' : 'lobby'} intensity={0.36} />
 
   <section class="shell room">
@@ -361,6 +446,30 @@
                   aria-label="Décompte avant lancement"
                 />
               </label>
+
+              <div class="lobby-question-control" role="group" aria-label="Nombre de questions">
+                <button
+                  type="button"
+                  on:click={() => setLobbyQuestionCount(-1)}
+                  disabled={!canDecreaseQuestions}
+                  aria-label="Retirer une question"
+                >
+                  -
+                </button>
+                <div>
+                  <span class="mono">Questions</span>
+                  <strong>{lobbyQuestionCount}</strong>
+                  <em>max {lobbyQuestionMax}</em>
+                </div>
+                <button
+                  type="button"
+                  on:click={() => setLobbyQuestionCount(1)}
+                  disabled={!canIncreaseQuestions}
+                  aria-label="Ajouter une question"
+                >
+                  +
+                </button>
+              </div>
             </div>
           {/if}
 
@@ -380,6 +489,17 @@
         </div>
 
         <PlayerList players={room.players} hostId={room.hostId} title="Dans le salon" />
+      </section>
+    {:else if room.status === 'closing' || roomClosing}
+      <section class="closing-panel card" role="status" aria-live="assertive">
+        <div class="panel-head">
+          <p class="mono">Salon</p>
+          <h2>Fermeture</h2>
+        </div>
+        <p>Un joueur a quitté le salon. Retour à l'accueil dans {closingCountdown}s.</p>
+        <div class="closing-meter" style={`--close-progress:${closingProgress * 100}%;`} aria-hidden="true">
+          <span></span>
+        </div>
       </section>
     {:else}
       <section class="grid">
@@ -665,6 +785,99 @@
   .host-panel {
     display: grid;
     gap: 10px;
+  }
+
+  .lobby-question-control {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    gap: 10px;
+    align-items: center;
+    border: 1px solid rgba(255, 250, 240, 0.14);
+    border-radius: 8px;
+    padding: 12px;
+    background: rgba(255, 250, 240, 0.06);
+  }
+
+  .lobby-question-control button {
+    display: grid;
+    width: 44px;
+    aspect-ratio: 1;
+    place-items: center;
+    border: 1px solid rgba(255, 250, 240, 0.24);
+    border-radius: 50%;
+    background: rgba(255, 250, 240, 0.1);
+    color: var(--paper);
+    font-size: 1.3rem;
+    font-weight: 950;
+  }
+
+  .lobby-question-control button:not(:disabled):hover {
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .lobby-question-control button:disabled {
+    cursor: not-allowed;
+    opacity: 0.42;
+  }
+
+  .lobby-question-control div {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .lobby-question-control span,
+  .lobby-question-control em {
+    color: var(--paper-dim);
+    font-size: 0.7rem;
+    font-style: normal;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .lobby-question-control strong {
+    color: var(--paper);
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  .closing-panel {
+    display: grid;
+    width: min(560px, 100%);
+    gap: 18px;
+    margin: 0 auto;
+    border: 1px solid rgba(248, 243, 74, 0.28);
+    border-radius: 8px;
+    padding: 24px;
+    background:
+      linear-gradient(135deg, rgba(248, 243, 74, 0.13), rgba(255, 62, 138, 0.08)),
+      rgba(23, 21, 27, 0.78);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.32);
+    backdrop-filter: blur(14px);
+  }
+
+  .closing-panel p {
+    margin: 0;
+    color: var(--paper-dim);
+    font-weight: 900;
+  }
+
+  .closing-meter {
+    height: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 250, 240, 0.16);
+    border-radius: 999px;
+    background: rgba(255, 250, 240, 0.08);
+  }
+
+  .closing-meter span {
+    display: block;
+    width: var(--close-progress);
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--yellow), var(--hot));
+    transition: width 100ms linear;
   }
 
   .actions {
