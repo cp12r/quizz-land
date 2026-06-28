@@ -141,6 +141,18 @@ export function normalizeQuestions(input = []) {
     .filter(Boolean);
 }
 
+function withUniqueQuestionIds(items) {
+  const seen = new Map();
+
+  return items.map((question, index) => {
+    const count = seen.get(question.id) || 0;
+    seen.set(question.id, count + 1);
+
+    if (count === 0) return question;
+    return { ...question, id: `${question.id}-repeat-${index + 1}` };
+  });
+}
+
 export function pickQuestions(selectedCategories = categories, count = 10, customQuestions = []) {
   const hasExplicitCategories = Array.isArray(selectedCategories);
   const wanted = hasExplicitCategories ? selectedCategories.map(normalizeCategory).filter(Boolean) : categories;
@@ -149,7 +161,20 @@ export function pickQuestions(selectedCategories = categories, count = 10, custo
   const source = [...standardPool, ...normalizedCustom];
   const fallback = source.length ? source : questions;
   const customOnly = hasExplicitCategories && wanted.length === 0 && normalizedCustom.length > 0;
-  const limit = customOnly ? normalizedCustom.length : Math.max(1, Math.min(Number(count) || 10, fallback.length));
+  const limit = customOnly ? normalizedCustom.length : Math.max(1, Number(count) || 10);
 
-  return [...fallback].sort(() => Math.random() - 0.5).slice(0, limit);
+  if (limit <= fallback.length) {
+    return withUniqueQuestionIds([...fallback].sort(() => Math.random() - 0.5).slice(0, limit));
+  }
+
+  const picked = [];
+  while (picked.length < limit) {
+    const cycle = [...fallback].sort(() => Math.random() - 0.5);
+    for (const question of cycle) {
+      if (picked.length >= limit) break;
+      picked.push(question);
+    }
+  }
+
+  return withUniqueQuestionIds(picked);
 }

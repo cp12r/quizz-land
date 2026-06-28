@@ -8,6 +8,7 @@ const tempDataFile = `${dataFile}.tmp`;
 const rooms = new Map();
 let writeQueue = Promise.resolve();
 const DEFAULT_CATEGORIES = ['culture', 'science', 'web'];
+const QUESTION_MAX = 50;
 export const ROOM_CLOSE_DELAY_MS = 4800;
 
 function roomCode() {
@@ -65,7 +66,7 @@ function roomCustomQuestions(room) {
   return [];
 }
 
-function availableQuestionCount(selectedCategories, customQuestions = []) {
+function sourceQuestionCount(selectedCategories, customQuestions = []) {
   const categories = normalizedRoomCategories(selectedCategories);
   const normalizedCustom = normalizeQuestions(customQuestions);
   const standardCount = categories.length
@@ -75,14 +76,19 @@ function availableQuestionCount(selectedCategories, customQuestions = []) {
   return sourceCount || questionBank.length;
 }
 
-function minQuestionCount(selectedCategories, available) {
-  return normalizedRoomCategories(selectedCategories).length ? Math.min(5, available) : 1;
+function maxQuestionCount(selectedCategories, customQuestions = []) {
+  const categories = normalizedRoomCategories(selectedCategories);
+  if (categories.length) return QUESTION_MAX;
+  return Math.max(1, sourceQuestionCount(categories, customQuestions));
+}
+
+function minQuestionCount(selectedCategories) {
+  return normalizedRoomCategories(selectedCategories).length ? 5 : 1;
 }
 
 function clampQuestionCount(value, selectedCategories, customQuestions = []) {
-  const available = availableQuestionCount(selectedCategories, customQuestions);
-  const min = minQuestionCount(selectedCategories, available);
-  const max = Math.max(min, Math.min(50, available));
+  const min = minQuestionCount(selectedCategories);
+  const max = Math.max(min, maxQuestionCount(selectedCategories, customQuestions));
   const requested = Number(value);
   const normalized = Number.isFinite(requested) ? Math.round(requested) : min;
   return Math.min(max, Math.max(min, normalized));
@@ -104,14 +110,14 @@ function applyQuestionConfig(room, requestedQuestionCount) {
   const categories = normalizedRoomCategories(room.config.categories);
   const questionCount = clampQuestionCount(requestedQuestionCount, categories, customQuestions);
   const pickedQuestions = pickRoomQuestions(categories, questionCount, customQuestions);
-  const available = availableQuestionCount(categories, customQuestions);
-  const min = minQuestionCount(categories, available);
+  const max = maxQuestionCount(categories, customQuestions);
+  const min = minQuestionCount(categories);
 
   room.customQuestions = customQuestions;
   room.questions = pickedQuestions;
   room.config.questionCount = pickedQuestions.length;
   room.config.requestedQuestionCount = questionCount;
-  room.config.availableQuestionCount = Math.min(50, available);
+  room.config.availableQuestionCount = max;
   room.config.minQuestionCount = min;
 }
 
@@ -147,7 +153,7 @@ export async function createRoom(config = {}) {
     : clampQuestionCount(config.questionCount || 8, selectedCategories, customQuestions);
   const theme = normalizeTheme(config.themeId);
   const pickedQuestions = pickRoomQuestions(selectedCategories, questionCount, customQuestions);
-  const available = availableQuestionCount(selectedCategories, customQuestions);
+  const max = maxQuestionCount(selectedCategories, customQuestions);
   const room = {
     id,
     name: config.name?.trim() || `Salon ${id}`,
@@ -161,8 +167,8 @@ export async function createRoom(config = {}) {
       categories: selectedCategories,
       questionCount: pickedQuestions.length,
       requestedQuestionCount: questionCount,
-      availableQuestionCount: Math.min(50, available),
-      minQuestionCount: minQuestionCount(selectedCategories, available),
+      availableQuestionCount: max,
+      minQuestionCount: minQuestionCount(selectedCategories),
       timePerQuestion: Number(config.timePerQuestion || 30),
       bonusTimer: Boolean(config.bonusTimer),
       themeId: theme.id,
