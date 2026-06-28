@@ -20,9 +20,12 @@ Le serveur personnalisé `server/index.js` sert le build SvelteKit et expose le 
 
 ## Render.com
 
-- Build command: `npm install && npm run build`
+- Build command: `npm ci && npm run build`
 - Start command: `npm start`
 - Environment: `PORT`, `PUBLIC_APP_URL`, `ROOM_RETENTION_HOURS`, `RESULT_RETENTION_MINUTES`
+
+Si Render ne trouve pas une nouvelle dépendance comme `three`, vérifier que `package.json`
+et `package-lock.json` sont bien commités puis relancer avec **Clear build cache & deploy**.
 
 Les salons actifs sont persistés dans `data/rooms.json` pendant 12 heures par défaut.
 Les salons terminés restent disponibles 30 minutes pour afficher ou exporter les résultats, puis sont purgés automatiquement au prochain accès serveur.

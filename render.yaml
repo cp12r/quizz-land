@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: quizz-land
+    env: node
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 22
