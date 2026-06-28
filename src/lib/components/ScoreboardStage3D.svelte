@@ -193,6 +193,44 @@
       `;
     }
 
+    function rankIconSvg(rank, color, accent) {
+      const icons = {
+        1: `
+          <path d="M24 47 40 64l24-35 24 35 16-17 7 48H17l7-48Z" fill="${color}"/>
+          <path d="M33 90h62" stroke="#17151b" stroke-opacity=".6" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="64" cy="29" r="8" fill="${accent}"/>
+          <circle cx="24" cy="47" r="7" fill="${accent}"/>
+          <circle cx="104" cy="47" r="7" fill="${accent}"/>
+        `,
+        2: `
+          <path d="M72 18c18 6 31 24 34 45L82 87 58 63 72 18Z" fill="${color}"/>
+          <path d="M58 63 35 69l17 17-6 24 24-7 12-16-24-24Z" fill="${accent}"/>
+          <circle cx="78" cy="49" r="10" fill="#fffaf0"/>
+          <circle cx="78" cy="49" r="10" fill="none" stroke="#17151b" stroke-opacity=".45" stroke-width="5"/>
+          <path d="M40 88 24 104M52 98l-9 13" stroke="${color}" stroke-width="8" stroke-linecap="round"/>
+        `,
+        3: `
+          <path d="M73 13 28 73h30l-8 42 50-67H69l4-35Z" fill="${color}"/>
+          <path d="M73 13 28 73h30l-8 42 50-67H69l4-35Z" fill="none" stroke="#17151b" stroke-opacity=".48" stroke-width="8" stroke-linejoin="round"/>
+          <path d="M30 35 18 26M102 91l13 10M101 26l12-9" stroke="${accent}" stroke-width="8" stroke-linecap="round"/>
+        `
+      };
+
+      return `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+          <defs>
+            <radialGradient id="iconGlow" cx="35%" cy="28%" r="68%">
+              <stop offset="0" stop-color="#fffaf0" stop-opacity=".95"/>
+              <stop offset=".42" stop-color="${color}" stop-opacity=".84"/>
+              <stop offset="1" stop-color="${accent}" stop-opacity=".68"/>
+            </radialGradient>
+          </defs>
+          <circle cx="64" cy="64" r="54" fill="url(#iconGlow)" opacity=".32"/>
+          ${icons[rank] || icons[3]}
+        </svg>
+      `;
+    }
+
     function podiumGlyphSvg(rank, color, accent) {
       const crown = rank === 1
         ? '<path d="M78 34 96 56l32-31 32 31 18-22 11 56H67l11-56Z" fill="#17151b" fill-opacity=".2"/><path d="M80 37 96 56l32-31 32 31 16-19 8 49H72l8-49Z" fill="#fffaf0" fill-opacity=".58"/>'
@@ -318,8 +356,9 @@
     const podiumGlyphGeometry = new THREE.PlaneGeometry(1.05, 0.46);
     const sideMedalGeometry = new THREE.PlaneGeometry(0.34, 0.42);
     const starGeometry = new THREE.PlaneGeometry(0.18, 0.18);
-    const avatarHeadGeometry = new THREE.SphereGeometry(0.18, lowPower ? 16 : 24, lowPower ? 10 : 16);
-    const avatarBodyGeometry = new THREE.CylinderGeometry(0.16, 0.22, 0.34, lowPower ? 14 : 20);
+    const rankIconGeometry = new THREE.PlaneGeometry(0.5, 0.5);
+    const rankIconDiscGeometry = new THREE.CircleGeometry(0.34, lowPower ? 30 : 48);
+    const rankIconRingGeometry = new THREE.TorusGeometry(0.37, 0.018, 8, lowPower ? 32 : 52);
     const winnerHaloGeometry = new THREE.TorusGeometry(0.42, 0.018, 8, lowPower ? 36 : 56);
     const podiums = podiumLayouts.map((layout) => {
       const group = new THREE.Group();
@@ -405,30 +444,62 @@
       plaque.scale.setScalar(layout.rank === 1 ? 1.1 : 0.96);
       group.add(plaque);
 
-      const avatar = new THREE.Group();
-      avatar.position.set(0, layout.height + 0.18, 0.02);
-      const avatarBody = new THREE.Mesh(
-        avatarBodyGeometry,
-        createMaterial({ color: layout.rank === 1 ? hot : layout.accent, roughness: 0.52, metalness: 0.04, opacity: 0.98 })
-      );
-      avatarBody.castShadow = !lowPower;
-      avatar.add(avatarBody);
+      const rankIcon = new THREE.Group();
+      rankIcon.position.set(0, layout.height + 0.36, layout.depth / 2 + 0.08);
 
-      const avatarHead = new THREE.Mesh(
-        avatarHeadGeometry,
-        createMaterial({ color: paper, roughness: 0.48, metalness: 0.02, opacity: 0.98 })
+      const iconShadow = new THREE.Mesh(
+        rankIconDiscGeometry,
+        new THREE.MeshBasicMaterial({
+          color: ink,
+          transparent: true,
+          opacity: 0.24,
+          depthWrite: false,
+          side: THREE.DoubleSide
+        })
       );
-      avatarHead.position.y = 0.31;
-      avatarHead.castShadow = !lowPower;
-      avatar.add(avatarHead);
+      iconShadow.position.set(0.035, -0.04, -0.025);
+      iconShadow.scale.set(1.16, 1.06, 1);
+      rankIcon.add(iconShadow);
 
-      const face = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.16, 0.055),
-        new THREE.MeshBasicMaterial({ color: ink, transparent: true, opacity: 0.72 })
+      const iconDisc = new THREE.Mesh(
+        rankIconDiscGeometry,
+        createMaterial({
+          color: layout.rank === 1 ? yellow : layout.color,
+          roughness: 0.34,
+          metalness: layout.rank === 1 ? 0.16 : 0.08,
+          opacity: 0.92,
+          side: THREE.DoubleSide
+        })
       );
-      face.position.set(0, 0.31, 0.17);
-      avatar.add(face);
-      group.add(avatar);
+      iconDisc.castShadow = !lowPower;
+      rankIcon.add(iconDisc);
+
+      const iconRing = new THREE.Mesh(
+        rankIconRingGeometry,
+        new THREE.MeshBasicMaterial({
+          color: layout.accent,
+          transparent: true,
+          opacity: layout.rank === 1 ? 0.86 : 0.66,
+          depthWrite: false
+        })
+      );
+      iconRing.position.z = 0.026;
+      rankIcon.add(iconRing);
+
+      const iconTexture = makeTexture(rankIconSvg(layout.rank, layout.rank === 1 ? yellow : layout.accent, layout.rank === 1 ? hot : paper));
+      const iconGlyph = new THREE.Mesh(
+        rankIconGeometry,
+        new THREE.MeshBasicMaterial({
+          map: iconTexture,
+          transparent: true,
+          opacity: 0.96,
+          depthWrite: false,
+          toneMapped: false
+        })
+      );
+      iconGlyph.position.z = 0.045;
+      rankIcon.add(iconGlyph);
+      group.add(rankIcon);
 
       if (layout.rank === 1) {
         const halo = new THREE.Mesh(
@@ -459,7 +530,7 @@
       }
 
       stage.add(group);
-      return { ...layout, group, avatar, block };
+      return { ...layout, group, rankIcon, block };
     });
 
     const trophy = new THREE.Group();
@@ -643,7 +714,8 @@
         const scale = (0.82 + 0.18 * eased) * visibleTarget;
         podium.group.scale.set(scale, scale, scale);
         podium.group.rotation.y = Math.sin(time * 0.001 + index) * 0.025;
-        podium.avatar.position.y = podium.height + 0.18 + Math.sin(time * 0.002 + index) * (podium.rank === 1 ? 0.035 : 0.02);
+        podium.rankIcon.position.y = podium.height + 0.36 + Math.sin(time * 0.002 + index) * (podium.rank === 1 ? 0.055 : 0.035);
+        podium.rankIcon.rotation.z = Math.sin(time * 0.0014 + index) * (podium.rank === 1 ? 0.055 : 0.035);
       });
 
       const trophyProgress = revealProgress(time, 360);
@@ -696,8 +768,9 @@
       podiumGlyphGeometry.dispose();
       sideMedalGeometry.dispose();
       starGeometry.dispose();
-      avatarHeadGeometry.dispose();
-      avatarBodyGeometry.dispose();
+      rankIconGeometry.dispose();
+      rankIconDiscGeometry.dispose();
+      rankIconRingGeometry.dispose();
       winnerHaloGeometry.dispose();
       confettiGeometry.dispose();
       moteGeometry.dispose();

@@ -12,6 +12,7 @@ let hydrated = false;
 let hydrateQueue = null;
 const DEFAULT_CATEGORIES = ['culture', 'science', 'web'];
 const QUESTION_MAX = 50;
+const ALL_ANSWERED_DELAY_MS = 5000;
 export const ROOM_CLOSE_DELAY_MS = 4800;
 
 function roomCode() {
@@ -169,6 +170,20 @@ function applyQuestionConfig(room, requestedQuestionCount) {
   room.config.requestedQuestionCount = questionCount;
   room.config.availableQuestionCount = max;
   room.config.minQuestionCount = min;
+}
+
+function activePlayerCount(room) {
+  return room.players.filter((player) => player.connected !== false).length;
+}
+
+function hasEveryActivePlayerAnswered(room, questionId) {
+  const answeredPlayerIds = new Set(
+    room.answers
+      .filter((answer) => answer.questionId === questionId)
+      .map((answer) => answer.playerId)
+  );
+
+  return activePlayerCount(room) > 0 && answeredPlayerIds.size >= activePlayerCount(room);
 }
 
 export async function hydrateRooms(force = false) {
@@ -354,6 +369,12 @@ export async function submitAnswer(roomId, playerId, answerIndex) {
   room.answers.push({ ...feedback, ms: now });
   const player = room.players.find((item) => item.id === playerId);
   if (player) player.score += points;
+
+  if (hasEveryActivePlayerAnswered(room, question.id)) {
+    room.roundEndsAt = now + ALL_ANSWERED_DELAY_MS;
+    feedback.allAnswered = true;
+    feedback.nextQuestionIn = ALL_ANSWERED_DELAY_MS / 1000;
+  }
 
   await persist();
   return { room: publicRoom(room), feedback };

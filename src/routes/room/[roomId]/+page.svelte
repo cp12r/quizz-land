@@ -56,6 +56,7 @@
   );
   $: canDecreaseQuestions = Boolean(isHost && !questionCountUpdating && lobbyQuestionCount > lobbyQuestionMin);
   $: canIncreaseQuestions = Boolean(isHost && !questionCountUpdating && lobbyQuestionCount < lobbyQuestionMax);
+  $: allAnswered = Boolean(room.status === 'playing' && room.players.length > 0 && answeredCount >= room.players.length);
   $: title = pageTitle(`${room.name} - Salon quiz`);
   $: description = `Rejoins le salon ${room.name} sur ${siteMeta.name} et réponds au quiz en direct, sans compte.`;
   $: progressText =
@@ -116,6 +117,11 @@
     const author = nextRoom.players.find((item) => item.id === latest.playerId);
     const title = latest.playerId === player?.id ? 'Ta réponse est notée' : `${author?.name || 'Un joueur'} a répondu`;
     addNotice(title, `${nextRoom.answers.length}/${nextRoom.players.length} réponses`, 'answer');
+  }
+
+  function getRemainingSeconds(nextRoom) {
+    if (!nextRoom?.roundEndsAt) return nextRoom?.config?.timePerQuestion || 0;
+    return Math.max(0, Math.ceil((nextRoom.roundEndsAt - Date.now()) / 1000));
   }
 
   function getSortedResults(nextRoom) {
@@ -190,7 +196,20 @@
     if (!next) return;
     const previousStatus = room.status;
     const previousQuestion = room.currentQuestion;
+    const previousRoundEndsAt = room.roundEndsAt;
+    const previousAnsweredCount = room.answers?.length || 0;
     const changedRound = previousQuestion !== next.currentQuestion || previousStatus !== next.status;
+    const roundDeadlineChanged = previousRoundEndsAt !== next.roundEndsAt;
+    const nextAnsweredCount = next.answers?.length || 0;
+    const expectedAnswers = next.players?.length || 0;
+    const everyoneAnsweredNow = Boolean(
+      next.status === 'playing' &&
+      !changedRound &&
+      roundDeadlineChanged &&
+      expectedAnswers > 0 &&
+      previousAnsweredCount < expectedAnswers &&
+      nextAnsweredCount >= expectedAnswers
+    );
 
     room = next;
     if (options.resetSelection || changedRound) {
@@ -198,6 +217,8 @@
       answerFeedback = null;
       remaining = room.config.timePerQuestion;
       timerWarningKey = '';
+    } else if (roundDeadlineChanged && room.status === 'playing') {
+      remaining = getRemainingSeconds(room);
     }
 
     if (room.status !== 'waiting') clearCountdown();
@@ -212,6 +233,11 @@
     } else if (changedRound && room.status === 'playing') {
       playSound('transition');
       addNotice(`Question ${room.currentQuestion + 1}`, room.questions[room.currentQuestion]?.category || 'Nouvelle manche', 'round');
+    }
+
+    if (everyoneAnsweredNow) {
+      playSound('ui');
+      addNotice('Tout le monde a répondu', 'Question suivante dans 5s', 'round');
     }
 
     if (room.status === 'finished' && !finishing) {
@@ -532,7 +558,9 @@
             <TimerCircle {remaining} total={room.config.timePerQuestion} />
           </div>
 
-          {#if remaining <= 3 && remaining > 0}
+          {#if allAnswered && remaining <= 5 && remaining > 0}
+            <div class="suspense mono" role="status" aria-live="polite">Question suivante dans {remaining}s</div>
+          {:else if remaining <= 3 && remaining > 0}
             <div class="suspense mono" role="status" aria-live="polite">Résultat imminent</div>
           {/if}
 

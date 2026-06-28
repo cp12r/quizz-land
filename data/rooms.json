@@ -1,105 +1,157 @@
 [
   {
-    "id": "3ZQN2K",
-    "name": "cp12r",
-    "hostId": "a8893172-459d-490d-8315-47fe2d6f242a",
-    "status": "finished",
-    "currentQuestion": 5,
+    "id": "GPQUIZ",
+    "name": "Quiz Pop Culture Custom",
+    "hostId": null,
+    "status": "waiting",
+    "currentQuestion": -1,
     "roundEndsAt": null,
+    "finishedAt": null,
+    "deleteAfter": null,
     "config": {
-      "categories": [
-        "culture",
-        "science",
-        "web"
-      ],
-      "questionCount": 50,
+      "categories": [],
+      "questionCount": 9,
+      "requestedQuestionCount": 9,
+      "availableQuestionCount": 9,
+      "minQuestionCount": 1,
       "timePerQuestion": 30,
-      "bonusTimer": true
+      "bonusTimer": true,
+      "themeId": "arcade",
+      "themeName": "Arcade",
+      "customQuestionCount": 9
     },
-    "players": [
+    "players": [],
+    "answers": [],
+    "customQuestions": [
       {
-        "id": "a8893172-459d-490d-8315-47fe2d6f242a",
-        "name": "hj",
-        "score": 0,
-        "ready": true,
-        "connected": true
+        "id": "custom-pikachu",
+        "category": "perso",
+        "text": "Quel Pokémon refuse de rentrer dans sa Poké Ball dans l'animé ?",
+        "answers": ["Pikachu", "Salamèche", "Rondoudou", "Miaouss"],
+        "correctIndex": 0
+      },
+      {
+        "id": "custom-gp-explorer",
+        "category": "perso",
+        "text": "Quel YouTubeur français a organisé le GP Explorer ?",
+        "answers": ["Squeezie", "Inoxtag", "Michou", "Amixem"],
+        "correctIndex": 0
+      },
+      {
+        "id": "custom-metamorph",
+        "category": "perso",
+        "text": "Quel Pokémon est capable de copier les attaques de presque tous les autres ?",
+        "answers": ["Métamorph", "Mew", "Évoli", "Porygon"],
+        "correctIndex": 0
+      },
+      {
+        "id": "custom-switch-bleu",
+        "category": "perso",
+        "text": "Quel type de switch produit un son clicky reconnaissable parmi tant d'autres ?",
+        "answers": ["Switch bleu", "Switch vert", "Switch rouge"],
+        "correctIndex": 0
+      },
+      {
+        "id": "custom-massa",
+        "category": "perso",
+        "text": "Quel célèbre youtubeur/rappeur a écrit le son \"Massa\" en feat avec un ex joueur de foot ?",
+        "answers": ["Mister you", "David LaFarge", "Mister V"],
+        "correctIndex": 2
+      },
+      {
+        "id": "custom-mjolnir",
+        "category": "perso",
+        "text": "Quel est le nom du marteau de Thor ?",
+        "answers": ["Mjolnir", "Stormbreaker", "Excalibur", "Gungnir"],
+        "correctIndex": 0
+      },
+      {
+        "id": "custom-pennywise",
+        "category": "perso",
+        "text": "Quel est le nom du clown dans Ça ?",
+        "answers": ["Pennywise", "Joker", "Art", "Bozo"],
+        "correctIndex": 0
+      },
+      {
+        "id": "custom-ps2",
+        "category": "perso",
+        "text": "Quelle est la meilleure vente de console de tous les temps ?",
+        "answers": ["PlayStation 2", "Nintendo Switch", "Nintendo DS", "PlayStation 4"],
+        "correctIndex": 0
+      },
+      {
+        "id": "custom-avatar",
+        "category": "perso",
+        "text": "Quel est le film ayant rapporté le plus d'argent au box-office mondial ?",
+        "answers": ["Avatar", "Avengers Endgame", "Titanic", "Star Wars VII"],
+        "correctIndex": 0
       }
     ],
-    "answers": [],
     "questions": [
       {
-        "id": "q8",
-        "category": "culture",
-        "text": "Dans quel pays se trouve Kyoto ?",
-        "answers": [
-          "Chine",
-          "Coree du Sud",
-          "Japon",
-          "Thailande"
-        ],
+        "id": "custom-pikachu",
+        "category": "perso",
+        "text": "Quel Pokémon refuse de rentrer dans sa Poké Ball dans l'animé ?",
+        "answers": ["Pikachu", "Salamèche", "Rondoudou", "Miaouss"],
+        "correctIndex": 0
+      },
+      {
+        "id": "custom-gp-explorer",
+        "category": "perso",
+        "text": "Quel YouTubeur français a organisé le GP Explorer ?",
+        "answers": ["Squeezie", "Inoxtag", "Michou", "Amixem"],
+        "correctIndex": 0
+      },
+      {
+        "id": "custom-metamorph",
+        "category": "perso",
+        "text": "Quel Pokémon est capable de copier les attaques de presque tous les autres ?",
+        "answers": ["Métamorph", "Mew", "Évoli", "Porygon"],
+        "correctIndex": 0
+      },
+      {
+        "id": "custom-switch-bleu",
+        "category": "perso",
+        "text": "Quel type de switch produit un son clicky reconnaissable parmi tant d'autres ?",
+        "answers": ["Switch bleu", "Switch vert", "Switch rouge"],
+        "correctIndex": 0
+      },
+      {
+        "id": "custom-massa",
+        "category": "perso",
+        "text": "Quel célèbre youtubeur/rappeur a écrit le son \"Massa\" en feat avec un ex joueur de foot ?",
+        "answers": ["Mister you", "David LaFarge", "Mister V"],
         "correctIndex": 2
       },
       {
-        "id": "q7",
-        "category": "web",
-        "text": "Quel outil est utilise par SvelteKit pour le build local ?",
-        "answers": [
-          "Webpack",
-          "Vite",
-          "Parcel",
-          "Rollup CLI"
-        ],
-        "correctIndex": 1
+        "id": "custom-mjolnir",
+        "category": "perso",
+        "text": "Quel est le nom du marteau de Thor ?",
+        "answers": ["Mjolnir", "Stormbreaker", "Excalibur", "Gungnir"],
+        "correctIndex": 0
       },
       {
-        "id": "q6",
-        "category": "science",
-        "text": "Quelle unite mesure la resistance electrique ?",
-        "answers": [
-          "Volt",
-          "Watt",
-          "Ohm",
-          "Ampere"
-        ],
-        "correctIndex": 2
+        "id": "custom-pennywise",
+        "category": "perso",
+        "text": "Quel est le nom du clown dans Ça ?",
+        "answers": ["Pennywise", "Joker", "Art", "Bozo"],
+        "correctIndex": 0
       },
       {
-        "id": "q3",
-        "category": "web",
-        "text": "Quel protocole securise les connexions web modernes ?",
-        "answers": [
-          "FTP",
-          "HTTPS",
-          "SMTP",
-          "DNS"
-        ],
-        "correctIndex": 1
+        "id": "custom-ps2",
+        "category": "perso",
+        "text": "Quelle est la meilleure vente de console de tous les temps ?",
+        "answers": ["PlayStation 2", "Nintendo Switch", "Nintendo DS", "PlayStation 4"],
+        "correctIndex": 0
       },
       {
-        "id": "q2",
-        "category": "science",
-        "text": "Quelle planete est la plus proche du Soleil ?",
-        "answers": [
-          "Venus",
-          "Mars",
-          "Mercure",
-          "Jupiter"
-        ],
-        "correctIndex": 2
-      },
-      {
-        "id": "q1",
-        "category": "culture",
-        "text": "Quelle ville est surnommee la Ville Lumiere ?",
-        "answers": [
-          "Lyon",
-          "Paris",
-          "Bruxelles",
-          "Geneve"
-        ],
-        "correctIndex": 1
+        "id": "custom-avatar",
+        "category": "perso",
+        "text": "Quel est le film ayant rapporté le plus d'argent au box-office mondial ?",
+        "answers": ["Avatar", "Avengers Endgame", "Titanic", "Star Wars VII"],
+        "correctIndex": 0
       }
     ],
-    "createdAt": "2026-06-25T18:23:05.185Z"
+    "createdAt": "2099-01-01T00:00:00.000Z"
   }
 ]
