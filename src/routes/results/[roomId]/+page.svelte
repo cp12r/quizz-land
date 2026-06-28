@@ -16,7 +16,6 @@
 
   $: exportText = JSON.stringify({ room: roomData.id, config: roomData.config, results: resultsData }, null, 2);
   $: winner = resultsData[0];
-  $: topThree = resultsData.slice(0, 3);
   $: totalScore = resultsData.reduce((sum, player) => sum + player.score, 0);
   $: title = pageTitle(winner ? `${winner.name} remporte le quiz` : 'Classement final');
   $: description = `Classement final du salon ${roomData.id} sur ${siteMeta.name}. Résultats temporaires disponibles après la partie.`;
@@ -105,44 +104,6 @@
         <p>La partie est terminée, mais le classement n'a pas pu être récupéré sur cet appareil.</p>
       </section>
     {/if}
-
-    <section class:revealed class="podium" aria-label="Podium final" aria-live="polite">
-      {#each topThree as player, index}
-        <article
-          class:winner={index === 0}
-          class={`place place-${index + 1}`}
-          aria-label={`${index + 1}e place : ${player.name}, ${revealed ? `${player.score} points` : 'score masqué'}`}
-          style={`--place-delay:${index * 90}ms;`}
-        >
-          <span class="place-icon" aria-hidden="true">
-            {#if index === 0}
-              <svg viewBox="0 0 128 128" focusable="false">
-                <path class="icon-fill" d="M24 47 40 64l24-35 24 35 16-17 7 48H17l7-48Z" />
-                <path class="icon-line" d="M33 90h62" />
-                <circle class="icon-accent" cx="64" cy="29" r="8" />
-                <circle class="icon-accent" cx="24" cy="47" r="7" />
-                <circle class="icon-accent" cx="104" cy="47" r="7" />
-              </svg>
-            {:else if index === 1}
-              <svg viewBox="0 0 128 128" focusable="false">
-                <path class="icon-fill" d="M72 18c18 6 31 24 34 45L82 87 58 63 72 18Z" />
-                <path class="icon-accent" d="M58 63 35 69l17 17-6 24 24-7 12-16-24-24Z" />
-                <circle class="icon-window" cx="78" cy="49" r="10" />
-                <path class="icon-line" d="M40 88 24 104M52 98l-9 13" />
-              </svg>
-            {:else}
-              <svg viewBox="0 0 128 128" focusable="false">
-                <path class="icon-fill" d="M73 13 28 73h30l-8 42 50-67H69l4-35Z" />
-                <path class="icon-line" d="M30 35 18 26M102 91l13 10M101 26l12-9" />
-              </svg>
-            {/if}
-          </span>
-          <span class="rank mono">#{index + 1}</span>
-          <strong>{player.name}</strong>
-          <span class:masked={!revealed} class="score mono" aria-hidden={!revealed}>{player.score} pts</span>
-        </article>
-      {/each}
-    </section>
 
     <section class="card board">
       <div class="board-head">
@@ -266,163 +227,6 @@
     text-transform: uppercase;
   }
 
-  .podium {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
-    align-items: end;
-  }
-
-  .place {
-    --place-a: var(--cyan);
-    --place-b: var(--paper);
-    position: relative;
-    overflow: hidden;
-    display: grid;
-    min-height: 170px;
-    grid-template-rows: auto 1fr auto auto;
-    align-content: stretch;
-    align-items: end;
-    gap: 10px;
-    border: 1px solid color-mix(in srgb, var(--place-a) 42%, rgba(255, 250, 240, 0.14));
-    border-radius: 8px;
-    background:
-      linear-gradient(150deg, color-mix(in srgb, var(--place-a) 24%, transparent), rgba(255, 250, 240, 0.045) 54%),
-      linear-gradient(0deg, rgba(255, 250, 240, 0.07), transparent 50%),
-      rgba(23, 21, 27, 0.66);
-    color: var(--paper);
-    padding: 18px;
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.24);
-    animation: podium-in 460ms cubic-bezier(0.16, 1.1, 0.3, 1) both;
-    animation-delay: var(--place-delay, 0ms);
-    transition:
-      border-color 200ms ease,
-      transform 200ms ease,
-      box-shadow 200ms ease;
-  }
-
-  .place::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.38), transparent);
-    transform: translateX(-120%);
-  }
-
-  .revealed .place::before {
-    animation: shimmer 900ms ease forwards;
-  }
-
-  .place > * {
-    position: relative;
-    z-index: 1;
-  }
-
-  .place:hover {
-    border-color: color-mix(in srgb, var(--place-a) 58%, rgba(255, 250, 240, 0.24));
-    transform: translateY(-3px);
-    box-shadow: 0 30px 72px rgba(0, 0, 0, 0.3);
-  }
-
-  .place-1 {
-    --place-a: var(--yellow);
-    --place-b: var(--hot);
-    min-height: 220px;
-    background:
-      linear-gradient(150deg, rgba(248, 243, 74, 0.32), rgba(255, 62, 138, 0.13) 56%),
-      linear-gradient(0deg, rgba(255, 250, 240, 0.08), transparent 52%),
-      rgba(23, 21, 27, 0.78);
-    box-shadow:
-      0 32px 80px rgba(0, 0, 0, 0.32),
-      0 0 0 1px rgba(248, 243, 74, 0.18) inset;
-  }
-
-  .place-2 {
-    --place-a: var(--cyan);
-    --place-b: var(--paper);
-    min-height: 185px;
-  }
-
-  .place-3 {
-    --place-a: #c97b47;
-    --place-b: var(--yellow);
-  }
-
-  .place-icon {
-    display: grid;
-    width: 64px;
-    aspect-ratio: 1;
-    place-items: center;
-    align-self: start;
-    border: 1px solid color-mix(in srgb, var(--place-a) 54%, rgba(255, 250, 240, 0.18));
-    border-radius: 50%;
-    background:
-      radial-gradient(circle at 34% 24%, rgba(255, 250, 240, 0.9), color-mix(in srgb, var(--place-a) 72%, transparent) 42%, rgba(23, 21, 27, 0.2)),
-      rgba(255, 250, 240, 0.1);
-    box-shadow:
-      0 18px 36px rgba(0, 0, 0, 0.22),
-      0 0 24px color-mix(in srgb, var(--place-a) 26%, transparent);
-  }
-
-  .place-1 .place-icon {
-    width: 76px;
-  }
-
-  .place-icon svg {
-    width: 68%;
-    height: 68%;
-    overflow: visible;
-  }
-
-  .icon-fill {
-    fill: var(--place-a);
-    stroke: var(--ink);
-    stroke-linejoin: round;
-    stroke-opacity: 0.46;
-    stroke-width: 7;
-  }
-
-  .icon-accent {
-    fill: var(--place-b);
-  }
-
-  .icon-window {
-    fill: var(--paper);
-    stroke: var(--ink);
-    stroke-opacity: 0.45;
-    stroke-width: 5;
-  }
-
-  .icon-line {
-    fill: none;
-    stroke: var(--ink);
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-opacity: 0.58;
-    stroke-width: 8;
-  }
-
-  .rank {
-    color: var(--yellow);
-    font-weight: 900;
-  }
-
-  .place strong {
-    overflow-wrap: anywhere;
-    font-size: 1.45rem;
-    text-transform: uppercase;
-  }
-
-  .score {
-    justify-self: start;
-    border: 1px solid rgba(255, 250, 240, 0.18);
-    border-radius: 8px;
-    background: rgba(255, 250, 240, 0.1);
-    color: var(--paper);
-    padding: 8px 12px;
-    font-weight: 900;
-  }
-
   .board {
     display: grid;
     gap: 12px;
@@ -515,52 +319,6 @@
     justify-content: flex-start;
   }
 
-  .winner {
-    animation:
-      podium-in 420ms cubic-bezier(0.16, 1.1, 0.3, 1) both,
-      winner-breathe 1900ms ease-in-out 900ms infinite;
-  }
-
-  .winner::after {
-    content: '';
-    position: absolute;
-    inset: 10px;
-    border: 1px solid rgba(248, 243, 74, 0.34);
-    opacity: 0;
-  }
-
-  .revealed .winner::after {
-    animation: victory-frame 1400ms ease-out both;
-  }
-
-  @keyframes podium-in {
-    from {
-      opacity: 0;
-      transform: translateY(18px) rotateX(-10deg);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) rotateX(0);
-    }
-  }
-
-  @keyframes winner-breathe {
-    50% {
-      transform: translateY(-6px) rotate(-0.6deg);
-    }
-  }
-
-  @keyframes victory-frame {
-    20% {
-      opacity: 1;
-      transform: scale(0.98);
-    }
-    100% {
-      opacity: 0;
-      transform: scale(1.08);
-    }
-  }
-
   @media (max-width: 720px) {
     .hero,
     .board-head {
@@ -571,16 +329,6 @@
 
     h1 {
       font-size: 2.45rem;
-    }
-
-    .podium {
-      grid-template-columns: 1fr;
-    }
-
-    .place,
-    .place-1,
-    .place-2 {
-      min-height: 140px;
     }
 
     .sound-toggle {
@@ -603,11 +351,4 @@
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .winner,
-    .place,
-    .revealed .winner::after {
-      animation: none;
-    }
-  }
 </style>
