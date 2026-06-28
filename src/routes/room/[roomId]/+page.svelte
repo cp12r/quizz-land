@@ -2,8 +2,10 @@
   import { onDestroy, onMount } from 'svelte';
   import Button from '$lib/components/Button.svelte';
   import { pageTitle, siteMeta } from '$lib/config/site.js';
+  import AnswerImpactEffect from '$lib/components/AnswerImpactEffect.svelte';
   import PlayerList from '$lib/components/PlayerList.svelte';
   import QuestionCard from '$lib/components/QuestionCard.svelte';
+  import SceneBackground3D from '$lib/components/SceneBackground3D.svelte';
   import TimerCircle from '$lib/components/TimerCircle.svelte';
   import { getPlayerId } from '$lib/stores/user.js';
   import { initSound, playSound, soundMuted, toggleSound } from '$lib/utils/sound.js';
@@ -49,7 +51,7 @@
   $: mixLabel = customOnly
     ? `${room.config.customQuestionCount} question${room.config.customQuestionCount > 1 ? 's' : ''} perso`
     : `${room.config.categories?.length || 0} sujet${(room.config.categories?.length || 0) > 1 ? 's' : ''}`;
-  $: lobbyStatus = room.players.length < 2 ? 'En attente de joueurs' : 'Pret a jouer';
+  $: lobbyStatus = room.players.length < 2 ? 'En attente de joueurs' : 'Prêt à jouer';
 
   function getDisplayName() {
     return (playerName || '').trim() || 'Joueur';
@@ -86,8 +88,8 @@
     seenAnswerKeys.add(key);
 
     const author = nextRoom.players.find((item) => item.id === latest.playerId);
-    const title = latest.playerId === player?.id ? 'Ta reponse est notee' : `${author?.name || 'Un joueur'} a repondu`;
-    addNotice(title, `${nextRoom.answers.length}/${nextRoom.players.length} reponses`, 'answer');
+    const title = latest.playerId === player?.id ? 'Ta réponse est notée' : `${author?.name || 'Un joueur'} a répondu`;
+    addNotice(title, `${nextRoom.answers.length}/${nextRoom.players.length} réponses`, 'answer');
   }
 
   function handleTimerTick(payload) {
@@ -97,7 +99,7 @@
     const key = `${room.currentQuestion}:3`;
     if (payload.remaining === 3 && timerWarningKey !== key) {
       timerWarningKey = key;
-      addNotice('Dernieres secondes', '3 secondes restantes', 'warning');
+      addNotice('Dernières secondes', '3 secondes restantes', 'warning');
     }
   }
 
@@ -119,7 +121,7 @@
 
     if (previousStatus === 'waiting' && room.status === 'playing') {
       playSound('start');
-      addNotice('Partie lancee', `Question 1/${room.questions.length}`, 'start');
+      addNotice('Partie lancée', `Question 1/${room.questions.length}`, 'start');
     } else if (changedRound && room.status === 'playing') {
       playSound('transition');
       addNotice(`Question ${room.currentQuestion + 1}`, room.questions[room.currentQuestion]?.category || 'Nouvelle manche', 'round');
@@ -186,7 +188,7 @@
   async function copyLink() {
     await navigator.clipboard.writeText(shareUrl);
     copied = true;
-    addNotice('Lien copie', 'Invitation prete a partager', 'info');
+    addNotice('Lien copié', 'Invitation prête à partager', 'info');
     playSound('ui');
     setTimeout(() => {
       copied = false;
@@ -209,13 +211,13 @@
       },
       answer_feedback: (payload) => {
         answerFeedback = payload;
-        addNotice(payload.correct ? `+${payload.points} points` : 'Reponse verrouillee', payload.correct ? 'Bonne reponse' : 'Pas cette fois', payload.correct ? 'success' : 'warning');
+        addNotice(payload.correct ? `+${payload.points} points` : 'Réponse verrouillée', payload.correct ? 'Bonne réponse' : 'Pas cette fois', payload.correct ? 'success' : 'warning');
         playSound(payload.correct ? 'correct' : 'wrong');
       },
       timer_tick: handleTimerTick,
       user_joined: (payload) => {
         if (joined && payload.id !== player?.id) {
-          addNotice(`${payload.name} est entre`, `${room.players.length + 1} joueurs connectes`, 'join');
+          addNotice(`${payload.name} est entré`, `${room.players.length + 1} joueurs connectés`, 'join');
           playSound('join');
         }
       },
@@ -225,7 +227,7 @@
         joined = true;
         joining = false;
         connectionError = '';
-        addNotice('Salon rejoint', 'Tu es synchronise', 'success');
+        addNotice('Salon rejoint', 'Tu es synchronisé', 'success');
         playSound('join');
       },
       error: (payload) => {
@@ -267,13 +269,15 @@
   <meta name="twitter:description" content={description} />
 </svelte:head>
 
-<main class="page">
+<main class="page room-page">
+  <SceneBackground3D variant={room.status === 'playing' ? 'game' : 'lobby'} intensity={0.36} />
+
   <section class="shell room">
     <header class="top">
       <div class="title">
         <span class="brand-mark mono">QL</span>
         <div>
-          <p class="mono">{room.id}</p>
+          <p class="mono">{room.id} / {mixLabel}</p>
           <h1>{room.name}</h1>
         </div>
       </div>
@@ -290,6 +294,15 @@
         <Button variant="secondary" onclick={copyLink}>{copied ? 'Lien copié' : 'Copier le lien'}</Button>
       </div>
     </header>
+
+    <div class="notice-tray" aria-live="polite" aria-label="Notifications de partie">
+      {#each notices as notice (notice.id)}
+        <article class={`notice notice-${notice.tone}`} role="status">
+          <strong>{notice.title}</strong>
+          {#if notice.detail}<span>{notice.detail}</span>{/if}
+        </article>
+      {/each}
+    </div>
 
     {#if !joined}
       <form class="card join" on:submit|preventDefault={join} aria-describedby="join-status">
@@ -319,6 +332,8 @@
               <p class="countdown-pill" role="status" aria-live="polite">
                 <span class="mono">{countdownRemaining}s</span>
               </p>
+            {:else}
+              <p class="ready-pill mono" role="status">{lobbyStatus}</p>
             {/if}
           </div>
 
@@ -381,7 +396,10 @@
             <div class="suspense mono" role="status" aria-live="polite">Résultat imminent</div>
           {/if}
 
-          <QuestionCard question={currentQuestion} {selected} feedback={answerFeedback} locked={selected !== null} onAnswer={answer} />
+          <div class="question-stage">
+            <AnswerImpactEffect feedback={answerFeedback} {selected} />
+            <QuestionCard question={currentQuestion} {selected} feedback={answerFeedback} locked={selected !== null} onAnswer={answer} />
+          </div>
         </div>
 
         <PlayerList players={room.players} hostId={room.hostId} maskScores title="Classement en direct" />
@@ -391,7 +409,45 @@
 </main>
 
 <style>
+  :global(body) {
+    overflow-x: hidden;
+  }
+
+  .room-page {
+    --ink: #17151b;
+    --paper: #fffaf0;
+    --paper-dim: rgba(255, 250, 240, 0.72);
+    --line: rgba(255, 250, 240, 0.18);
+    --hot: #ff3e8a;
+    --cyan: #43e8ff;
+    --yellow: #f8f34a;
+    --lime: #68f06f;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background:
+      linear-gradient(122deg, rgba(255, 62, 138, 0.16), transparent 34%),
+      linear-gradient(248deg, rgba(67, 232, 255, 0.14), transparent 38%),
+      conic-gradient(from 120deg at 50% 18%, #25202d, #17151b, #0f0e12, #221926, #17151b);
+    color: var(--paper);
+  }
+
+  .room-page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.034) 0 1px, transparent 1px 78px),
+      repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.024) 0 1px, transparent 1px 78px);
+    opacity: 0.46;
+    mask-image: linear-gradient(to bottom, black 0%, transparent 84%);
+  }
+
   .room {
+    position: relative;
+    z-index: 1;
     display: grid;
     gap: 24px;
   }
@@ -426,36 +482,91 @@
     aspect-ratio: 1;
     flex: 0 0 auto;
     place-items: center;
-    border-radius: 14px;
-    background: var(--color-ink);
-    color: white;
-    font-weight: 900;
-    box-shadow: var(--shadow-soft);
+    border: 1px solid rgba(255, 250, 240, 0.22);
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--yellow), var(--hot));
+    color: var(--ink);
+    font-weight: 950;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
   }
 
   .title p,
   .panel-head p {
-    color: var(--color-accent);
+    color: var(--yellow);
     font-weight: 900;
+    text-transform: uppercase;
   }
 
   h1 {
-    font-size: 2rem;
+    color: var(--paper);
+    font-size: clamp(1.75rem, 5svw, 3.8rem);
+    line-height: 0.95;
+    text-transform: uppercase;
   }
 
   h2 {
-    font-size: 1.8rem;
+    color: var(--paper);
+    font-size: clamp(1.6rem, 4svw, 2.5rem);
+    line-height: 1;
+    text-transform: uppercase;
   }
 
   .icon-button {
-    min-height: 42px;
-    border: 1px solid var(--border-soft);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.82);
-    color: var(--color-ink);
+    min-height: 46px;
+    border: 1px solid rgba(255, 250, 240, 0.22);
+    border-radius: 8px;
+    background: rgba(255, 250, 240, 0.08);
+    color: var(--paper);
     padding: 0 14px;
     font-weight: 900;
-    box-shadow: var(--shadow-soft);
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.18);
+    text-transform: uppercase;
+  }
+
+  .notice-tray {
+    position: fixed;
+    right: clamp(12px, 3svw, 28px);
+    bottom: clamp(12px, 3svw, 28px);
+    z-index: 8;
+    display: grid;
+    width: min(340px, calc(100svw - 24px));
+    gap: 8px;
+    pointer-events: none;
+  }
+
+  .notice {
+    display: grid;
+    gap: 3px;
+    border: 1px solid rgba(255, 250, 240, 0.18);
+    border-radius: 8px;
+    padding: 10px 12px;
+    background:
+      linear-gradient(90deg, rgba(255, 250, 240, 0.1), rgba(255, 250, 240, 0.035)),
+      rgba(23, 21, 27, 0.86);
+    color: var(--paper);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.26);
+    animation: notice-in 260ms cubic-bezier(0.16, 1.1, 0.3, 1) both;
+  }
+
+  .notice strong,
+  .notice span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .notice span {
+    color: var(--paper-dim);
+  }
+
+  .notice-success,
+  .notice-join {
+    border-color: rgba(104, 240, 111, 0.34);
+  }
+
+  .notice-warning {
+    border-color: rgba(248, 243, 74, 0.42);
   }
 
   .join,
@@ -463,6 +574,13 @@
     display: grid;
     gap: 18px;
     padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background:
+      linear-gradient(135deg, rgba(255, 250, 240, 0.09), rgba(255, 250, 240, 0.035)),
+      rgba(23, 21, 27, 0.68);
+    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(14px);
   }
 
   .join {
@@ -472,20 +590,29 @@
 
   .error {
     margin: 0;
-    color: var(--color-danger);
+    color: var(--yellow);
     font-weight: 900;
   }
 
-  .countdown-pill {
+  .countdown-pill,
+  .ready-pill {
     display: grid;
     min-width: 70px;
     min-height: 48px;
     place-items: center;
     margin: 0;
-    border-radius: 999px;
-    background: var(--color-ink);
-    color: white;
-    box-shadow: var(--shadow-soft);
+    border: 1px solid rgba(255, 250, 240, 0.2);
+    border-radius: 8px;
+    background: rgba(255, 250, 240, 0.1);
+    color: var(--paper);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+    padding: 0 12px;
+    font-size: 0.74rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .countdown-pill {
     animation: pulse-ring 900ms ease-out infinite;
   }
 
@@ -494,9 +621,9 @@
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 10px;
     align-items: center;
-    border: 1px dashed rgba(21, 19, 31, 0.22);
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.68);
+    border: 1px dashed rgba(255, 250, 240, 0.24);
+    border-radius: 8px;
+    background: rgba(255, 250, 240, 0.07);
     padding: 14px;
   }
 
@@ -507,12 +634,13 @@
 
   .room-code button {
     min-height: 38px;
-    border: 0;
-    border-radius: 999px;
-    background: var(--color-ink);
-    color: white;
+    border: 1px solid rgba(255, 250, 240, 0.18);
+    border-radius: 8px;
+    background: var(--paper);
+    color: var(--ink);
     padding: 0 14px;
     font-weight: 900;
+    text-transform: uppercase;
   }
 
   .config-row {
@@ -525,11 +653,13 @@
     display: grid;
     min-height: 44px;
     place-items: center;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.66);
-    color: var(--color-muted);
+    border: 1px solid rgba(255, 250, 240, 0.13);
+    border-radius: 8px;
+    background: rgba(255, 250, 240, 0.075);
+    color: var(--paper-dim);
     font-weight: 900;
     text-align: center;
+    text-transform: uppercase;
   }
 
   .host-panel {
@@ -544,9 +674,10 @@
 
   .start-hint {
     margin: 0;
-    border-radius: 12px;
-    background: rgba(217, 45, 85, 0.10);
-    color: var(--color-danger);
+    border: 1px solid rgba(248, 243, 74, 0.22);
+    border-radius: 8px;
+    background: rgba(248, 243, 74, 0.1);
+    color: var(--yellow);
     padding: 10px 12px;
     font-weight: 900;
   }
@@ -564,11 +695,13 @@
   }
 
   .hud {
-    border: 1px solid var(--border-soft);
-    border-radius: var(--radius-card);
-    background: rgba(255, 255, 255, 0.70);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background:
+      linear-gradient(90deg, rgba(255, 62, 138, 0.12), rgba(67, 232, 255, 0.07)),
+      rgba(23, 21, 27, 0.68);
     padding: 14px 16px;
-    box-shadow: var(--shadow-soft);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.22);
   }
 
   .hud > div {
@@ -577,23 +710,41 @@
   }
 
   .hud span {
-    color: var(--color-accent);
+    color: var(--yellow);
     font-weight: 900;
+    text-transform: uppercase;
   }
 
   .hud strong {
-    color: var(--color-muted);
+    color: var(--paper-dim);
   }
 
   .suspense {
     justify-self: start;
-    border-radius: 999px;
-    background: var(--color-ink);
-    color: white;
+    border: 1px solid rgba(248, 243, 74, 0.26);
+    border-radius: 8px;
+    background: rgba(23, 21, 27, 0.78);
+    color: var(--yellow);
     padding: 8px 12px;
     font-size: 12px;
     font-weight: 900;
     animation: pulse-ring 800ms ease-out infinite;
+  }
+
+  .question-stage {
+    position: relative;
+    perspective: 1000px;
+  }
+
+  @keyframes notice-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px) rotateX(-12deg);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) rotateX(0);
+    }
   }
 
   @media (max-width: 860px) {
@@ -611,6 +762,14 @@
     .icon-button {
       width: 100%;
     }
+
+    .notice-tray {
+      position: sticky;
+      right: auto;
+      bottom: auto;
+      width: 100%;
+      order: 1;
+    }
   }
 
   @media (max-width: 560px) {
@@ -620,7 +779,6 @@
 
     .brand-mark {
       width: 46px;
-      border-radius: 12px;
     }
 
     h1 {

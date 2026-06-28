@@ -2,6 +2,8 @@
   import { onMount } from 'svelte';
   import Button from '$lib/components/Button.svelte';
   import { pageTitle, siteMeta } from '$lib/config/site.js';
+  import SceneBackground3D from '$lib/components/SceneBackground3D.svelte';
+  import ScoreboardStage3D from '$lib/components/ScoreboardStage3D.svelte';
   import { initSound, playSound, soundMuted, toggleSound } from '$lib/utils/sound.js';
   import { applyTheme } from '$lib/utils/theme.js';
 
@@ -51,7 +53,9 @@
   <meta name="twitter:description" content={description} />
 </svelte:head>
 
-<main class="page">
+<main class="page results-page">
+  <SceneBackground3D variant="results" intensity={0.4} />
+
   <section class="shell results">
     <header class="hero">
       <div>
@@ -69,9 +73,11 @@
       </button>
     </header>
 
+    <ScoreboardStage3D results={data.results} {revealed} />
+
     <section class:revealed class="podium" aria-label="Podium final" aria-live="polite">
       {#each topThree as player, index}
-        <article class={`place place-${index + 1}`} aria-label={`${index + 1}e place : ${player.name}`}>
+        <article class:winner={index === 0} class={`place place-${index + 1}`} aria-label={`${index + 1}e place : ${player.name}`}>
           <span class="rank mono">#{index + 1}</span>
           <strong>{player.name}</strong>
           <span class:masked={!revealed} class="score mono">{player.score} pts</span>
@@ -109,9 +115,42 @@
 </main>
 
 <style>
+  .results-page {
+    --ink: #17151b;
+    --paper: #fffaf0;
+    --paper-dim: rgba(255, 250, 240, 0.72);
+    --line: rgba(255, 250, 240, 0.18);
+    --hot: #ff3e8a;
+    --cyan: #43e8ff;
+    --yellow: #f8f34a;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background:
+      linear-gradient(122deg, rgba(255, 62, 138, 0.16), transparent 34%),
+      linear-gradient(248deg, rgba(67, 232, 255, 0.15), transparent 38%),
+      conic-gradient(from 120deg at 50% 16%, #25202d, #17151b, #0f0e12, #221926, #17151b);
+    color: var(--paper);
+  }
+
+  .results-page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.034) 0 1px, transparent 1px 78px),
+      repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.024) 0 1px, transparent 1px 78px);
+    opacity: 0.46;
+    mask-image: linear-gradient(to bottom, black 0%, transparent 84%);
+  }
+
   .results {
+    position: relative;
+    z-index: 1;
     display: grid;
-    max-width: 920px;
+    max-width: 1040px;
     gap: 24px;
   }
 
@@ -133,27 +172,34 @@
 
   .hero p,
   .board-head p {
-    color: var(--color-accent);
+    color: var(--yellow);
     font-weight: 900;
+    text-transform: uppercase;
   }
 
   h1 {
-    font-size: 3.4rem;
+    color: var(--paper);
+    font-size: clamp(2.3rem, 7svw, 5.2rem);
+    line-height: 0.92;
+    text-transform: uppercase;
   }
 
   h2 {
+    color: var(--paper);
     font-size: 2rem;
+    text-transform: uppercase;
   }
 
   .sound-toggle {
-    min-height: 42px;
-    border: 1px solid var(--border-soft);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.82);
-    color: var(--color-ink);
+    min-height: 46px;
+    border: 1px solid rgba(255, 250, 240, 0.22);
+    border-radius: 8px;
+    background: rgba(255, 250, 240, 0.08);
+    color: var(--paper);
     padding: 0 14px;
     font-weight: 900;
-    box-shadow: var(--shadow-soft);
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.18);
+    text-transform: uppercase;
   }
 
   .podium {
@@ -170,14 +216,15 @@
     min-height: 170px;
     align-content: end;
     gap: 10px;
-    border: 1px solid var(--border-soft);
-    border-radius: var(--radius-card);
+    border: 1px solid rgba(255, 250, 240, 0.16);
+    border-radius: 8px;
     background:
-      linear-gradient(135deg, rgba(255, 209, 102, 0.28), transparent 48%),
-      rgba(255, 255, 255, 0.78);
+      linear-gradient(135deg, rgba(255, 209, 102, 0.18), rgba(255, 250, 240, 0.06)),
+      rgba(23, 21, 27, 0.66);
+    color: var(--paper);
     padding: 18px;
-    box-shadow: var(--shadow-card);
-    animation: rise-in 380ms var(--ease-pop) both;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.24);
+    animation: podium-in 420ms cubic-bezier(0.16, 1.1, 0.3, 1) both;
   }
 
   .place::before {
@@ -195,8 +242,11 @@
   .place-1 {
     min-height: 220px;
     background:
-      linear-gradient(135deg, rgba(255, 209, 102, 0.42), rgba(255, 255, 255, 0.76)),
-      white;
+      linear-gradient(135deg, rgba(248, 243, 74, 0.32), rgba(255, 62, 138, 0.14)),
+      rgba(23, 21, 27, 0.78);
+    box-shadow:
+      0 32px 80px rgba(0, 0, 0, 0.32),
+      0 0 0 1px rgba(248, 243, 74, 0.18) inset;
   }
 
   .place-2 {
@@ -204,20 +254,22 @@
   }
 
   .rank {
-    color: var(--color-accent);
+    color: var(--yellow);
     font-weight: 900;
   }
 
   .place strong {
     overflow-wrap: anywhere;
     font-size: 1.45rem;
+    text-transform: uppercase;
   }
 
   .score {
     justify-self: start;
-    border-radius: 999px;
-    background: var(--color-ink);
-    color: white;
+    border: 1px solid rgba(255, 250, 240, 0.18);
+    border-radius: 8px;
+    background: rgba(255, 250, 240, 0.1);
+    color: var(--paper);
     padding: 8px 12px;
     font-weight: 900;
   }
@@ -225,13 +277,21 @@
   .board {
     display: grid;
     gap: 12px;
+    border: 1px solid rgba(255, 250, 240, 0.16);
+    border-radius: 8px;
+    background:
+      linear-gradient(135deg, rgba(255, 250, 240, 0.09), rgba(255, 250, 240, 0.035)),
+      rgba(23, 21, 27, 0.72);
+    color: var(--paper);
     padding: 20px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.24);
   }
 
   .total {
-    border-radius: 999px;
-    background: var(--surface-tint);
-    color: var(--color-accent);
+    border: 1px solid rgba(248, 243, 74, 0.22);
+    border-radius: 8px;
+    background: rgba(248, 243, 74, 0.1);
+    color: var(--yellow);
     padding: 8px 12px;
     font-weight: 900;
   }
@@ -242,24 +302,24 @@
     align-items: center;
     gap: 12px;
     min-height: 58px;
-    border: 1px solid rgba(21, 19, 31, 0.06);
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.70);
+    border: 1px solid rgba(255, 250, 240, 0.12);
+    border-radius: 8px;
+    background: rgba(255, 250, 240, 0.07);
     padding: 10px 12px;
     animation: rise-in 280ms var(--ease-pop) both;
   }
 
   .leader {
-    background: linear-gradient(135deg, rgba(255, 79, 121, 0.12), rgba(255, 209, 102, 0.18));
+    background: linear-gradient(135deg, rgba(255, 79, 121, 0.16), rgba(255, 209, 102, 0.12));
   }
 
   .rank-badge {
     display: grid;
     min-height: 36px;
     place-items: center;
-    border-radius: 999px;
-    background: var(--color-ink);
-    color: white;
+    border-radius: 8px;
+    background: rgba(255, 250, 240, 0.1);
+    color: var(--yellow);
     font-weight: 900;
   }
 
@@ -270,6 +330,7 @@
   }
 
   .row-score {
+    color: var(--paper);
     font-weight: 900;
   }
 
@@ -281,9 +342,10 @@
   .retention {
     justify-self: start;
     margin: 0;
-    border-radius: 999px;
-    background: rgba(21, 19, 31, 0.08);
-    color: var(--color-muted);
+    border: 1px solid rgba(255, 250, 240, 0.14);
+    border-radius: 8px;
+    background: rgba(255, 250, 240, 0.07);
+    color: var(--paper-dim);
     padding: 8px 12px;
     font-size: 12px;
     font-weight: 900;
@@ -292,6 +354,52 @@
   .actions {
     flex-wrap: wrap;
     justify-content: flex-start;
+  }
+
+  .winner {
+    animation:
+      podium-in 420ms cubic-bezier(0.16, 1.1, 0.3, 1) both,
+      winner-breathe 1900ms ease-in-out 900ms infinite;
+  }
+
+  .winner::after {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    border: 1px solid rgba(248, 243, 74, 0.34);
+    opacity: 0;
+  }
+
+  .revealed .winner::after {
+    animation: victory-frame 1400ms ease-out both;
+  }
+
+  @keyframes podium-in {
+    from {
+      opacity: 0;
+      transform: translateY(18px) rotateX(-10deg);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) rotateX(0);
+    }
+  }
+
+  @keyframes winner-breathe {
+    50% {
+      transform: translateY(-6px) rotate(-0.6deg);
+    }
+  }
+
+  @keyframes victory-frame {
+    20% {
+      opacity: 1;
+      transform: scale(0.98);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.08);
+    }
   }
 
   @media (max-width: 720px) {
@@ -333,6 +441,14 @@
     .row-score {
       grid-column: 2;
       justify-self: start;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .winner,
+    .place,
+    .revealed .winner::after {
+      animation: none;
     }
   }
 </style>

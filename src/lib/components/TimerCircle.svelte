@@ -22,9 +22,10 @@
     width: 82px;
     aspect-ratio: 1;
     place-items: center;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.72);
-    box-shadow: var(--shadow-soft);
+    border: 1px solid rgba(255, 250, 240, 0.18);
+    border-radius: 50%;
+    background: rgba(23, 21, 27, 0.72);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
   }
 
   svg {
@@ -39,7 +40,7 @@
   }
 
   .track {
-    stroke: var(--gray-200);
+    stroke: rgba(255, 250, 240, 0.16);
   }
 
   .value {
@@ -51,7 +52,7 @@
   }
 
   strong {
-    color: var(--color-ink);
+    color: #fffaf0;
     font-size: 18px;
   }
 

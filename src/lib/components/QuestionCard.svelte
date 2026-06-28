@@ -59,7 +59,16 @@
     overflow: hidden;
     display: grid;
     gap: 20px;
+    border-radius: 8px;
     padding: clamp(20px, 4svw, 32px);
+    background:
+      linear-gradient(135deg, rgba(255, 250, 240, 0.1), rgba(255, 250, 240, 0.035)),
+      rgba(23, 21, 27, 0.72);
+    color: #fffaf0;
+    box-shadow:
+      0 26px 70px rgba(0, 0, 0, 0.28),
+      inset 0 0 0 1px rgba(255, 250, 240, 0.08);
+    transform: rotateX(0.001deg);
     animation: rise-in 260ms var(--ease-pop) both;
   }
 
@@ -69,8 +78,9 @@
     inset: 0;
     pointer-events: none;
     background:
-      linear-gradient(135deg, rgba(255, 79, 121, 0.10), transparent 36%),
-      linear-gradient(315deg, rgba(2, 166, 166, 0.10), transparent 32%);
+      linear-gradient(135deg, rgba(255, 79, 121, 0.14), transparent 36%),
+      linear-gradient(315deg, rgba(2, 166, 166, 0.12), transparent 32%),
+      repeating-linear-gradient(90deg, rgba(255, 250, 240, 0.026) 0 1px, transparent 1px 72px);
   }
 
   .question-head,
@@ -84,7 +94,7 @@
 
   .eyebrow {
     margin: 0;
-    color: var(--color-accent);
+    color: var(--color-yellow);
     font-size: 13px;
     font-weight: 900;
     text-transform: uppercase;
@@ -92,7 +102,10 @@
 
   h1 {
     margin: 0;
-    font-size: 2.25rem;
+    color: #fffaf0;
+    font-size: clamp(1.85rem, 4svw, 3.25rem);
+    line-height: 0.98;
+    text-transform: uppercase;
   }
 
   figure {
@@ -100,8 +113,8 @@
     max-height: 320px;
     margin: 0;
     border: 1px solid var(--border-soft);
-    border-radius: 12px;
-    background: var(--gray-100);
+    border-radius: 8px;
+    background: rgba(255, 250, 240, 0.08);
   }
 
   img {
@@ -122,10 +135,12 @@
     grid-template-columns: 38px minmax(0, 1fr);
     align-items: center;
     gap: 12px;
-    min-height: 68px;
-    border: 1px solid var(--border-soft);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.82);
+    min-height: 74px;
+    border: 1px solid rgba(255, 250, 240, 0.14);
+    border-radius: 8px;
+    background:
+      linear-gradient(160deg, rgba(255, 255, 255, 0.9), rgba(255, 250, 240, 0.78)),
+      #fffaf0;
     color: var(--color-ink);
     padding: 12px;
     text-align: left;
@@ -135,15 +150,17 @@
       transform var(--duration-fast) var(--ease-pop),
       border-color var(--duration-fast) ease,
       background var(--duration-fast) ease,
-      box-shadow var(--duration-fast) ease;
+      box-shadow var(--duration-fast) ease,
+      filter var(--duration-fast) ease;
   }
 
   .answers button:hover:not(:disabled),
   .answers button:focus-visible {
     outline: none;
     transform: translateY(-2px);
-    border-color: rgba(255, 79, 121, 0.46);
-    box-shadow: 0 14px 28px rgba(21, 19, 31, 0.10);
+    border-color: rgba(248, 243, 74, 0.5);
+    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.16);
+    filter: saturate(1.06);
   }
 
   .answers button:active:not(:disabled) {
@@ -152,8 +169,12 @@
 
   .answers button.selected {
     border-color: var(--color-accent);
-    background: linear-gradient(135deg, rgba(255, 79, 121, 0.14), rgba(255, 209, 102, 0.20));
-    box-shadow: 0 12px 28px rgba(255, 79, 121, 0.18);
+    background:
+      linear-gradient(135deg, rgba(255, 209, 102, 0.52), rgba(255, 79, 121, 0.22)),
+      #fffaf0;
+    box-shadow:
+      0 14px 32px rgba(255, 79, 121, 0.18),
+      inset 0 0 0 1px rgba(23, 21, 27, 0.08);
   }
 
   .answers button:disabled:not(.selected) {
@@ -164,7 +185,7 @@
     display: grid;
     min-height: 38px;
     place-items: center;
-    border-radius: 999px;
+    border-radius: 8px;
     background: var(--color-ink);
     color: white;
     font-size: 13px;
@@ -177,9 +198,10 @@
   .feedback {
     justify-self: start;
     margin: 0;
-    border-radius: 999px;
-    background: var(--color-ink);
-    color: white;
+    border: 1px solid rgba(255, 250, 240, 0.18);
+    border-radius: 8px;
+    background: rgba(23, 21, 27, 0.88);
+    color: #fffaf0;
     padding: 8px 12px;
     font-size: 12px;
     font-weight: 900;

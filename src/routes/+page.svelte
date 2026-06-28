@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { pageTitle, siteMeta } from '$lib/config/site.js';
+  import SceneBackground3D from '$lib/components/SceneBackground3D.svelte';
   import { createRoom } from '$lib/utils/api.js';
   import { initSound, playSound, soundMuted, toggleSound } from '$lib/utils/sound.js';
   import { applyTheme } from '$lib/utils/theme.js';
@@ -320,6 +321,8 @@
   on:mousemove={trackPointer}
   style={`--pointer-x:${pointerX}%; --pointer-y:${pointerY}%;`}
 >
+  <SceneBackground3D variant="creator" intensity={0.42} />
+
   <div class="ambient-field" aria-hidden="true">
     <span class="light-ribbon ribbon-a"></span>
     <span class="light-ribbon ribbon-b"></span>

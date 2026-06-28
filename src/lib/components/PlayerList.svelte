@@ -40,7 +40,13 @@
 
 <style>
   .players {
+    border-radius: 8px;
     padding: 20px;
+    background:
+      linear-gradient(135deg, rgba(255, 250, 240, 0.09), rgba(255, 250, 240, 0.035)),
+      rgba(23, 21, 27, 0.7);
+    color: #fffaf0;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.24);
   }
 
   .heading {
@@ -53,7 +59,9 @@
 
   h2 {
     margin: 0;
+    color: #fffaf0;
     font-size: 20px;
+    text-transform: uppercase;
   }
 
   .count {
@@ -61,9 +69,10 @@
     min-width: 34px;
     min-height: 30px;
     place-items: center;
-    border-radius: 999px;
-    background: var(--color-ink);
-    color: white;
+    border: 1px solid rgba(255, 250, 240, 0.18);
+    border-radius: 8px;
+    background: rgba(255, 250, 240, 0.1);
+    color: var(--color-yellow);
     font-size: 13px;
     font-weight: 900;
   }
@@ -82,16 +91,16 @@
     align-items: center;
     gap: 10px;
     min-height: 54px;
-    border: 1px solid rgba(21, 19, 31, 0.06);
+    border: 1px solid rgba(255, 250, 240, 0.12);
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.68);
+    background: rgba(255, 250, 240, 0.07);
     padding: 8px 12px;
     animation: rise-in 260ms var(--ease-pop) both;
   }
 
   .podium {
-    background: linear-gradient(135deg, rgba(255, 209, 102, 0.24), rgba(255, 255, 255, 0.74));
-    box-shadow: 0 8px 18px rgba(21, 19, 31, 0.07);
+    background: linear-gradient(135deg, rgba(255, 209, 102, 0.16), rgba(255, 250, 240, 0.08));
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.16);
   }
 
   strong {
@@ -104,9 +113,10 @@
     display: inline-flex;
     min-height: 24px;
     align-items: center;
-    border-radius: 999px;
-    background: rgba(37, 99, 235, 0.10);
-    color: var(--color-blue);
+    border: 1px solid rgba(67, 232, 255, 0.24);
+    border-radius: 8px;
+    background: rgba(67, 232, 255, 0.1);
+    color: var(--color-cyan);
     padding: 0 8px;
     font-weight: 900;
     font-size: 12px;
@@ -116,16 +126,16 @@
     display: grid;
     min-height: 34px;
     place-items: center;
-    border-radius: 999px;
-    background: var(--surface-tint);
-    color: var(--color-accent);
+    border-radius: 8px;
+    background: rgba(255, 250, 240, 0.1);
+    color: var(--color-yellow);
     font-size: 12px;
     font-weight: 900;
   }
 
   .score {
     min-width: 54px;
-    color: var(--gray-900);
+    color: #fffaf0;
     text-align: right;
     font-weight: 900;
   }
@@ -137,7 +147,7 @@
 
   p {
     margin: 0;
-    color: var(--color-muted);
+    color: rgba(255, 250, 240, 0.72);
     font-weight: 800;
   }
 
