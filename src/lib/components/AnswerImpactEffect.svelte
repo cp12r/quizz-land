@@ -1,6 +1,6 @@
 <script>
   import { onDestroy, onMount } from 'svelte';
-  import { disposeObject, getCssColor, isLowPowerDevice, prefersReducedMotion, supportsWebGL } from '$lib/utils/webgl.js';
+  import { disposeObject, getCssColor, isLowPowerDevice, loadThree, prefersReducedMotion, supportsWebGL } from '$lib/utils/webgl.js';
 
   export let feedback = null;
   export let selected = null;
@@ -31,8 +31,18 @@
     }
 
     const lowPower = isLowPowerDevice();
-    const THREE = await import('three');
-    if (!host) return;
+    const THREE = await loadThree();
+    if (!THREE || !host) {
+      api = {
+        burst: () => {
+          fallbackPulse = true;
+          setTimeout(() => {
+            fallbackPulse = false;
+          }, 500);
+        }
+      };
+      return;
+    }
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 30);

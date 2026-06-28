@@ -1,5 +1,7 @@
 import { browser } from '$app/environment';
 
+const THREE_MODULE_URL = 'https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js';
+
 export function prefersReducedMotion() {
   return browser && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
@@ -25,6 +27,17 @@ export function getCssColor(name, fallback) {
   if (!browser) return fallback;
   const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   return value || fallback;
+}
+
+export async function loadThree() {
+  if (!browser) return null;
+
+  try {
+    return await import(/* @vite-ignore */ THREE_MODULE_URL);
+  } catch (error) {
+    console.warn('Three.js runtime load failed; using CSS fallback.', error);
+    return null;
+  }
 }
 
 export function disposeObject(object) {

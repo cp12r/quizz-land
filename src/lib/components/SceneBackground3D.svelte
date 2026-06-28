@@ -1,6 +1,6 @@
 <script>
   import { onDestroy, onMount } from 'svelte';
-  import { disposeObject, getCssColor, isLowPowerDevice, prefersReducedMotion, supportsWebGL } from '$lib/utils/webgl.js';
+  import { disposeObject, getCssColor, isLowPowerDevice, loadThree, prefersReducedMotion, supportsWebGL } from '$lib/utils/webgl.js';
 
   export let variant = 'party';
   export let intensity = 0.55;
@@ -26,8 +26,11 @@
     }
 
     const lowPower = isLowPowerDevice();
-    const THREE = await import('three');
-    if (!host) return;
+    const THREE = await loadThree();
+    if (!THREE || !host) {
+      fallback = true;
+      return;
+    }
 
     const settings = variantDepth[variant] || variantDepth.party;
     const scene = new THREE.Scene();
