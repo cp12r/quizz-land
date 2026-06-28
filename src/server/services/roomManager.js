@@ -5,8 +5,11 @@ import { log } from './logger.js';
 
 const dataFile = join(process.cwd(), 'data', 'rooms.json');
 const tempDataFile = `${dataFile}.tmp`;
+const resultsFile = join(process.cwd(), 'data', 'results.json');
+const tempResultsFile = `${resultsFile}.tmp`;
 const rooms = new Map();
 let writeQueue = Promise.resolve();
+let resultWriteQueue = Promise.resolve();
 const DEFAULT_CATEGORIES = ['culture', 'science', 'web'];
 const QUESTION_MAX = 50;
 export const ROOM_CLOSE_DELAY_MS = 4800;
@@ -53,6 +56,51 @@ async function persist() {
     await rename(tempDataFile, dataFile);
   });
   return writeQueue;
+}
+
+async function readResultSnapshots() {
+  try {
+    const raw = await readFile(resultsFile, 'utf8');
+    const saved = JSON.parse(raw);
+    return Array.isArray(saved) ? saved : [];
+  } catch (error) {
+    if (error.code !== 'ENOENT') {
+      log('error', 'results_storage_read_failed', { error: error.message });
+    }
+    return [];
+  }
+}
+
+async function persistResultSnapshots(snapshots) {
+  resultWriteQueue = resultWriteQueue.then(async () => {
+    await mkdir(dirname(resultsFile), { recursive: true });
+    await writeFile(tempResultsFile, JSON.stringify(snapshots, null, 2));
+    await rename(tempResultsFile, resultsFile);
+  });
+  return resultWriteQueue;
+}
+
+async function archiveResult(room) {
+  const snapshots = await readResultSnapshots();
+  const now = Date.now();
+  const retention = resultRetentionMs();
+  const snapshot = {
+    id: room.id,
+    room: publicRoom(room),
+    results: getResults(room),
+    createdAt: room.createdAt,
+    finishedAt: room.finishedAt || new Date().toISOString(),
+    deleteAfter: room.deleteAfter || new Date(now + retention).toISOString()
+  };
+  const freshSnapshots = snapshots.filter((item) => {
+    if (item.id === room.id) return false;
+    const deleteAfter = new Date(item.deleteAfter || item.finishedAt || item.createdAt).getTime();
+    return deleteAfter > now;
+  });
+
+  freshSnapshots.push(snapshot);
+  await persistResultSnapshots(freshSnapshots);
+  return snapshot;
 }
 
 function normalizedRoomCategories(categories = DEFAULT_CATEGORIES) {
@@ -193,6 +241,18 @@ export async function getRoom(id, reveal = false) {
   return reveal ? room : publicRoom(room);
 }
 
+export async function getResultSnapshot(id) {
+  const snapshots = await readResultSnapshots();
+  const now = Date.now();
+  const snapshot = snapshots.find((item) => item.id === id);
+
+  if (!snapshot) return null;
+  const deleteAfter = new Date(snapshot.deleteAfter || snapshot.finishedAt || snapshot.createdAt).getTime();
+  if (deleteAfter <= now) return null;
+
+  return snapshot;
+}
+
 export async function joinRoom(roomId, playerName, playerId = crypto.randomUUID()) {
   await hydrateRooms();
   const room = rooms.get(roomId);
@@ -297,6 +357,7 @@ export async function advanceRound(roomId) {
     room.roundEndsAt = null;
     room.finishedAt = new Date().toISOString();
     room.deleteAfter = new Date(Date.now() + resultRetentionMs()).toISOString();
+    await archiveResult(room);
   } else {
     room.currentQuestion += 1;
     room.roundEndsAt = Date.now() + room.config.timePerQuestion * 1000;
