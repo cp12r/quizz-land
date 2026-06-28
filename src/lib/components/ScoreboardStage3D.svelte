@@ -193,6 +193,56 @@
       `;
     }
 
+    function podiumGlyphSvg(rank, color, accent) {
+      const crown = rank === 1
+        ? '<path d="M78 34 96 56l32-31 32 31 18-22 11 56H67l11-56Z" fill="#17151b" fill-opacity=".2"/><path d="M80 37 96 56l32-31 32 31 16-19 8 49H72l8-49Z" fill="#fffaf0" fill-opacity=".58"/>'
+        : '';
+
+      return `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 112">
+          <defs>
+            <linearGradient id="panel" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0" stop-color="#fffaf0" stop-opacity=".72"/>
+              <stop offset=".46" stop-color="${color}" stop-opacity=".62"/>
+              <stop offset="1" stop-color="${accent}" stop-opacity=".42"/>
+            </linearGradient>
+            <linearGradient id="stripe" x1="0" x2="1">
+              <stop offset="0" stop-color="${accent}" stop-opacity=".0"/>
+              <stop offset=".5" stop-color="${accent}" stop-opacity=".78"/>
+              <stop offset="1" stop-color="${accent}" stop-opacity=".0"/>
+            </linearGradient>
+          </defs>
+          <path d="M20 17h216v78H20z" rx="18" fill="url(#panel)"/>
+          <path d="M20 17h216v78H20z" rx="18" fill="none" stroke="#17151b" stroke-opacity=".28" stroke-width="5"/>
+          <path d="M40 76h176" stroke="url(#stripe)" stroke-width="9" stroke-linecap="round"/>
+          <path d="M54 40h42l18 16-18 16H54l18-16-18-16Zm106 0h42l-18 16 18 16h-42l-18-16 18-16Z" fill="#17151b" fill-opacity=".18"/>
+          ${crown}
+          <circle cx="128" cy="56" r="23" fill="#17151b" fill-opacity=".22"/>
+          <circle cx="128" cy="56" r="18" fill="#fffaf0" fill-opacity=".68"/>
+          <text x="128" y="66" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="28" font-weight="900" fill="#17151b">${rank}</text>
+        </svg>
+      `;
+    }
+
+    function sideMedalSvg(rank, color, accent) {
+      return `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 160">
+          <defs>
+            <linearGradient id="medal" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0" stop-color="#fffaf0" stop-opacity=".82"/>
+              <stop offset=".55" stop-color="${color}" stop-opacity=".72"/>
+              <stop offset="1" stop-color="${accent}" stop-opacity=".48"/>
+            </linearGradient>
+          </defs>
+          <path d="M24 12h80l-18 52H42L24 12Z" fill="${accent}" fill-opacity=".62"/>
+          <circle cx="64" cy="94" r="39" fill="url(#medal)"/>
+          <circle cx="64" cy="94" r="39" fill="none" stroke="#17151b" stroke-opacity=".32" stroke-width="6"/>
+          <path d="M43 94h42M64 73v42" stroke="#17151b" stroke-opacity=".22" stroke-width="8" stroke-linecap="round"/>
+          <text x="64" y="105" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="34" font-weight="900" fill="#17151b">#${rank}</text>
+        </svg>
+      `;
+    }
+
     function createRoundedBlockGeometry(width, height, depth, radius = 0.16) {
       const shape = new THREE.Shape();
       const x = -width / 2;
@@ -265,6 +315,8 @@
     ];
 
     const plaqueGeometry = new THREE.PlaneGeometry(0.86, 0.43);
+    const podiumGlyphGeometry = new THREE.PlaneGeometry(1.05, 0.46);
+    const sideMedalGeometry = new THREE.PlaneGeometry(0.34, 0.42);
     const starGeometry = new THREE.PlaneGeometry(0.18, 0.18);
     const avatarHeadGeometry = new THREE.SphereGeometry(0.18, lowPower ? 16 : 24, lowPower ? 10 : 16);
     const avatarBodyGeometry = new THREE.CylinderGeometry(0.16, 0.22, 0.34, lowPower ? 14 : 20);
@@ -305,17 +357,38 @@
       rim.position.set(0, layout.height - 0.08, layout.depth / 2 + 0.024);
       group.add(rim);
 
-      const grooveMaterial = new THREE.MeshBasicMaterial({
-        color: ink,
-        transparent: true,
-        opacity: 0.14,
-        depthWrite: false
+      const glyphTexture = makeTexture(podiumGlyphSvg(layout.rank, layout.color, layout.accent));
+      const glyph = new THREE.Mesh(
+        podiumGlyphGeometry,
+        new THREE.MeshBasicMaterial({
+          map: glyphTexture,
+          transparent: true,
+          opacity: layout.rank === 1 ? 0.66 : 0.52,
+          depthWrite: false,
+          toneMapped: false
+        })
+      );
+      glyph.position.set(0, layout.height * 0.34, layout.depth / 2 + 0.045);
+      glyph.scale.set(layout.width / 1.32, layout.rank === 1 ? 1.08 : 0.96, 1);
+      group.add(glyph);
+
+      const sideMedalTexture = makeTexture(sideMedalSvg(layout.rank, layout.color, layout.accent));
+      [-1, 1].forEach((side) => {
+        const medal = new THREE.Mesh(
+          sideMedalGeometry,
+          new THREE.MeshBasicMaterial({
+            map: sideMedalTexture,
+            transparent: true,
+            opacity: layout.rank === 1 ? 0.58 : 0.44,
+            depthWrite: false,
+            toneMapped: false
+          })
+        );
+        medal.position.set(side * (layout.width / 2 + 0.035), layout.height * 0.58, 0.06);
+        medal.rotation.y = side * Math.PI / 2;
+        medal.scale.setScalar(layout.rank === 1 ? 1.1 : 0.96);
+        group.add(medal);
       });
-      for (let grooveIndex = 0; grooveIndex < 2; grooveIndex += 1) {
-        const groove = new THREE.Mesh(new THREE.BoxGeometry(layout.width * (0.48 + grooveIndex * 0.18), 0.018, 0.02), grooveMaterial);
-        groove.position.set(0, layout.height * (0.36 + grooveIndex * 0.18), layout.depth / 2 + 0.026);
-        group.add(groove);
-      }
 
       const plaqueTexture = makeTexture(badgeSvg(layout.rank, layout.color, layout.accent));
       const plaque = new THREE.Mesh(
@@ -620,6 +693,8 @@
       window.removeEventListener('resize', resize);
       disposeObject(scene);
       plaqueGeometry.dispose();
+      podiumGlyphGeometry.dispose();
+      sideMedalGeometry.dispose();
       starGeometry.dispose();
       avatarHeadGeometry.dispose();
       avatarBodyGeometry.dispose();
