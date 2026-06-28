@@ -32,7 +32,8 @@
             {rankLabel(index)}
           </span>
           {#if maskScores}<span class="sr-only">Rang masqué</span>{/if}
-          <strong>{player.name}</strong>
+          <strong class:masked={maskScores} aria-hidden={maskScores}>{player.name}</strong>
+          {#if maskScores}<span class="sr-only">Pseudo masqué</span>{/if}
           {#if player.id === hostId}<small>Host</small>{/if}
           <span class:masked={maskScores} class="score mono" aria-hidden={maskScores}>
             {maskScores ? '---' : player.score}
