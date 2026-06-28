@@ -195,7 +195,11 @@
   }
 
   function removeDraft(id) {
-    const removedIndex = customDrafts.findIndex((draft) => draft.id === id);
+    removeDraftAt(customDrafts.findIndex((draft) => draft.id === id));
+  }
+
+  function removeDraftAt(index) {
+    if (index < 0 || index >= customDrafts.length) return;
 
     if (customDrafts.length === 1) {
       customDrafts = [createQuestionDraft()];
@@ -204,9 +208,9 @@
       return;
     }
 
-    const nextDrafts = customDrafts.filter((draft) => draft.id !== id);
+    const nextDrafts = customDrafts.filter((_, draftIndex) => draftIndex !== index);
     customDrafts = nextDrafts;
-    activeDraftId = nextDrafts[Math.max(0, Math.min(removedIndex, nextDrafts.length - 1))]?.id;
+    activeDraftId = nextDrafts[Math.max(0, Math.min(index, nextDrafts.length - 1))]?.id;
     playSound('ui');
   }
 
@@ -543,7 +547,7 @@
       </div>
 
       <div class="draft-strip" aria-label="Questions personnalisées">
-        {#each customDrafts as draft, index}
+        {#each customDrafts as draft, index (draft.id)}
           {@const state = getDraftState(draft)}
           <div class:active={activeDraftId === draft.id} class:ready={state.ready} class="draft-item">
             <button
@@ -559,7 +563,7 @@
             <button
               type="button"
               class="draft-delete"
-              on:click={() => removeDraft(draft.id)}
+              on:click|stopPropagation={() => removeDraftAt(index)}
               aria-label={`Supprimer la question ${index + 1}`}
               title="Supprimer"
             >
