@@ -41,6 +41,12 @@ function scheduleRoomRemoval(roomId, closesAt) {
 
   const delay = Math.max(0, new Date(closesAt).getTime() - Date.now());
   const timer = setTimeout(async () => {
+    const room = await getRoom(roomId);
+    if (!room || room.status === 'finished') {
+      closingTimers.delete(roomId);
+      return;
+    }
+
     broadcast(roomId, 'room_closed', { redirectTo: '/' });
     await deleteRoom(roomId);
 
@@ -52,6 +58,13 @@ function scheduleRoomRemoval(roomId, closesAt) {
   }, delay);
 
   closingTimers.set(roomId, timer);
+}
+
+function cancelRoomRemoval(roomId) {
+  const timer = closingTimers.get(roomId);
+  if (!timer) return;
+  clearTimeout(timer);
+  closingTimers.delete(roomId);
 }
 
 async function closeSmallRoomIfNeeded(client) {
@@ -83,14 +96,19 @@ async function closeSmallRoomIfNeeded(client) {
 setInterval(async () => {
   const roomIds = new Set([...clients.values()].map((client) => client.roomId));
   for (const roomId of roomIds) {
-    const room = await getRoom(roomId);
-    if (!room || room.status !== 'playing') continue;
-    const remaining = Math.max(0, Math.ceil((room.roundEndsAt - Date.now()) / 1000));
-    broadcast(roomId, 'timer_tick', { remaining });
-    if (remaining === 0) {
-      const next = await advanceRound(roomId);
-      broadcast(roomId, 'round_end', next);
-      broadcast(roomId, 'room_state', next);
+    try {
+      const room = await getRoom(roomId);
+      if (!room || room.status !== 'playing') continue;
+      const remaining = Math.max(0, Math.ceil((room.roundEndsAt - Date.now()) / 1000));
+      broadcast(roomId, 'timer_tick', { remaining });
+      if (remaining === 0) {
+        const next = await advanceRound(roomId);
+        if (next?.status === 'finished') cancelRoomRemoval(roomId);
+        broadcast(roomId, 'round_end', next);
+        broadcast(roomId, 'room_state', next);
+      }
+    } catch (error) {
+      log('error', 'room_timer_tick_failed', { roomId, error: error.message });
     }
   }
 }, 1000);

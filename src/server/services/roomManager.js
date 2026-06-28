@@ -1,15 +1,15 @@
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { normalizeCategory, normalizeQuestions, normalizeTheme, pickQuestions, questions as questionBank } from './questions.js';
 import { log } from './logger.js';
 
 const dataFile = join(process.cwd(), 'data', 'rooms.json');
-const tempDataFile = `${dataFile}.tmp`;
 const resultsFile = join(process.cwd(), 'data', 'results.json');
-const tempResultsFile = `${resultsFile}.tmp`;
 const rooms = new Map();
 let writeQueue = Promise.resolve();
 let resultWriteQueue = Promise.resolve();
+let hydrated = false;
+let hydrateQueue = null;
 const DEFAULT_CATEGORIES = ['culture', 'science', 'web'];
 const QUESTION_MAX = 50;
 export const ROOM_CLOSE_DELAY_MS = 4800;
@@ -50,10 +50,11 @@ function shouldKeepRoom(room, now = Date.now()) {
 }
 
 async function persist() {
-  writeQueue = writeQueue.then(async () => {
+  writeQueue = writeQueue.catch((error) => {
+    log('error', 'rooms_storage_write_queue_recovered', { error: error.message });
+  }).then(async () => {
     await mkdir(dirname(dataFile), { recursive: true });
-    await writeFile(tempDataFile, JSON.stringify([...rooms.values()], null, 2));
-    await rename(tempDataFile, dataFile);
+    await writeFile(dataFile, JSON.stringify([...rooms.values()], null, 2));
   });
   return writeQueue;
 }
@@ -72,10 +73,11 @@ async function readResultSnapshots() {
 }
 
 async function persistResultSnapshots(snapshots) {
-  resultWriteQueue = resultWriteQueue.then(async () => {
+  resultWriteQueue = resultWriteQueue.catch((error) => {
+    log('error', 'results_storage_write_queue_recovered', { error: error.message });
+  }).then(async () => {
     await mkdir(dirname(resultsFile), { recursive: true });
-    await writeFile(tempResultsFile, JSON.stringify(snapshots, null, 2));
-    await rename(tempResultsFile, resultsFile);
+    await writeFile(resultsFile, JSON.stringify(snapshots, null, 2));
   });
   return resultWriteQueue;
 }
@@ -169,7 +171,11 @@ function applyQuestionConfig(room, requestedQuestionCount) {
   room.config.minQuestionCount = min;
 }
 
-export async function hydrateRooms() {
+export async function hydrateRooms(force = false) {
+  if (hydrated && !force) return;
+  if (hydrateQueue) return hydrateQueue;
+
+  hydrateQueue = (async () => {
   try {
     const raw = await readFile(dataFile, 'utf8');
     const saved = JSON.parse(raw);
@@ -182,10 +188,21 @@ export async function hydrateRooms() {
     if (error.code !== 'ENOENT') {
       log('error', 'rooms_storage_read_failed', { error: error.message });
     }
-    rooms.clear();
   }
 
-  await persist();
+    hydrated = true;
+    await persist();
+  })().finally(() => {
+    hydrateQueue = null;
+  });
+
+  return hydrateQueue;
+}
+
+async function ensureRoomLoaded(id) {
+  await hydrateRooms();
+  if (!rooms.has(id)) await hydrateRooms(true);
+  return rooms.get(id);
 }
 
 export async function createRoom(config = {}) {
@@ -235,8 +252,7 @@ export async function createRoom(config = {}) {
 }
 
 export async function getRoom(id, reveal = false) {
-  await hydrateRooms();
-  const room = rooms.get(id);
+  const room = await ensureRoomLoaded(id);
   if (!room) return null;
   return reveal ? room : publicRoom(room);
 }
@@ -254,8 +270,7 @@ export async function getResultSnapshot(id) {
 }
 
 export async function joinRoom(roomId, playerName, playerId = crypto.randomUUID()) {
-  await hydrateRooms();
-  const room = rooms.get(roomId);
+  const room = await ensureRoomLoaded(roomId);
   if (!room || room.status === 'closing') return null;
   let player = room.players.find((item) => item.id === playerId);
   if (!player) {
@@ -271,8 +286,7 @@ export async function joinRoom(roomId, playerName, playerId = crypto.randomUUID(
 }
 
 export async function startGame(roomId, playerId) {
-  await hydrateRooms();
-  const room = rooms.get(roomId);
+  const room = await ensureRoomLoaded(roomId);
   const connectedPlayers = room?.players.filter((player) => player.connected !== false) || [];
   if (!room || room.status !== 'waiting' || room.hostId !== playerId || connectedPlayers.length < 2) return null;
   room.status = 'playing';
@@ -284,8 +298,7 @@ export async function startGame(roomId, playerId) {
 }
 
 export async function updateQuestionCount(roomId, playerId, questionCount) {
-  await hydrateRooms();
-  const room = rooms.get(roomId);
+  const room = await ensureRoomLoaded(roomId);
   if (!room || room.status !== 'waiting' || room.hostId !== playerId) return null;
   applyQuestionConfig(room, questionCount);
   room.answers = [];
@@ -294,8 +307,7 @@ export async function updateQuestionCount(roomId, playerId, questionCount) {
 }
 
 export async function closeRoom(roomId, reason = 'player_left', delayMs = ROOM_CLOSE_DELAY_MS) {
-  await hydrateRooms();
-  const room = rooms.get(roomId);
+  const room = await ensureRoomLoaded(roomId);
   if (!room || room.status === 'finished') return null;
 
   const now = Date.now();
@@ -309,15 +321,14 @@ export async function closeRoom(roomId, reason = 'player_left', delayMs = ROOM_C
 }
 
 export async function deleteRoom(roomId) {
-  await hydrateRooms();
+  await ensureRoomLoaded(roomId);
   const deleted = rooms.delete(roomId);
   if (deleted) await persist();
   return deleted;
 }
 
 export async function submitAnswer(roomId, playerId, answerIndex) {
-  await hydrateRooms();
-  const room = rooms.get(roomId);
+  const room = await ensureRoomLoaded(roomId);
   if (!room || room.status !== 'playing') return null;
 
   const now = Date.now();
@@ -349,8 +360,7 @@ export async function submitAnswer(roomId, playerId, answerIndex) {
 }
 
 export async function advanceRound(roomId) {
-  await hydrateRooms();
-  const room = rooms.get(roomId);
+  const room = await ensureRoomLoaded(roomId);
   if (!room) return null;
   if (room.currentQuestion + 1 >= room.questions.length) {
     room.status = 'finished';

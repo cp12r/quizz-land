@@ -1,4 +1,3 @@
-import { error } from '@sveltejs/kit';
 import { getResultSnapshot, getResults, getRoom } from '$server/services/roomManager.js';
 
 export async function load({ params }) {
@@ -6,12 +5,20 @@ export async function load({ params }) {
 
   if (!room) {
     const snapshot = await getResultSnapshot(params.roomId);
-    if (!snapshot) throw error(404, 'Resultats introuvables');
+    if (!snapshot) {
+      return {
+        missing: true,
+        room: { id: params.roomId, config: {}, deleteAfter: null },
+        results: []
+      };
+    }
+
     return {
+      missing: false,
       room: { ...snapshot.room, questions: undefined, deleteAfter: snapshot.deleteAfter },
       results: snapshot.results
     };
   }
 
-  return { room: { ...room, questions: undefined }, results: getResults(room) };
+  return { missing: false, room: { ...room, questions: undefined }, results: getResults(room) };
 }

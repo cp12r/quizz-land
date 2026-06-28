@@ -11,13 +11,31 @@
 
   let revealed = false;
   let copied = false;
+  let roomData = data.room;
+  let resultsData = data.results;
 
-  $: exportText = JSON.stringify({ room: data.room.id, config: data.room.config, results: data.results }, null, 2);
-  $: winner = data.results[0];
-  $: topThree = data.results.slice(0, 3);
-  $: totalScore = data.results.reduce((sum, player) => sum + player.score, 0);
+  $: exportText = JSON.stringify({ room: roomData.id, config: roomData.config, results: resultsData }, null, 2);
+  $: winner = resultsData[0];
+  $: topThree = resultsData.slice(0, 3);
+  $: totalScore = resultsData.reduce((sum, player) => sum + player.score, 0);
   $: title = pageTitle(winner ? `${winner.name} remporte le quiz` : 'Classement final');
-  $: description = `Classement final du salon ${data.room.id} sur ${siteMeta.name}. Résultats temporaires disponibles après la partie.`;
+  $: description = `Classement final du salon ${roomData.id} sur ${siteMeta.name}. Résultats temporaires disponibles après la partie.`;
+
+  function restoreResultBackup() {
+    if (typeof sessionStorage === 'undefined' || resultsData.length) return;
+
+    const raw = sessionStorage.getItem(`quizz-results-${roomData.id}`);
+    if (!raw) return;
+
+    try {
+      const backup = JSON.parse(raw);
+      if (!Array.isArray(backup.results) || !backup.results.length) return;
+      roomData = { ...backup.room, id: backup.room?.id || roomData.id };
+      resultsData = backup.results;
+    } catch {
+      sessionStorage.removeItem(`quizz-results-${roomData.id}`);
+    }
+  }
 
   async function copyResults() {
     await navigator.clipboard.writeText(exportText);
@@ -29,8 +47,9 @@
   }
 
   onMount(() => {
+    restoreResultBackup();
     initSound();
-    applyTheme(data.room.config?.themeId);
+    applyTheme(roomData.config?.themeId);
     playSound('reveal');
     setTimeout(() => {
       revealed = true;
@@ -59,7 +78,7 @@
   <section class="shell results">
     <header class="hero">
       <div>
-        <p class="mono">{data.room.id}</p>
+        <p class="mono">{roomData.id}</p>
         <h1>{winner ? `${winner.name} remporte le quiz` : 'Classement final'}</h1>
       </div>
       <button
@@ -73,7 +92,19 @@
       </button>
     </header>
 
-    <ScoreboardStage3D results={data.results} {revealed} />
+    {#if resultsData.length}
+      <ScoreboardStage3D results={resultsData} {revealed} />
+    {:else}
+      <section class="card board empty-results" role="status">
+        <div class="board-head">
+          <div>
+            <p class="mono">Scores</p>
+            <h2>Résultats indisponibles</h2>
+          </div>
+        </div>
+        <p>La partie est terminée, mais le classement n'a pas pu être récupéré sur cet appareil.</p>
+      </section>
+    {/if}
 
     <section class:revealed class="podium" aria-label="Podium final" aria-live="polite">
       {#each topThree as player, index}
@@ -94,7 +125,7 @@
         <span class="total mono">{totalScore} pts</span>
       </div>
 
-      {#each data.results as player, index}
+      {#each resultsData as player, index}
         <article class:leader={index === 0} class="row">
           <span class="rank-badge mono">{index + 1}</span>
           <strong>{player.name}</strong>
@@ -103,8 +134,8 @@
       {/each}
     </section>
 
-    {#if data.room.deleteAfter}
-      <p class="retention mono">Données temporaires jusqu’à {new Date(data.room.deleteAfter).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</p>
+    {#if roomData.deleteAfter}
+      <p class="retention mono">Données temporaires jusqu’à {new Date(roomData.deleteAfter).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</p>
     {/if}
 
     <div class="actions">

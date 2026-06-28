@@ -118,6 +118,22 @@
     addNotice(title, `${nextRoom.answers.length}/${nextRoom.players.length} réponses`, 'answer');
   }
 
+  function getSortedResults(nextRoom) {
+    return [...(nextRoom.players || [])].sort((a, b) => b.score - a.score);
+  }
+
+  function saveResultBackup(nextRoom) {
+    if (typeof sessionStorage === 'undefined') return;
+
+    const backup = {
+      room: { ...nextRoom, questions: undefined },
+      results: getSortedResults(nextRoom),
+      savedAt: new Date().toISOString()
+    };
+
+    sessionStorage.setItem(`quizz-results-${nextRoom.id}`, JSON.stringify(backup));
+  }
+
   function beginRoomClosing(payload = {}) {
     const nextRoom = payload.room || payload;
     const target = payload.redirectTo || '/';
@@ -200,10 +216,13 @@
 
     if (room.status === 'finished' && !finishing) {
       finishing = true;
+      roomClosing = false;
+      clearClosingTimer();
+      saveResultBackup(room);
       playSound('reveal');
       addNotice('Classement final', 'Calcul des scores', 'finish');
       setTimeout(() => {
-        location.href = `/results/${room.id}`;
+        location.assign(`/results/${room.id}`);
       }, 700);
     }
   }
@@ -292,6 +311,7 @@
       },
       room_closing: beginRoomClosing,
       room_closed: (payload) => {
+        if (finishing || room.status === 'finished') return;
         closeRedirectTo = payload.redirectTo || '/';
         location.href = closeRedirectTo;
       },
