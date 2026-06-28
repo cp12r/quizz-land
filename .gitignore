@@ -1,7 +1,9 @@
 node_modules/
 .svelte-kit/
 build/
-data/
+data/*
+!data/results.json
+!data/rooms.json
 server.log
 .env
 .DS_Store

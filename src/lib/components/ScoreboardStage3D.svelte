@@ -9,21 +9,13 @@
   let fallback = false;
   let cleanup = () => {};
   let api = null;
-  let animatedScores = [];
-  let scoreAnimationFrame = 0;
-  let scoreAnimationKey = '';
 
   $: topPlayers = results.slice(0, 5);
   $: topThree = results.slice(0, 3);
   $: if (api) api.update(topPlayers, revealed);
-  $: animateScoreLabels(topThree, revealed);
 
   function clamp(value, min = 0, max = 1) {
     return Math.min(max, Math.max(min, value));
-  }
-
-  function easeOutCubic(value) {
-    return 1 - Math.pow(1 - value, 3);
   }
 
   function easeOutBack(value) {
@@ -31,51 +23,6 @@
     return 1 + (amount + 1) * Math.pow(value - 1, 3) + amount * Math.pow(value - 1, 2);
   }
 
-  function scoreKey(players, nextRevealed) {
-    return `${nextRevealed}:${players.map((player) => `${player.id || player.name}:${player.score || 0}`).join('|')}`;
-  }
-
-  function animateScoreLabels(players, nextRevealed) {
-    const nextKey = scoreKey(players, nextRevealed);
-    if (scoreAnimationKey === nextKey) return;
-    scoreAnimationKey = nextKey;
-
-    if (scoreAnimationFrame) {
-      cancelAnimationFrame(scoreAnimationFrame);
-      scoreAnimationFrame = 0;
-    }
-
-    if (!nextRevealed || typeof requestAnimationFrame === 'undefined') {
-      animatedScores = players.map((player) => (nextRevealed ? player.score || 0 : 0));
-      return;
-    }
-
-    const startScores = players.map((_, index) => animatedScores[index] || 0);
-    const targetScores = players.map((player) => player.score || 0);
-    const start = performance.now();
-    const duration = 980;
-
-    function step(now) {
-      const progress = clamp((now - start) / duration);
-      const eased = easeOutCubic(progress);
-      animatedScores = targetScores.map((score, index) => Math.round(startScores[index] + (score - startScores[index]) * eased));
-
-      if (progress < 1) {
-        scoreAnimationFrame = requestAnimationFrame(step);
-      } else {
-        scoreAnimationFrame = 0;
-      }
-    }
-
-    scoreAnimationFrame = requestAnimationFrame(step);
-  }
-
-  function rankLabel(index) {
-    if (index === 0) return 'Champion';
-    if (index === 1) return 'Deuxième';
-    if (index === 2) return 'Troisième';
-    return `${index + 1}e`;
-  }
 
   onMount(async () => {
     if (prefersReducedMotion() || !supportsWebGL()) {
@@ -783,28 +730,12 @@
   });
 
   onDestroy(() => {
-    if (scoreAnimationFrame) cancelAnimationFrame(scoreAnimationFrame);
     cleanup();
   });
 </script>
 
 <div class="score-stage" class:fallback class:revealed aria-label="Scène de victoire finale">
   <div bind:this={host} class="score-canvas" aria-hidden="true"></div>
-
-  {#if topThree.length}
-    <div class="score-overlay" aria-live="polite">
-      {#each topThree as player, index}
-        <article class:champion={index === 0} class={`score-chip score-chip-${index + 1}`}>
-          <span class="rank mono">{index + 1}</span>
-          <div>
-            <strong>{player.name}</strong>
-            <em>{rankLabel(index)}</em>
-          </div>
-          <span class:masked={!revealed} class="points mono">{animatedScores[index] ?? (revealed ? player.score : 0)} pts</span>
-        </article>
-      {/each}
-    </div>
-  {/if}
 
   {#if fallback}
     <div class="fallback-podium" aria-hidden="true">
@@ -871,125 +802,6 @@
     height: 100%;
   }
 
-  .score-overlay {
-    position: absolute;
-    inset: auto clamp(12px, 3svw, 28px) clamp(12px, 3svw, 24px);
-    z-index: 2;
-    display: grid;
-    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr) minmax(0, 0.92fr);
-    grid-template-areas: 'second first third';
-    gap: 10px;
-    align-items: end;
-    pointer-events: none;
-  }
-
-  .score-chip {
-    display: grid;
-    grid-template-columns: 38px minmax(0, 1fr);
-    gap: 8px 10px;
-    align-items: center;
-    min-height: 82px;
-    border: 1px solid rgba(255, 250, 240, 0.18);
-    border-radius: 8px;
-    padding: 10px;
-    background:
-      linear-gradient(135deg, rgba(255, 250, 240, 0.14), rgba(255, 250, 240, 0.05)),
-      rgba(23, 21, 27, 0.74);
-    color: var(--stage-paper);
-    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
-    transform: translateY(12px);
-    opacity: 0.72;
-    transition:
-      transform 520ms cubic-bezier(0.16, 1.25, 0.3, 1),
-      opacity 420ms ease,
-      border-color 420ms ease;
-  }
-
-  .score-stage.revealed .score-chip {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .score-chip-1 {
-    grid-area: first;
-    min-height: 104px;
-    border-color: rgba(248, 243, 74, 0.36);
-    background:
-      linear-gradient(135deg, rgba(248, 243, 74, 0.19), rgba(255, 62, 138, 0.1)),
-      rgba(23, 21, 27, 0.82);
-  }
-
-  .score-chip-2 {
-    grid-area: second;
-  }
-
-  .score-chip-3 {
-    grid-area: third;
-  }
-
-  .rank {
-    display: grid;
-    width: 38px;
-    aspect-ratio: 1;
-    place-items: center;
-    border-radius: 50%;
-    background: var(--stage-paper);
-    color: var(--stage-ink);
-    font-weight: 950;
-  }
-
-  .champion .rank {
-    background: var(--color-yellow);
-  }
-
-  .score-chip div {
-    min-width: 0;
-  }
-
-  .score-chip strong,
-  .score-chip em,
-  .points {
-    display: block;
-    min-width: 0;
-  }
-
-  .score-chip strong {
-    overflow: hidden;
-    color: var(--stage-paper);
-    font-size: clamp(0.98rem, 2.4svw, 1.28rem);
-    line-height: 1;
-    text-overflow: ellipsis;
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-
-  .score-chip em {
-    margin-top: 4px;
-    color: var(--stage-muted);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.66rem;
-    font-style: normal;
-    font-weight: 900;
-    text-transform: uppercase;
-  }
-
-  .points {
-    grid-column: 1 / -1;
-    justify-self: start;
-    border: 1px solid rgba(255, 250, 240, 0.16);
-    border-radius: 8px;
-    background: rgba(255, 250, 240, 0.1);
-    color: var(--stage-paper);
-    padding: 7px 10px;
-    font-size: 0.78rem;
-    font-weight: 950;
-  }
-
-  .masked {
-    filter: blur(6px);
-    opacity: 0.46;
-  }
-
   .fallback-podium {
     position: absolute;
     inset: 18% 14% 24%;
@@ -1054,20 +866,6 @@
       min-height: clamp(560px, 150svw, 640px);
     }
 
-    .score-overlay {
-      grid-template-columns: 1fr;
-      grid-template-areas:
-        'first'
-        'second'
-        'third';
-      align-items: stretch;
-    }
-
-    .score-chip,
-    .score-chip-1 {
-      min-height: 76px;
-    }
-
     .fallback-podium {
       inset: 16% 12% 34%;
     }
@@ -1078,24 +876,10 @@
       min-height: 600px;
     }
 
-    .score-chip {
-      grid-template-columns: 34px minmax(0, 1fr);
-      min-height: 72px;
-      padding: 9px;
-    }
-
-    .rank {
-      width: 34px;
-    }
-
-    .points {
-      font-size: 0.72rem;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .score-stage::after,
-    .score-chip,
     .fallback-step {
       transition: none;
     }

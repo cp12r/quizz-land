@@ -23,13 +23,21 @@
   {#if players.length}
     <ol>
       {#each rankedPlayers as player, index}
-        <li class:podium={index < 3}>
-          <span class="rank mono">{rankLabel(index)}</span>
+        <li
+          class:podium={index < 3}
+          aria-label={maskScores ? `${player.name}, rang et score masqués` : undefined}
+          style={`--row-delay:${Math.min(index, 8) * 42}ms;`}
+        >
+          <span class:masked={maskScores} class="rank mono" aria-hidden={maskScores}>
+            {rankLabel(index)}
+          </span>
+          {#if maskScores}<span class="sr-only">Rang masqué</span>{/if}
           <strong>{player.name}</strong>
           {#if player.id === hostId}<small>Host</small>{/if}
-          <span class:masked={maskScores} class="score mono">
+          <span class:masked={maskScores} class="score mono" aria-hidden={maskScores}>
             {maskScores ? '---' : player.score}
           </span>
+          {#if maskScores}<span class="sr-only">Score masqué</span>{/if}
         </li>
       {/each}
     </ol>
@@ -95,7 +103,17 @@
     border-radius: 8px;
     background: rgba(255, 250, 240, 0.07);
     padding: 8px 12px;
-    animation: rise-in 260ms var(--ease-pop) both;
+    animation: rise-in 300ms var(--ease-pop) both;
+    animation-delay: var(--row-delay, 0ms);
+    transition:
+      border-color 180ms ease,
+      background 180ms ease,
+      transform 180ms ease;
+  }
+
+  li:hover {
+    border-color: rgba(255, 209, 102, 0.28);
+    transform: translateY(-2px);
   }
 
   .podium {
@@ -141,8 +159,12 @@
   }
 
   .masked {
-    filter: blur(3px);
-    opacity: 0.58;
+    color: var(--color-yellow);
+    filter: blur(4px);
+    opacity: 0.72;
+    text-shadow: 0 0 14px rgba(255, 209, 102, 0.46);
+    transform: translateZ(0);
+    user-select: none;
   }
 
   p {

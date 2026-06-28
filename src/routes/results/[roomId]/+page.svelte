@@ -108,7 +108,12 @@
 
     <section class:revealed class="podium" aria-label="Podium final" aria-live="polite">
       {#each topThree as player, index}
-        <article class:winner={index === 0} class={`place place-${index + 1}`} aria-label={`${index + 1}e place : ${player.name}`}>
+        <article
+          class:winner={index === 0}
+          class={`place place-${index + 1}`}
+          aria-label={`${index + 1}e place : ${player.name}, ${revealed ? `${player.score} points` : 'score masqué'}`}
+          style={`--place-delay:${index * 90}ms;`}
+        >
           <span class="place-icon" aria-hidden="true">
             {#if index === 0}
               <svg viewBox="0 0 128 128" focusable="false">
@@ -134,7 +139,7 @@
           </span>
           <span class="rank mono">#{index + 1}</span>
           <strong>{player.name}</strong>
-          <span class:masked={!revealed} class="score mono">{player.score} pts</span>
+          <span class:masked={!revealed} class="score mono" aria-hidden={!revealed}>{player.score} pts</span>
         </article>
       {/each}
     </section>
@@ -149,10 +154,15 @@
       </div>
 
       {#each resultsData as player, index}
-        <article class:leader={index === 0} class="row">
+        <article
+          class:leader={index === 0}
+          class="row"
+          aria-label={`${index + 1}e place : ${player.name}, ${revealed ? `${player.score} points` : 'score masqué'}`}
+          style={`--row-delay:${Math.min(index, 10) * 38}ms;`}
+        >
           <span class="rank-badge mono">{index + 1}</span>
           <strong>{player.name}</strong>
-          <span class:masked={!revealed} class="row-score mono">{player.score} pts</span>
+          <span class:masked={!revealed} class="row-score mono" aria-hidden={!revealed}>{player.score} pts</span>
         </article>
       {/each}
     </section>
@@ -283,7 +293,12 @@
     color: var(--paper);
     padding: 18px;
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.24);
-    animation: podium-in 420ms cubic-bezier(0.16, 1.1, 0.3, 1) both;
+    animation: podium-in 460ms cubic-bezier(0.16, 1.1, 0.3, 1) both;
+    animation-delay: var(--place-delay, 0ms);
+    transition:
+      border-color 200ms ease,
+      transform 200ms ease,
+      box-shadow 200ms ease;
   }
 
   .place::before {
@@ -301,6 +316,12 @@
   .place > * {
     position: relative;
     z-index: 1;
+  }
+
+  .place:hover {
+    border-color: color-mix(in srgb, var(--place-a) 58%, rgba(255, 250, 240, 0.24));
+    transform: translateY(-3px);
+    box-shadow: 0 30px 72px rgba(0, 0, 0, 0.3);
   }
 
   .place-1 {
@@ -434,7 +455,17 @@
     border-radius: 8px;
     background: rgba(255, 250, 240, 0.07);
     padding: 10px 12px;
-    animation: rise-in 280ms var(--ease-pop) both;
+    animation: rise-in 320ms var(--ease-pop) both;
+    animation-delay: var(--row-delay, 0ms);
+    transition:
+      border-color 180ms ease,
+      background 180ms ease,
+      transform 180ms ease;
+  }
+
+  .row:hover {
+    border-color: rgba(248, 243, 74, 0.26);
+    transform: translateY(-2px);
   }
 
   .leader {
