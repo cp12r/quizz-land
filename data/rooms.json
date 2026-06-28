@@ -1,230 +1,297 @@
 [
   {
-    "id": "q1",
-    "category": "gaming",
-    "text": "Quel personnage porte un masque représentant un crâne dans Call of Duty ?",
-    "answers": [
-      "Ghost",
-      "Soap",
-      "Price",
-      "Gaz"
+    "id": "GPQUIZ",
+    "name": "Quiz Gaming Pop Culture",
+    "hostId": null,
+    "status": "waiting",
+    "currentQuestion": -1,
+    "roundEndsAt": null,
+    "finishedAt": null,
+    "deleteAfter": null,
+    "config": {
+      "categories": [],
+      "questionCount": 19,
+      "requestedQuestionCount": 19,
+      "availableQuestionCount": 19,
+      "minQuestionCount": 1,
+      "timePerQuestion": 30,
+      "bonusTimer": true,
+      "themeId": "arcade",
+      "themeName": "Arcade",
+      "customQuestionCount": 19
+    },
+    "players": [],
+    "answers": [],
+    "customQuestions": [
+      {
+        "id": "q1",
+        "category": "gaming",
+        "text": "Quel personnage porte un masque représentant un crâne dans Call of Duty ?",
+        "answers": ["Ghost", "Soap", "Price", "Gaz"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q2",
+        "category": "pokemon",
+        "text": "Quel Pokémon porte le numéro 1 du Pokédex ?",
+        "answers": ["Bulbizarre", "Pikachu", "Salamèche", "Carapuce"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q3",
+        "category": "gaming",
+        "text": "Qui est Matt dans Wii Sports ?",
+        "answers": ["Le champion de boxe", "Le coach de tennis", "Le créateur du jeu", "Le commentateur"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q4",
+        "category": "gaming",
+        "text": "Quelle est la console la plus vendue de tous les temps ?",
+        "answers": ["PlayStation 2", "Nintendo Switch", "Nintendo DS", "PlayStation 4"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q5",
+        "category": "cinema",
+        "text": "Comment s'appelle le clown dans le film Ça ?",
+        "answers": ["Pennywise", "Joker", "Art", "Bozo"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q6",
+        "category": "serie",
+        "text": "Quelle maison de Harry Potter a le jaune comme couleur principale ?",
+        "answers": ["Gryffondor", "Serpentard", "Serdaigle", "Poufsouffle"],
+        "correctIndex": 3
+      },
+      {
+        "id": "q7",
+        "category": "gaming",
+        "text": "Le célèbre Code Konami commence par quelle combinaison ?",
+        "answers": ["Haut, Haut, Bas, Bas", "Gauche, Droite, Gauche, Droite", "Bas, Bas, Haut, Haut", "A, B, X, Y"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q8",
+        "category": "gaming",
+        "text": "Dans Mario Kart, quel objet est célèbre pour renverser le premier de la course ?",
+        "answers": ["Carapace bleue", "Carapace rouge", "Éclair", "Bob-omb"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q9",
+        "category": "pokemon",
+        "text": "Quel Pokémon refuse de rentrer dans sa Poké Ball dans l'animé ?",
+        "answers": ["Pikachu", "Salamèche", "Rondoudou", "Miaouss"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q10",
+        "category": "gaming",
+        "text": "Quelle carte de Call of Duty est devenue culte pour les duels de sniper en 1 contre 1 ?",
+        "answers": ["Rust", "Shipment", "Nuketown", "Terminal"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q11",
+        "category": "gaming",
+        "text": "D'où vient le célèbre « Press F to Pay Respects » ?",
+        "answers": ["Call of Duty: Advanced Warfare", "Battlefield 4", "GTA V", "Counter-Strike"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q12",
+        "category": "gaming",
+        "text": "Quelle arme était surnommée le « Noob Tube » dans les anciens Call of Duty ?",
+        "answers": ["Le lance-grenades M203", "Le RPG-7", "L'Intervention", "Le SPAS-12"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q13",
+        "category": "science",
+        "text": "Combien d'os possède le corps humain à l'âge adulte ?",
+        "answers": ["206", "201", "212", "220"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q14",
+        "category": "youtube",
+        "text": "Quel YouTubeur français est à l'origine du GP Explorer ?",
+        "answers": ["Squeezie", "Inoxtag", "Michou", "Amixem"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q15",
+        "category": "marvel",
+        "text": "Comment s'appelle le marteau de Thor ?",
+        "answers": ["Mjolnir", "Stormbreaker", "Excalibur", "Gungnir"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q16",
+        "category": "gaming",
+        "text": "Dans GTA V, comment s'appelle la ville principale ?",
+        "answers": ["Los Santos", "Vice City", "Liberty City", "San Fierro"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q17",
+        "category": "gaming",
+        "text": "Quel personnage répète sans arrêt « Hey! Listen! » ?",
+        "answers": ["Navi", "Zelda", "Link", "Tingle"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q18",
+        "category": "pokemon",
+        "text": "Comment appelle-t-on un Pokémon d'une couleur extrêmement rare ?",
+        "answers": ["Shiny", "Alpha", "Légendaire", "Fusion"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q19",
+        "category": "cinema",
+        "text": "Quel film a rapporté le plus d'argent au box-office mondial ?",
+        "answers": ["Avatar", "Avengers: Endgame", "Titanic", "Star Wars VII"],
+        "correctIndex": 0
+      }
     ],
-    "correctIndex": 0
-  },
-  {
-    "id": "q2",
-    "category": "pokemon",
-    "text": "Quel Pokémon porte le numéro 1 du Pokédex ?",
-    "answers": [
-      "Bulbizarre",
-      "Pikachu",
-      "Salamèche",
-      "Carapuce"
+    "questions": [
+      {
+        "id": "q1",
+        "category": "gaming",
+        "text": "Quel personnage porte un masque représentant un crâne dans Call of Duty ?",
+        "answers": ["Ghost", "Soap", "Price", "Gaz"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q2",
+        "category": "pokemon",
+        "text": "Quel Pokémon porte le numéro 1 du Pokédex ?",
+        "answers": ["Bulbizarre", "Pikachu", "Salamèche", "Carapuce"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q3",
+        "category": "gaming",
+        "text": "Qui est Matt dans Wii Sports ?",
+        "answers": ["Le champion de boxe", "Le coach de tennis", "Le créateur du jeu", "Le commentateur"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q4",
+        "category": "gaming",
+        "text": "Quelle est la console la plus vendue de tous les temps ?",
+        "answers": ["PlayStation 2", "Nintendo Switch", "Nintendo DS", "PlayStation 4"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q5",
+        "category": "cinema",
+        "text": "Comment s'appelle le clown dans le film Ça ?",
+        "answers": ["Pennywise", "Joker", "Art", "Bozo"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q6",
+        "category": "serie",
+        "text": "Quelle maison de Harry Potter a le jaune comme couleur principale ?",
+        "answers": ["Gryffondor", "Serpentard", "Serdaigle", "Poufsouffle"],
+        "correctIndex": 3
+      },
+      {
+        "id": "q7",
+        "category": "gaming",
+        "text": "Le célèbre Code Konami commence par quelle combinaison ?",
+        "answers": ["Haut, Haut, Bas, Bas", "Gauche, Droite, Gauche, Droite", "Bas, Bas, Haut, Haut", "A, B, X, Y"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q8",
+        "category": "gaming",
+        "text": "Dans Mario Kart, quel objet est célèbre pour renverser le premier de la course ?",
+        "answers": ["Carapace bleue", "Carapace rouge", "Éclair", "Bob-omb"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q9",
+        "category": "pokemon",
+        "text": "Quel Pokémon refuse de rentrer dans sa Poké Ball dans l'animé ?",
+        "answers": ["Pikachu", "Salamèche", "Rondoudou", "Miaouss"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q10",
+        "category": "gaming",
+        "text": "Quelle carte de Call of Duty est devenue culte pour les duels de sniper en 1 contre 1 ?",
+        "answers": ["Rust", "Shipment", "Nuketown", "Terminal"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q11",
+        "category": "gaming",
+        "text": "D'où vient le célèbre « Press F to Pay Respects » ?",
+        "answers": ["Call of Duty: Advanced Warfare", "Battlefield 4", "GTA V", "Counter-Strike"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q12",
+        "category": "gaming",
+        "text": "Quelle arme était surnommée le « Noob Tube » dans les anciens Call of Duty ?",
+        "answers": ["Le lance-grenades M203", "Le RPG-7", "L'Intervention", "Le SPAS-12"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q13",
+        "category": "science",
+        "text": "Combien d'os possède le corps humain à l'âge adulte ?",
+        "answers": ["206", "201", "212", "220"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q14",
+        "category": "youtube",
+        "text": "Quel YouTubeur français est à l'origine du GP Explorer ?",
+        "answers": ["Squeezie", "Inoxtag", "Michou", "Amixem"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q15",
+        "category": "marvel",
+        "text": "Comment s'appelle le marteau de Thor ?",
+        "answers": ["Mjolnir", "Stormbreaker", "Excalibur", "Gungnir"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q16",
+        "category": "gaming",
+        "text": "Dans GTA V, comment s'appelle la ville principale ?",
+        "answers": ["Los Santos", "Vice City", "Liberty City", "San Fierro"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q17",
+        "category": "gaming",
+        "text": "Quel personnage répète sans arrêt « Hey! Listen! » ?",
+        "answers": ["Navi", "Zelda", "Link", "Tingle"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q18",
+        "category": "pokemon",
+        "text": "Comment appelle-t-on un Pokémon d'une couleur extrêmement rare ?",
+        "answers": ["Shiny", "Alpha", "Légendaire", "Fusion"],
+        "correctIndex": 0
+      },
+      {
+        "id": "q19",
+        "category": "cinema",
+        "text": "Quel film a rapporté le plus d'argent au box-office mondial ?",
+        "answers": ["Avatar", "Avengers: Endgame", "Titanic", "Star Wars VII"],
+        "correctIndex": 0
+      }
     ],
-    "correctIndex": 0
-  },
-  {
-    "id": "q3",
-    "category": "gaming",
-    "text": "Qui est Matt dans Wii Sports ?",
-    "answers": [
-      "Le champion de boxe",
-      "Le coach de tennis",
-      "Le créateur du jeu",
-      "Le commentateur"
-    ],
-    "correctIndex": 0
-  },
-  {
-    "id": "q4",
-    "category": "gaming",
-    "text": "Quelle est la console la plus vendue de tous les temps ?",
-    "answers": [
-      "PlayStation 2",
-      "Nintendo Switch",
-      "Nintendo DS",
-      "PlayStation 4"
-    ],
-    "correctIndex": 0
-  },
-  {
-    "id": "q5",
-    "category": "cinema",
-    "text": "Comment s'appelle le clown dans le film Ça ?",
-    "answers": [
-      "Pennywise",
-      "Joker",
-      "Art",
-      "Bozo"
-    ],
-    "correctIndex": 0
-  },
-  {
-    "id": "q6",
-    "category": "serie",
-    "text": "Quelle maison de Harry Potter a le jaune comme couleur principale ?",
-    "answers": [
-      "Gryffondor",
-      "Serpentard",
-      "Serdaigle",
-      "Poufsouffle"
-    ],
-    "correctIndex": 3
-  },
-  {
-    "id": "q7",
-    "category": "gaming",
-    "text": "Le célèbre Code Konami commence par quelle combinaison ?",
-    "answers": [
-      "Haut, Haut, Bas, Bas",
-      "Gauche, Droite, Gauche, Droite",
-      "Bas, Bas, Haut, Haut",
-      "A, B, X, Y"
-    ],
-    "correctIndex": 0
-  },
-  {
-    "id": "q8",
-    "category": "gaming",
-    "text": "Dans Mario Kart, quel objet est célèbre pour renverser le premier de la course ?",
-    "answers": [
-      "Carapace bleue",
-      "Carapace rouge",
-      "Éclair",
-      "Bob-omb"
-    ],
-    "correctIndex": 0
-  },
-  {
-    "id": "q9",
-    "category": "pokemon",
-    "text": "Quel Pokémon refuse de rentrer dans sa Poké Ball dans l'animé ?",
-    "answers": [
-      "Pikachu",
-      "Salamèche",
-      "Rondoudou",
-      "Miaouss"
-    ],
-    "correctIndex": 0
-  },
-  {
-    "id": "q10",
-    "category": "gaming",
-    "text": "Quelle carte de Call of Duty est devenue culte pour les duels de sniper en 1 contre 1 ?",
-    "answers": [
-      "Rust",
-      "Shipment",
-      "Nuketown",
-      "Terminal"
-    ],
-    "correctIndex": 0
-  },
-  {
-    "id": "q11",
-    "category": "gaming",
-    "text": "D'où vient le célèbre « Press F to Pay Respects » ?",
-    "answers": [
-      "Call of Duty: Advanced Warfare",
-      "Battlefield 4",
-      "GTA V",
-      "Counter-Strike"
-    ],
-    "correctIndex": 0
-  },
-  {
-    "id": "q12",
-    "category": "gaming",
-    "text": "Quelle arme était surnommée le « Noob Tube » dans les anciens Call of Duty ?",
-    "answers": [
-      "Le lance-grenades M203",
-      "Le RPG-7",
-      "L'Intervention",
-      "Le SPAS-12"
-    ],
-    "correctIndex": 0
-  },
-  {
-    "id": "q13",
-    "category": "science",
-    "text": "Combien d'os possède le corps humain à l'âge adulte ?",
-    "answers": [
-      "206",
-      "201",
-      "212",
-      "220"
-    ],
-    "correctIndex": 0
-  },
-  {
-    "id": "q14",
-    "category": "youtube",
-    "text": "Quel YouTubeur français est à l'origine du GP Explorer ?",
-    "answers": [
-      "Squeezie",
-      "Inoxtag",
-      "Michou",
-      "Amixem"
-    ],
-    "correctIndex": 0
-  },
-  {
-    "id": "q15",
-    "category": "marvel",
-    "text": "Comment s'appelle le marteau de Thor ?",
-    "answers": [
-      "Mjolnir",
-      "Stormbreaker",
-      "Excalibur",
-      "Gungnir"
-    ],
-    "correctIndex": 0
-  },
-  {
-    "id": "q16",
-    "category": "gaming",
-    "text": "Dans GTA V, comment s'appelle la ville principale ?",
-    "answers": [
-      "Los Santos",
-      "Vice City",
-      "Liberty City",
-      "San Fierro"
-    ],
-    "correctIndex": 0
-  },
-  {
-    "id": "q17",
-    "category": "gaming",
-    "text": "Quel personnage répète sans arrêt « Hey! Listen! » ?",
-    "answers": [
-      "Navi",
-      "Zelda",
-      "Link",
-      "Tingle"
-    ],
-    "correctIndex": 0
-  },
-  {
-    "id": "q18",
-    "category": "pokemon",
-    "text": "Comment appelle-t-on un Pokémon d'une couleur extrêmement rare ?",
-    "answers": [
-      "Shiny",
-      "Alpha",
-      "Légendaire",
-      "Fusion"
-    ],
-    "correctIndex": 0
-  },
-  {
-    "id": "q19",
-    "category": "cinema",
-    "text": "Quel film a rapporté le plus d'argent au box-office mondial ?",
-    "answers": [
-      "Avatar",
-      "Avengers: Endgame",
-      "Titanic",
-      "Star Wars VII"
-    ],
-    "correctIndex": 0
+    "createdAt": "2099-01-01T00:00:00.000Z"
   }
 ]
