@@ -76,6 +76,7 @@
   $: estimatedDuration = Math.max(1, Math.ceil((Math.max(1, effectiveQuestionCount) * timePerQuestion) / 60));
   $: customCountLabel = customCount === 1 ? '1 question perso' : `${customCount} questions perso`;
   $: activeDraft = customDrafts.find((draft) => draft.id === activeDraftId) || customDrafts[0];
+  $: activeDraftIndex = Math.max(0, customDrafts.findIndex((draft) => draft.id === activeDraft?.id));
   $: activeDraftState = activeDraft ? getDraftState(activeDraft) : null;
   $: categoryLabel = selectedCategories.length
     ? selectedCategories.map((category) => readableCategory(category)).join(' + ')
@@ -194,15 +195,18 @@
   }
 
   function removeDraft(id) {
+    const removedIndex = customDrafts.findIndex((draft) => draft.id === id);
+
     if (customDrafts.length === 1) {
       customDrafts = [createQuestionDraft()];
       activeDraftId = customDrafts[0].id;
+      playSound('ui');
       return;
     }
 
     const nextDrafts = customDrafts.filter((draft) => draft.id !== id);
     customDrafts = nextDrafts;
-    activeDraftId = nextDrafts[0]?.id;
+    activeDraftId = nextDrafts[Math.max(0, Math.min(removedIndex, nextDrafts.length - 1))]?.id;
     playSound('ui');
   }
 
@@ -541,15 +545,27 @@
       <div class="draft-strip" aria-label="Questions personnalisées">
         {#each customDrafts as draft, index}
           {@const state = getDraftState(draft)}
-          <button
-            type="button"
-            class:active={activeDraftId === draft.id}
-            class:ready={state.ready}
-            on:click={() => (activeDraftId = draft.id)}
-          >
-            <span>Q{index + 1}</span>
-            <strong>{state.label}</strong>
-          </button>
+          <div class:active={activeDraftId === draft.id} class:ready={state.ready} class="draft-item">
+            <button
+              type="button"
+              class="draft-select"
+              on:click={() => (activeDraftId = draft.id)}
+              aria-label={`Modifier la question ${index + 1}`}
+            >
+              <span>Q{index + 1}</span>
+              <strong>{state.label}</strong>
+              <em>{draft.text.trim() || 'Question vide'}</em>
+            </button>
+            <button
+              type="button"
+              class="draft-delete"
+              on:click={() => removeDraft(draft.id)}
+              aria-label={`Supprimer la question ${index + 1}`}
+              title="Supprimer"
+            >
+              x
+            </button>
+          </div>
         {/each}
       </div>
 
@@ -557,6 +573,14 @@
         <div class:ready={activeDraftState?.ready} class="lab-status">
           <span>{activeDraftState?.label}</span>
           <strong>{activeDraftState?.detail}</strong>
+        </div>
+
+        <div class="active-draft-toolbar">
+          <span class="mono">Question {activeDraftIndex + 1}/{customDrafts.length}</span>
+          <div>
+            <button type="button" on:click={() => duplicateDraft(activeDraft.id)}>Dupliquer</button>
+            <button type="button" class="danger" on:click={() => removeDraft(activeDraft.id)}>Supprimer</button>
+          </div>
         </div>
 
         <div class="builder-grid">
@@ -624,10 +648,12 @@
             </label>
           </div>
 
-          <div class="draft-actions">
-            <button type="button" on:click={() => duplicateDraft(activeDraft.id)}>Dupliquer</button>
-            <button type="button" on:click={() => removeDraft(activeDraft.id)}>Retirer</button>
-          </div>
+          {#if activeDraft.image.trim()}
+            <figure class="image-preview">
+              <img src={activeDraft.image.trim()} alt={activeDraft.imageAlt.trim() || 'Aperçu de l’image'} loading="lazy" />
+              <figcaption>{activeDraft.imageAlt.trim() || 'Aperçu image'}</figcaption>
+            </figure>
+          {/if}
         </div>
       {/if}
 
@@ -949,7 +975,7 @@
   .flip-toggle:focus-visible,
   .add-card:focus-visible,
   .draft-strip button:focus-visible,
-  .draft-actions button:focus-visible,
+  .active-draft-toolbar button:focus-visible,
   .answer-key:focus-visible {
     outline: 2px solid var(--yellow);
     outline-offset: 4px;
@@ -1632,47 +1658,93 @@
     padding-bottom: 4px;
   }
 
-  .draft-strip button {
-    flex: 0 0 108px;
+  .draft-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 34px;
+    flex: 0 0 178px;
     min-height: 62px;
     border: 1px solid rgba(230, 232, 239, 0.18);
     border-radius: 8px;
-    padding: 10px;
     background: rgba(230, 232, 239, 0.07);
-    color: var(--paper);
-    text-align: left;
+    overflow: hidden;
     transition:
       transform 180ms ease,
       background 180ms ease,
       border-color 180ms ease;
   }
 
-  .draft-strip span,
-  .draft-strip strong {
-    display: block;
+  .draft-select,
+  .draft-delete {
+    border: 0;
+    background: transparent;
+    color: var(--paper);
   }
 
-  .draft-strip span {
+  .draft-select {
+    display: grid;
+    min-width: 0;
+    gap: 3px;
+    align-content: center;
+    padding: 10px;
+    text-align: left;
+  }
+
+  .draft-delete {
+    display: grid;
+    min-height: 100%;
+    place-items: center;
+    border-left: 1px solid rgba(230, 232, 239, 0.12);
+    color: rgba(230, 232, 239, 0.64);
+    font-size: 1rem;
+    font-weight: 950;
+    text-transform: uppercase;
+  }
+
+  .draft-select span,
+  .draft-select strong,
+  .draft-select em {
+    display: block;
+    min-width: 0;
+  }
+
+  .draft-select span {
     font-size: 1.2rem;
     font-weight: 950;
   }
 
-  .draft-strip strong {
+  .draft-select strong {
     color: var(--paper-dim);
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.68rem;
     text-transform: uppercase;
   }
 
-  .draft-strip button:hover,
-  .draft-strip button.active {
+  .draft-select em {
+    overflow: hidden;
+    color: rgba(230, 232, 239, 0.54);
+    font-size: 0.72rem;
+    font-style: normal;
+    font-weight: 800;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .draft-item:hover,
+  .draft-item.active {
     border-color: rgba(57, 213, 255, 0.54);
     background: rgba(57, 213, 255, 0.14);
     transform: translateY(-3px);
   }
 
-  .draft-strip button.ready strong {
+  .draft-item.ready .draft-select strong {
     color: var(--lime);
+  }
+
+  .draft-delete:hover,
+  .draft-delete:focus-visible {
+    background: rgba(229, 57, 53, 0.22);
+    color: var(--paper);
   }
 
   .lab-status {
@@ -1718,6 +1790,62 @@
 
   .lab-status.ready strong {
     color: var(--lime);
+  }
+
+  .active-draft-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border: 1px solid rgba(230, 232, 239, 0.14);
+    border-radius: 8px;
+    padding: 10px;
+    background: rgba(230, 232, 239, 0.055);
+  }
+
+  .active-draft-toolbar > span {
+    color: var(--yellow);
+    font-size: 0.74rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .active-draft-toolbar div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .active-draft-toolbar button {
+    min-height: 40px;
+    border: 1px solid rgba(230, 232, 239, 0.2);
+    border-radius: 8px;
+    padding: 0 12px;
+    background: rgba(230, 232, 239, 0.08);
+    color: var(--paper);
+    font-weight: 900;
+    text-transform: uppercase;
+    transition:
+      transform 180ms ease,
+      background 180ms ease,
+      border-color 180ms ease;
+  }
+
+  .active-draft-toolbar button:hover {
+    background: var(--paper);
+    color: var(--ink);
+    transform: translateY(-2px);
+  }
+
+  .active-draft-toolbar .danger {
+    border-color: rgba(229, 57, 53, 0.38);
+    color: #ffb7c5;
+  }
+
+  .active-draft-toolbar .danger:hover {
+    background: var(--hot);
+    color: white;
   }
 
   .builder-grid {
@@ -1826,30 +1954,29 @@
     background: rgba(230, 232, 239, 0.055);
   }
 
-  .draft-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+  .image-preview {
+    display: grid;
+    gap: 8px;
+    overflow: hidden;
+    margin: 0;
+    border: 1px solid rgba(230, 232, 239, 0.14);
+    border-radius: 8px;
+    background: rgba(11, 16, 32, 0.42);
   }
 
-  .draft-actions button {
-    min-height: 44px;
-    border: 1px solid rgba(230, 232, 239, 0.2);
-    border-radius: 8px;
-    padding: 0 14px;
-    background: rgba(230, 232, 239, 0.08);
-    color: var(--paper);
+  .image-preview img {
+    width: 100%;
+    max-height: 260px;
+    object-fit: cover;
+  }
+
+  .image-preview figcaption {
+    padding: 0 12px 12px;
+    color: var(--paper-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
     font-weight: 900;
     text-transform: uppercase;
-    transition:
-      transform 180ms ease,
-      background 180ms ease;
-  }
-
-  .draft-actions button:hover {
-    background: var(--paper);
-    color: var(--ink);
-    transform: translateY(-3px);
   }
 
   .json-sync {
