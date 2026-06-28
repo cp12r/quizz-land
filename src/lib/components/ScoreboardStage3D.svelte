@@ -56,19 +56,19 @@
     }
     host.appendChild(renderer.domElement);
 
-    const ink = getCssColor('--color-ink', '#17151b');
-    const hot = getCssColor('--color-accent', '#ff4f79');
-    const cyan = getCssColor('--color-cyan', '#02a6a6');
-    const yellow = getCssColor('--color-yellow', '#ffd166');
-    const mint = getCssColor('--color-mint', '#38d996');
-    const paper = '#fffaf0';
+    const ink = getCssColor('--color-ink', '#0b1020');
+    const hot = getCssColor('--color-accent', '#e53935');
+    const cyan = getCssColor('--color-cyan', '#39d5ff');
+    const yellow = getCssColor('--color-yellow', '#ffd54a');
+    const mint = getCssColor('--color-mint', '#36d27c');
+    const paper = '#e6e8ef';
     const bronze = '#c97b47';
     const silver = '#dce7ea';
     const gold = yellow;
     const palette = [gold, cyan, hot, mint, paper, bronze];
     const textures = [];
 
-    scene.add(new THREE.HemisphereLight(0xfff2cf, 0x1b1730, lowPower ? 0.62 : 0.48));
+    scene.add(new THREE.HemisphereLight(0xfff1b4, 0x0b1020, lowPower ? 0.66 : 0.54));
 
     const key = new THREE.DirectionalLight(0xffdfaa, lowPower ? 1.1 : 1.45);
     key.position.set(-2.8, 5.4, 4.9);
@@ -84,7 +84,7 @@
     }
     scene.add(key);
 
-    const rim = new THREE.DirectionalLight(0x8ee9ff, 0.38);
+    const rim = new THREE.DirectionalLight(0xff5a5f, 0.42);
     rim.position.set(3.8, 2.6, -3.7);
     scene.add(rim);
 
@@ -118,15 +118,15 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 128">
           <defs>
             <linearGradient id="shine" x1="0" x2="1" y1="0" y2="1">
-              <stop offset="0" stop-color="#fffaf0" stop-opacity=".86"/>
+              <stop offset="0" stop-color="#e6e8ef" stop-opacity=".86"/>
               <stop offset=".42" stop-color="${color}" stop-opacity=".96"/>
               <stop offset="1" stop-color="${accent}" stop-opacity=".86"/>
             </linearGradient>
           </defs>
           <path d="M23 18h171l39 31v55H62l-39-31V18Z" fill="url(#shine)"/>
-          <path d="M23 18h171l39 31v55H62l-39-31V18Z" fill="none" stroke="#17151b" stroke-opacity=".52" stroke-width="7"/>
-          <path d="M44 31h132" stroke="#17151b" stroke-opacity=".22" stroke-width="5" stroke-linecap="round"/>
-          <text x="128" y="86" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="52" font-weight="900" fill="#17151b">#${rank}</text>
+          <path d="M23 18h171l39 31v55H62l-39-31V18Z" fill="none" stroke="#0b1020" stroke-opacity=".52" stroke-width="7"/>
+          <path d="M44 31h132" stroke="#0b1020" stroke-opacity=".22" stroke-width="5" stroke-linecap="round"/>
+          <text x="128" y="86" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="52" font-weight="900" fill="#0b1020">#${rank}</text>
         </svg>
       `;
     }
@@ -135,7 +135,7 @@
       return `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
           <path d="m48 8 10 26 28 3-22 18 7 27-23-15-23 15 7-27-22-18 28-3L48 8Z" fill="${color}"/>
-          <path d="m48 8 10 26 28 3-22 18 7 27-23-15-23 15 7-27-22-18 28-3L48 8Z" fill="none" stroke="#17151b" stroke-opacity=".35" stroke-width="5" stroke-linejoin="round"/>
+          <path d="m48 8 10 26 28 3-22 18 7 27-23-15-23 15 7-27-22-18 28-3L48 8Z" fill="none" stroke="#0b1020" stroke-opacity=".35" stroke-width="5" stroke-linejoin="round"/>
         </svg>
       `;
     }
@@ -144,7 +144,7 @@
       const icons = {
         1: `
           <path d="M24 47 40 64l24-35 24 35 16-17 7 48H17l7-48Z" fill="${color}"/>
-          <path d="M33 90h62" stroke="#17151b" stroke-opacity=".6" stroke-width="8" stroke-linecap="round"/>
+          <path d="M33 90h62" stroke="#0b1020" stroke-opacity=".6" stroke-width="8" stroke-linecap="round"/>
           <circle cx="64" cy="29" r="8" fill="${accent}"/>
           <circle cx="24" cy="47" r="7" fill="${accent}"/>
           <circle cx="104" cy="47" r="7" fill="${accent}"/>
@@ -152,13 +152,13 @@
         2: `
           <path d="M72 18c18 6 31 24 34 45L82 87 58 63 72 18Z" fill="${color}"/>
           <path d="M58 63 35 69l17 17-6 24 24-7 12-16-24-24Z" fill="${accent}"/>
-          <circle cx="78" cy="49" r="10" fill="#fffaf0"/>
-          <circle cx="78" cy="49" r="10" fill="none" stroke="#17151b" stroke-opacity=".45" stroke-width="5"/>
+          <circle cx="78" cy="49" r="10" fill="#e6e8ef"/>
+          <circle cx="78" cy="49" r="10" fill="none" stroke="#0b1020" stroke-opacity=".45" stroke-width="5"/>
           <path d="M40 88 24 104M52 98l-9 13" stroke="${color}" stroke-width="8" stroke-linecap="round"/>
         `,
         3: `
           <path d="M73 13 28 73h30l-8 42 50-67H69l4-35Z" fill="${color}"/>
-          <path d="M73 13 28 73h30l-8 42 50-67H69l4-35Z" fill="none" stroke="#17151b" stroke-opacity=".48" stroke-width="8" stroke-linejoin="round"/>
+          <path d="M73 13 28 73h30l-8 42 50-67H69l4-35Z" fill="none" stroke="#0b1020" stroke-opacity=".48" stroke-width="8" stroke-linejoin="round"/>
           <path d="M30 35 18 26M102 91l13 10M101 26l12-9" stroke="${accent}" stroke-width="8" stroke-linecap="round"/>
         `
       };
@@ -167,7 +167,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
           <defs>
             <radialGradient id="iconGlow" cx="35%" cy="28%" r="68%">
-              <stop offset="0" stop-color="#fffaf0" stop-opacity=".95"/>
+              <stop offset="0" stop-color="#e6e8ef" stop-opacity=".95"/>
               <stop offset=".42" stop-color="${color}" stop-opacity=".84"/>
               <stop offset="1" stop-color="${accent}" stop-opacity=".68"/>
             </radialGradient>
@@ -180,14 +180,14 @@
 
     function podiumGlyphSvg(rank, color, accent) {
       const crown = rank === 1
-        ? '<path d="M78 34 96 56l32-31 32 31 18-22 11 56H67l11-56Z" fill="#17151b" fill-opacity=".2"/><path d="M80 37 96 56l32-31 32 31 16-19 8 49H72l8-49Z" fill="#fffaf0" fill-opacity=".58"/>'
+        ? '<path d="M78 34 96 56l32-31 32 31 18-22 11 56H67l11-56Z" fill="#0b1020" fill-opacity=".2"/><path d="M80 37 96 56l32-31 32 31 16-19 8 49H72l8-49Z" fill="#e6e8ef" fill-opacity=".58"/>'
         : '';
 
       return `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 112">
           <defs>
             <linearGradient id="panel" x1="0" x2="1" y1="0" y2="1">
-              <stop offset="0" stop-color="#fffaf0" stop-opacity=".72"/>
+              <stop offset="0" stop-color="#e6e8ef" stop-opacity=".72"/>
               <stop offset=".46" stop-color="${color}" stop-opacity=".62"/>
               <stop offset="1" stop-color="${accent}" stop-opacity=".42"/>
             </linearGradient>
@@ -198,13 +198,13 @@
             </linearGradient>
           </defs>
           <path d="M20 17h216v78H20z" rx="18" fill="url(#panel)"/>
-          <path d="M20 17h216v78H20z" rx="18" fill="none" stroke="#17151b" stroke-opacity=".28" stroke-width="5"/>
+          <path d="M20 17h216v78H20z" rx="18" fill="none" stroke="#0b1020" stroke-opacity=".28" stroke-width="5"/>
           <path d="M40 76h176" stroke="url(#stripe)" stroke-width="9" stroke-linecap="round"/>
-          <path d="M54 40h42l18 16-18 16H54l18-16-18-16Zm106 0h42l-18 16 18 16h-42l-18-16 18-16Z" fill="#17151b" fill-opacity=".18"/>
+          <path d="M54 40h42l18 16-18 16H54l18-16-18-16Zm106 0h42l-18 16 18 16h-42l-18-16 18-16Z" fill="#0b1020" fill-opacity=".18"/>
           ${crown}
-          <circle cx="128" cy="56" r="23" fill="#17151b" fill-opacity=".22"/>
-          <circle cx="128" cy="56" r="18" fill="#fffaf0" fill-opacity=".68"/>
-          <text x="128" y="66" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="28" font-weight="900" fill="#17151b">${rank}</text>
+          <circle cx="128" cy="56" r="23" fill="#0b1020" fill-opacity=".22"/>
+          <circle cx="128" cy="56" r="18" fill="#e6e8ef" fill-opacity=".68"/>
+          <text x="128" y="66" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="28" font-weight="900" fill="#0b1020">${rank}</text>
         </svg>
       `;
     }
@@ -214,16 +214,16 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 160">
           <defs>
             <linearGradient id="medal" x1="0" x2="1" y1="0" y2="1">
-              <stop offset="0" stop-color="#fffaf0" stop-opacity=".82"/>
+              <stop offset="0" stop-color="#e6e8ef" stop-opacity=".82"/>
               <stop offset=".55" stop-color="${color}" stop-opacity=".72"/>
               <stop offset="1" stop-color="${accent}" stop-opacity=".48"/>
             </linearGradient>
           </defs>
           <path d="M24 12h80l-18 52H42L24 12Z" fill="${accent}" fill-opacity=".62"/>
           <circle cx="64" cy="94" r="39" fill="url(#medal)"/>
-          <circle cx="64" cy="94" r="39" fill="none" stroke="#17151b" stroke-opacity=".32" stroke-width="6"/>
-          <path d="M43 94h42M64 73v42" stroke="#17151b" stroke-opacity=".22" stroke-width="8" stroke-linecap="round"/>
-          <text x="64" y="105" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="34" font-weight="900" fill="#17151b">#${rank}</text>
+          <circle cx="64" cy="94" r="39" fill="none" stroke="#0b1020" stroke-opacity=".32" stroke-width="6"/>
+          <path d="M43 94h42M64 73v42" stroke="#0b1020" stroke-opacity=".22" stroke-width="8" stroke-linecap="round"/>
+          <text x="64" y="105" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="34" font-weight="900" fill="#0b1020">#${rank}</text>
         </svg>
       `;
     }
@@ -260,7 +260,7 @@
     }
 
     const islandTopMaterial = createMaterial({ color: ink, roughness: 0.68, metalness: 0.05, opacity: 0.94 });
-    const islandSideMaterial = createMaterial({ color: '#231a2c', roughness: 0.78, metalness: 0.04, opacity: 0.9 });
+    const islandSideMaterial = createMaterial({ color: '#171e31', roughness: 0.78, metalness: 0.04, opacity: 0.92 });
     const islandGlowMaterial = new THREE.MeshBasicMaterial({
       color: yellow,
       transparent: true,
@@ -751,21 +751,21 @@
 
 <style>
   .score-stage {
-    --stage-ink: #17151b;
-    --stage-paper: #fffaf0;
-    --stage-muted: rgba(255, 250, 240, 0.72);
-    --stage-line: rgba(255, 250, 240, 0.16);
+    --stage-ink: #0b1020;
+    --stage-paper: #e6e8ef;
+    --stage-muted: rgba(230, 232, 239, 0.72);
+    --stage-line: rgba(230, 232, 239, 0.16);
     position: relative;
     min-height: clamp(340px, 46svw, 540px);
     overflow: hidden;
     border: 1px solid var(--stage-line);
     border-radius: 8px;
     background:
-      radial-gradient(circle at 50% 79%, rgba(255, 209, 102, 0.2), transparent 37%),
-      radial-gradient(circle at 50% 18%, rgba(255, 250, 240, 0.12), transparent 34%),
-      linear-gradient(180deg, rgba(255, 250, 240, 0.08), rgba(255, 250, 240, 0.026)),
-      rgba(23, 21, 27, 0.55);
-    box-shadow: 0 30px 78px rgba(0, 0, 0, 0.3);
+      radial-gradient(circle at 50% 79%, rgba(255, 213, 74, 0.24), transparent 37%),
+      radial-gradient(circle at 50% 18%, rgba(229, 57, 53, 0.18), transparent 34%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.024)),
+      rgba(23, 30, 49, 0.62);
+    box-shadow: 0 32px 86px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
 
   .score-stage::before {
@@ -773,7 +773,7 @@
     position: absolute;
     inset: auto 9% 11% 9%;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 250, 240, 0.32), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 213, 74, 0.34), transparent);
   }
 
   .score-stage::after {
@@ -782,7 +782,7 @@
     inset: 10% 18% auto;
     height: 28%;
     pointer-events: none;
-    background: radial-gradient(ellipse at 50% 50%, rgba(255, 209, 102, 0.14), transparent 68%);
+    background: radial-gradient(ellipse at 50% 50%, rgba(255, 213, 74, 0.18), transparent 68%);
     opacity: 0;
     transition: opacity 500ms ease;
   }
@@ -818,11 +818,11 @@
     min-height: var(--fallback-score);
     place-items: center;
     overflow: hidden;
-    border: 1px solid rgba(255, 250, 240, 0.18);
+    border: 1px solid rgba(230, 232, 239, 0.18);
     border-radius: 8px 8px 3px 3px;
     background:
-      linear-gradient(180deg, rgba(255, 250, 240, 0.22), rgba(255, 250, 240, 0.05)),
-      rgba(23, 21, 27, 0.78);
+      linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.04)),
+      rgba(23, 30, 49, 0.82);
     transform: translateY(18px);
     transition: transform 520ms cubic-bezier(0.16, 1.25, 0.3, 1);
   }

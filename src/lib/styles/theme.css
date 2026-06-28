@@ -1,32 +1,34 @@
 :root {
-  color-scheme: light;
-  --color-ink: #15131f;
-  --color-muted: #676173;
-  --color-navy: #22213a;
-  --color-blue: #2563eb;
-  --color-cyan: #02a6a6;
-  --color-accent: #ff4f79;
-  --color-accent-strong: #df2456;
-  --color-yellow: #ffd166;
-  --color-mint: #38d996;
-  --color-lilac: #8b5cf6;
-  --color-success: #12825c;
-  --color-danger: #d92d55;
-  --color-warning: #b7791f;
-  --gray-50: #fbfaf7;
-  --gray-100: #f4f2ec;
-  --gray-200: #e6e1d8;
-  --gray-300: #d5cfc4;
-  --gray-600: #676173;
-  --gray-900: #15131f;
-  --surface: #ffffff;
-  --surface-raised: rgba(255, 255, 255, 0.86);
-  --surface-tint: #fff7fb;
-  --border-soft: rgba(21, 19, 31, 0.11);
-  --shadow-card: 0 18px 48px rgba(37, 34, 54, 0.12);
-  --shadow-soft: 0 8px 24px rgba(37, 34, 54, 0.10);
-  --shadow-pop: 0 14px 30px rgba(255, 79, 121, 0.24);
-  --radius-button: 8px;
+  color-scheme: dark;
+  --color-ink: #0b1020;
+  --color-muted: #8b93a6;
+  --color-navy: #171e31;
+  --color-blue: #212a45;
+  --color-cyan: #39d5ff;
+  --color-accent: #e53935;
+  --color-accent-strong: #c62828;
+  --color-accent-soft: #ff5a5f;
+  --color-yellow: #ffd54a;
+  --color-mint: #36d27c;
+  --color-lilac: #7c5cff;
+  --color-success: #36d27c;
+  --color-danger: #e53935;
+  --color-warning: #ffd54a;
+  --gray-50: #e6e8ef;
+  --gray-100: #c8cedc;
+  --gray-200: #8b93a6;
+  --gray-300: #5c667f;
+  --gray-600: #8b93a6;
+  --gray-900: #e6e8ef;
+  --surface: #171e31;
+  --surface-raised: rgba(33, 42, 69, 0.82);
+  --surface-elevated: #212a45;
+  --surface-tint: rgba(229, 57, 53, 0.12);
+  --border-soft: rgba(230, 232, 239, 0.13);
+  --shadow-card: 0 24px 70px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --shadow-soft: 0 12px 34px rgba(0, 0, 0, 0.28);
+  --shadow-pop: 0 16px 34px rgba(229, 57, 53, 0.32), 0 0 34px rgba(255, 90, 95, 0.16);
+  --radius-button: 14px;
   --radius-card: 16px;
   --radius-panel: 24px;
   --space-page: clamp(16px, 4svw, 48px);
@@ -36,43 +38,43 @@
 }
 
 .theme-neon {
-  --color-blue: #2563eb;
-  --color-cyan: #02a6a6;
-  --color-accent: #ff4f79;
-  --color-accent-strong: #df2456;
-  --color-yellow: #ffd166;
-  --surface-tint: #fff7fb;
+  --color-blue: #212a45;
+  --color-cyan: #39d5ff;
+  --color-accent: #e53935;
+  --color-accent-strong: #c62828;
+  --color-yellow: #ffd54a;
+  --surface-tint: rgba(229, 57, 53, 0.12);
 }
 
 .theme-candy {
-  --color-blue: #7c3aed;
-  --color-cyan: #f97316;
-  --color-accent: #ec4899;
-  --color-accent-strong: #be185d;
-  --color-yellow: #facc15;
-  --surface-tint: #fff1f7;
+  --color-blue: #251b45;
+  --color-cyan: #ff8a45;
+  --color-accent: #ff5a5f;
+  --color-accent-strong: #c62828;
+  --color-yellow: #ffd54a;
+  --surface-tint: rgba(255, 90, 95, 0.13);
 }
 
 .theme-arcade {
-  --color-blue: #0f766e;
-  --color-cyan: #0284c7;
-  --color-accent: #f43f5e;
-  --color-accent-strong: #be123c;
-  --color-yellow: #f59e0b;
-  --surface-tint: #f0fdfa;
+  --color-blue: #14243d;
+  --color-cyan: #36d27c;
+  --color-accent: #e53935;
+  --color-accent-strong: #c62828;
+  --color-yellow: #ffd54a;
+  --surface-tint: rgba(54, 210, 124, 0.1);
 }
 
 .theme-studio {
-  --color-blue: #4338ca;
-  --color-cyan: #0891b2;
-  --color-accent: #e11d48;
-  --color-accent-strong: #be123c;
-  --color-yellow: #eab308;
-  --surface-tint: #f8fafc;
+  --color-blue: #171e31;
+  --color-cyan: #8b93a6;
+  --color-accent: #e53935;
+  --color-accent-strong: #c62828;
+  --color-yellow: #ffd54a;
+  --surface-tint: rgba(230, 232, 239, 0.08);
 }
 
 .chill {
-  --color-accent: #de4c70;
-  --color-accent-strong: #bd3158;
-  --shadow-card: 0 14px 38px rgba(37, 34, 54, 0.10);
+  --color-accent: #ff5a5f;
+  --color-accent-strong: #c62828;
+  --shadow-card: 0 18px 48px rgba(0, 0, 0, 0.28);
 }

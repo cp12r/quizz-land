@@ -141,20 +141,20 @@
 
 <style>
   .results-page {
-    --ink: #17151b;
-    --paper: #fffaf0;
-    --paper-dim: rgba(255, 250, 240, 0.72);
-    --line: rgba(255, 250, 240, 0.18);
-    --hot: #ff3e8a;
-    --cyan: #43e8ff;
-    --yellow: #f8f34a;
+    --ink: #0b1020;
+    --paper: #e6e8ef;
+    --paper-dim: rgba(230, 232, 239, 0.72);
+    --line: rgba(230, 232, 239, 0.18);
+    --hot: #e53935;
+    --cyan: #39d5ff;
+    --yellow: #ffd54a;
     position: relative;
     isolation: isolate;
     overflow: hidden;
     background:
-      linear-gradient(122deg, rgba(255, 62, 138, 0.16), transparent 34%),
-      linear-gradient(248deg, rgba(67, 232, 255, 0.15), transparent 38%),
-      conic-gradient(from 120deg at 50% 16%, #25202d, #17151b, #0f0e12, #221926, #17151b);
+      linear-gradient(122deg, rgba(229, 57, 53, 0.16), transparent 34%),
+      linear-gradient(248deg, rgba(57, 213, 255, 0.15), transparent 38%),
+      conic-gradient(from 120deg at 50% 16%, #171e31, #0b1020, #0f0e12, #212a45, #0b1020);
     color: var(--paper);
   }
 
@@ -217,9 +217,9 @@
 
   .sound-toggle {
     min-height: 46px;
-    border: 1px solid rgba(255, 250, 240, 0.22);
+    border: 1px solid rgba(230, 232, 239, 0.22);
     border-radius: 8px;
-    background: rgba(255, 250, 240, 0.08);
+    background: rgba(230, 232, 239, 0.08);
     color: var(--paper);
     padding: 0 14px;
     font-weight: 900;
@@ -230,20 +230,20 @@
   .board {
     display: grid;
     gap: 12px;
-    border: 1px solid rgba(255, 250, 240, 0.16);
+    border: 1px solid rgba(230, 232, 239, 0.16);
     border-radius: 8px;
     background:
-      linear-gradient(135deg, rgba(255, 250, 240, 0.09), rgba(255, 250, 240, 0.035)),
-      rgba(23, 21, 27, 0.72);
+      linear-gradient(135deg, rgba(230, 232, 239, 0.09), rgba(230, 232, 239, 0.035)),
+      rgba(11, 16, 32, 0.72);
     color: var(--paper);
     padding: 20px;
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.24);
   }
 
   .total {
-    border: 1px solid rgba(248, 243, 74, 0.22);
+    border: 1px solid rgba(255, 213, 74, 0.22);
     border-radius: 8px;
-    background: rgba(248, 243, 74, 0.1);
+    background: rgba(255, 213, 74, 0.1);
     color: var(--yellow);
     padding: 8px 12px;
     font-weight: 900;
@@ -255,9 +255,9 @@
     align-items: center;
     gap: 12px;
     min-height: 58px;
-    border: 1px solid rgba(255, 250, 240, 0.12);
+    border: 1px solid rgba(230, 232, 239, 0.12);
     border-radius: 8px;
-    background: rgba(255, 250, 240, 0.07);
+    background: rgba(230, 232, 239, 0.07);
     padding: 10px 12px;
     animation: rise-in 320ms var(--ease-pop) both;
     animation-delay: var(--row-delay, 0ms);
@@ -268,12 +268,12 @@
   }
 
   .row:hover {
-    border-color: rgba(248, 243, 74, 0.26);
+    border-color: rgba(255, 213, 74, 0.26);
     transform: translateY(-2px);
   }
 
   .leader {
-    background: linear-gradient(135deg, rgba(255, 79, 121, 0.16), rgba(255, 209, 102, 0.12));
+    background: linear-gradient(135deg, rgba(229, 57, 53, 0.16), rgba(255, 213, 74, 0.12));
   }
 
   .rank-badge {
@@ -281,7 +281,7 @@
     min-height: 36px;
     place-items: center;
     border-radius: 8px;
-    background: rgba(255, 250, 240, 0.1);
+    background: rgba(230, 232, 239, 0.1);
     color: var(--yellow);
     font-weight: 900;
   }
@@ -305,9 +305,9 @@
   .retention {
     justify-self: start;
     margin: 0;
-    border: 1px solid rgba(255, 250, 240, 0.14);
+    border: 1px solid rgba(230, 232, 239, 0.14);
     border-radius: 8px;
-    background: rgba(255, 250, 240, 0.07);
+    background: rgba(230, 232, 239, 0.07);
     color: var(--paper-dim);
     padding: 8px 12px;
     font-size: 12px;

@@ -22,10 +22,14 @@
     width: 82px;
     aspect-ratio: 1;
     place-items: center;
-    border: 1px solid rgba(255, 250, 240, 0.18);
+    border: 1px solid rgba(230, 232, 239, 0.18);
     border-radius: 50%;
-    background: rgba(23, 21, 27, 0.72);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+    background:
+      radial-gradient(circle at 50% 50%, rgba(229, 57, 53, 0.12), transparent 56%),
+      rgba(11, 16, 32, 0.82);
+    box-shadow:
+      0 16px 40px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
 
   svg {
@@ -40,11 +44,11 @@
   }
 
   .track {
-    stroke: rgba(255, 250, 240, 0.16);
+    stroke: rgba(230, 232, 239, 0.16);
   }
 
   .value {
-    stroke: var(--color-cyan);
+    stroke: var(--color-yellow);
     stroke-linecap: round;
     transition:
       stroke-dasharray 200ms ease-out,
@@ -52,7 +56,7 @@
   }
 
   strong {
-    color: #fffaf0;
+    color: var(--gray-900);
     font-size: 18px;
   }
 

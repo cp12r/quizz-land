@@ -47,7 +47,9 @@
     border: 1px solid transparent;
     border-radius: var(--radius-button);
     padding: 0 18px;
-    background: linear-gradient(135deg, var(--color-accent), var(--color-accent-strong));
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 42%),
+      linear-gradient(135deg, var(--color-accent-soft), var(--color-accent) 48%, var(--color-accent-strong));
     color: white;
     font-weight: 900;
     text-decoration: none;
@@ -66,14 +68,16 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.32), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.42), transparent);
     transform: translateX(-120%);
     transition: transform 500ms ease;
   }
 
   .button:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 18px 34px rgba(255, 79, 121, 0.28);
+    transform: translateY(-3px);
+    box-shadow:
+      0 20px 42px rgba(229, 57, 53, 0.38),
+      0 0 34px rgba(255, 90, 95, 0.22);
   }
 
   .button:hover:not(:disabled)::after {
@@ -87,15 +91,17 @@
   .button:focus-visible {
     outline: none;
     box-shadow:
-      0 0 0 4px rgba(255, 79, 121, 0.20),
+      0 0 0 4px rgba(255, 213, 74, 0.24),
       var(--shadow-pop);
   }
 
   .secondary {
-    border-color: rgba(255, 79, 121, 0.26);
-    background: white;
-    color: var(--color-accent);
-    box-shadow: var(--shadow-soft);
+    border-color: rgba(229, 57, 53, 0.72);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent),
+      rgba(11, 16, 32, 0.55);
+    color: var(--gray-900);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03), var(--shadow-soft);
   }
 
   .ghost {
@@ -116,7 +122,10 @@
   }
 
   .button:disabled {
-    opacity: 0.56;
+    border-color: rgba(139, 147, 166, 0.22);
+    background: linear-gradient(180deg, rgba(139, 147, 166, 0.24), rgba(33, 42, 69, 0.72));
+    color: rgba(230, 232, 239, 0.52);
+    opacity: 1;
     box-shadow: none;
     transform: none;
   }

@@ -46,17 +46,17 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, lowPower ? 1 : 1.35));
     host.appendChild(renderer.domElement);
 
-    const hot = getCssColor('--color-accent', '#ff4f79');
-    const cyan = getCssColor('--color-cyan', '#02a6a6');
-    const yellow = getCssColor('--color-yellow', '#ffd166');
-    const mint = getCssColor('--color-mint', '#38d996');
+    const hot = getCssColor('--color-accent', '#e53935');
+    const cyan = getCssColor('--color-cyan', '#39d5ff');
+    const yellow = getCssColor('--color-yellow', '#ffd54a');
+    const mint = getCssColor('--color-mint', '#36d27c');
     const palette = [hot, cyan, yellow, mint];
 
     const group = new THREE.Group();
     scene.add(group);
-    scene.add(new THREE.AmbientLight(0xffffff, 0.64));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.58));
 
-    const key = new THREE.DirectionalLight(0xffffff, 0.78);
+    const key = new THREE.DirectionalLight(0xfff0bf, 0.86);
     key.position.set(-3, 4, 5);
     scene.add(key);
 
@@ -248,7 +248,7 @@
   .scene3d.fallback::after {
     content: '';
     position: absolute;
-    border: 1px solid rgba(255, 250, 240, 0.14);
+    border: 1px solid rgba(230, 232, 239, 0.14);
     opacity: 0.8;
     transform: rotate(-9deg);
   }
@@ -259,7 +259,7 @@
     width: 32vmin;
     aspect-ratio: 1;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 209, 102, 0.16), transparent 64%);
+    background: radial-gradient(circle, rgba(255, 213, 74, 0.16), transparent 64%);
   }
 
   .scene3d.fallback::after {
@@ -267,7 +267,7 @@
     bottom: 10%;
     width: 40vmin;
     height: 12vmin;
-    background: linear-gradient(90deg, transparent, rgba(2, 166, 166, 0.16), transparent);
+    background: linear-gradient(90deg, transparent, rgba(229, 57, 53, 0.16), transparent);
   }
 
   @media (prefers-reduced-motion: reduce) {

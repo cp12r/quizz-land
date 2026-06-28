@@ -62,12 +62,13 @@
     border-radius: 8px;
     padding: clamp(20px, 4svw, 32px);
     background:
-      linear-gradient(135deg, rgba(255, 250, 240, 0.1), rgba(255, 250, 240, 0.035)),
-      rgba(23, 21, 27, 0.72);
-    color: #fffaf0;
+      radial-gradient(circle at 14% 0%, rgba(229, 57, 53, 0.22), transparent 34%),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
+      rgba(23, 30, 49, 0.86);
+    color: var(--gray-900);
     box-shadow:
       0 26px 70px rgba(0, 0, 0, 0.28),
-      inset 0 0 0 1px rgba(255, 250, 240, 0.08);
+      inset 0 0 0 1px rgba(255, 255, 255, 0.07);
     transform: rotateX(0.001deg);
     animation: rise-in 260ms var(--ease-pop) both;
   }
@@ -78,9 +79,9 @@
     inset: 0;
     pointer-events: none;
     background:
-      linear-gradient(135deg, rgba(255, 79, 121, 0.14), transparent 36%),
-      linear-gradient(315deg, rgba(2, 166, 166, 0.12), transparent 32%),
-      repeating-linear-gradient(90deg, rgba(255, 250, 240, 0.026) 0 1px, transparent 1px 72px);
+      linear-gradient(135deg, rgba(255, 90, 95, 0.16), transparent 36%),
+      linear-gradient(315deg, rgba(255, 213, 74, 0.1), transparent 32%),
+      repeating-linear-gradient(90deg, rgba(230, 232, 239, 0.026) 0 1px, transparent 1px 72px);
   }
 
   .question-head,
@@ -102,7 +103,7 @@
 
   h1 {
     margin: 0;
-    color: #fffaf0;
+    color: var(--gray-900);
     font-size: clamp(1.85rem, 4svw, 3.25rem);
     line-height: 0.98;
     text-transform: uppercase;
@@ -114,7 +115,7 @@
     margin: 0;
     border: 1px solid var(--border-soft);
     border-radius: 8px;
-    background: rgba(255, 250, 240, 0.08);
+    background: rgba(11, 16, 32, 0.46);
   }
 
   img {
@@ -136,12 +137,12 @@
     align-items: center;
     gap: 12px;
     min-height: 74px;
-    border: 1px solid rgba(255, 250, 240, 0.14);
+    border: 1px solid rgba(230, 232, 239, 0.13);
     border-radius: 8px;
     background:
-      linear-gradient(160deg, rgba(255, 255, 255, 0.9), rgba(255, 250, 240, 0.78)),
-      #fffaf0;
-    color: var(--color-ink);
+      linear-gradient(180deg, rgba(255, 255, 255, 0.055), transparent),
+      rgba(33, 42, 69, 0.88);
+    color: var(--gray-900);
     padding: 12px;
     text-align: left;
     font-weight: 900;
@@ -158,8 +159,8 @@
   .answers button:focus-visible {
     outline: none;
     transform: translateY(-2px);
-    border-color: rgba(248, 243, 74, 0.5);
-    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.16);
+    border-color: rgba(255, 213, 74, 0.5);
+    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.2), 0 0 24px rgba(255, 213, 74, 0.08);
     filter: saturate(1.06);
   }
 
@@ -170,11 +171,12 @@
   .answers button.selected {
     border-color: var(--color-accent);
     background:
-      linear-gradient(135deg, rgba(255, 209, 102, 0.52), rgba(255, 79, 121, 0.22)),
-      #fffaf0;
+      linear-gradient(135deg, rgba(198, 40, 40, 0.82), rgba(229, 57, 53, 0.42)),
+      rgba(33, 42, 69, 0.92);
+    color: white;
     box-shadow:
-      0 14px 32px rgba(255, 79, 121, 0.18),
-      inset 0 0 0 1px rgba(23, 21, 27, 0.08);
+      0 14px 32px rgba(229, 57, 53, 0.24),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.09);
   }
 
   .answers button:disabled:not(.selected) {
@@ -187,21 +189,22 @@
     place-items: center;
     border-radius: 8px;
     background: var(--color-ink);
-    color: white;
+    color: var(--color-yellow);
     font-size: 13px;
   }
 
   .selected .key {
-    background: var(--color-accent);
+    background: var(--color-accent-strong);
+    color: white;
   }
 
   .feedback {
     justify-self: start;
     margin: 0;
-    border: 1px solid rgba(255, 250, 240, 0.18);
+    border: 1px solid rgba(230, 232, 239, 0.16);
     border-radius: 8px;
-    background: rgba(23, 21, 27, 0.88);
-    color: #fffaf0;
+    background: rgba(11, 16, 32, 0.9);
+    color: var(--gray-900);
     padding: 8px 12px;
     font-size: 12px;
     font-weight: 900;
@@ -209,10 +212,12 @@
 
   .feedback.correct {
     background: var(--color-success);
+    color: #07140f;
   }
 
   .feedback.wrong {
     background: var(--color-danger);
+    color: white;
   }
 
   @media (max-width: 640px) {

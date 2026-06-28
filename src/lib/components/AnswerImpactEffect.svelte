@@ -83,8 +83,8 @@
       clearMeshes();
       life = maxLife;
       const count = lowPower ? 10 : 18;
-      const color = mode === 'correct' ? getCssColor('--color-mint', '#38d996') : getCssColor('--color-danger', '#d92d55');
-      const accent = mode === 'correct' ? getCssColor('--color-yellow', '#ffd166') : getCssColor('--color-accent', '#ff4f79');
+      const color = mode === 'correct' ? getCssColor('--color-mint', '#36d27c') : getCssColor('--color-danger', '#e53935');
+      const accent = mode === 'correct' ? getCssColor('--color-yellow', '#ffd54a') : getCssColor('--color-accent', '#e53935');
 
       for (let index = 0; index < count; index += 1) {
         const geometry = index % 2 ? new THREE.BoxGeometry(0.11, 0.11, 0.04) : new THREE.TetrahedronGeometry(0.11, 0);
@@ -167,7 +167,7 @@
     content: '';
     position: absolute;
     inset: 10%;
-    border: 2px solid rgba(255, 209, 102, 0.36);
+    border: 2px solid rgba(255, 213, 74, 0.36);
     opacity: 0;
     transform: scale(0.92);
     animation: impact-fallback 480ms ease-out;
