@@ -353,8 +353,7 @@
           aria-label={$soundMuted ? 'Activer le son' : 'Couper le son'}
           aria-pressed={!$soundMuted}
         >
-          <span>{$soundMuted ? 'Non' : 'Oui'}</span>
-          <strong>son</strong>
+          <span aria-hidden="true">{$soundMuted ? '🔇' : '🔊'}</span>
         </button>
 
         <button class="launch-button" type="submit" disabled={creating}>
@@ -871,7 +870,7 @@
 
   .sound-puck {
     display: grid;
-    width: 96px;
+    width: 76px;
     aspect-ratio: 1;
     place-items: center;
     border: 1px solid rgba(230, 232, 239, 0.4);
@@ -880,21 +879,10 @@
     box-shadow: 0 22px 40px rgba(0, 0, 0, 0.22);
   }
 
-  .sound-puck span,
-  .sound-puck strong {
-    grid-area: 1 / 1;
-    text-transform: uppercase;
-  }
-
   .sound-puck span {
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: 950;
-  }
-
-  .sound-puck strong {
-    align-self: end;
-    padding-bottom: 16px;
-    font-size: 0.68rem;
+    line-height: 1;
   }
 
   .launch-button {

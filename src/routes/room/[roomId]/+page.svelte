@@ -420,7 +420,7 @@
           aria-label={$soundMuted ? 'Activer le son' : 'Couper le son'}
           aria-pressed={!$soundMuted}
         >
-          {$soundMuted ? 'Son coupé' : 'Son activé'}
+          <span aria-hidden="true">{$soundMuted ? '🔇' : '🔊'}</span>
         </button>
         <Button variant="secondary" onclick={copyLink}>{copied ? 'Lien copié' : 'Copier le lien'}</Button>
       </div>
@@ -680,15 +680,18 @@
   }
 
   .icon-button {
+    display: grid;
+    width: 48px;
     min-height: 46px;
+    place-items: center;
     border: 1px solid rgba(230, 232, 239, 0.22);
     border-radius: 8px;
     background: rgba(230, 232, 239, 0.08);
     color: var(--paper);
-    padding: 0 14px;
+    padding: 0;
+    font-size: 1.35rem;
     font-weight: 900;
     box-shadow: 0 16px 38px rgba(0, 0, 0, 0.18);
-    text-transform: uppercase;
   }
 
   .notice-tray {
@@ -1017,10 +1020,6 @@
 
     .top-actions,
     .actions {
-      width: 100%;
-    }
-
-    .icon-button {
       width: 100%;
     }
 
