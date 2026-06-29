@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { pageTitle, siteMeta } from '$lib/config/site.js';
   import SceneBackground3D from '$lib/components/SceneBackground3D.svelte';
+  import SeasonAssetShowcase from '$lib/components/SeasonAssetShowcase.svelte';
   import { createRoom } from '$lib/utils/api.js';
   import { initSound, playSound, soundMuted, toggleSound } from '$lib/utils/sound.js';
   import { applyTheme } from '$lib/utils/theme.js';
@@ -410,6 +411,10 @@
       </div>
     </section>
 
+    <div class="season-home">
+      <SeasonAssetShowcase compact limitIcons={8} limitFrames={4} />
+    </div>
+
     <section class="control-table" aria-label="Préparation du salon">
       <div class="name-console console-panel">
         <div class="panel-tag">Nom</div>
@@ -800,6 +805,7 @@
     grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.78fr);
     grid-template-areas:
       'hero live'
+      'season live'
       'controls live'
       'lab lab'
       'footer footer';
@@ -1012,6 +1018,11 @@
     grid-area: live;
     min-height: 720px;
     perspective: 1200px;
+  }
+
+  .season-home {
+    grid-area: season;
+    min-width: 0;
   }
 
   .screen-stack {
@@ -2119,6 +2130,7 @@
       grid-template-areas:
         'hero'
         'live'
+        'season'
         'controls'
         'lab'
         'footer';

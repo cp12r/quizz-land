@@ -1,0 +1,286 @@
+.ql-float {
+  animation: ql-float 3.4s ease-in-out infinite;
+}
+
+.ql-bounce {
+  animation: ql-bounce 1.8s cubic-bezier(0.2, 0.9, 0.2, 1) infinite;
+}
+
+.ql-tilt {
+  animation: ql-tilt 2.6s ease-in-out infinite;
+  transform-origin: 50% 80%;
+}
+
+.ql-pulse {
+  animation: ql-pulse 2.1s ease-in-out infinite;
+}
+
+.ql-rotate {
+  animation: ql-rotate 4.8s ease-in-out infinite;
+}
+
+.ql-bob {
+  animation: ql-bob 2.8s ease-in-out infinite;
+}
+
+.ql-shake {
+  animation: ql-shake 2.2s ease-in-out infinite;
+}
+
+.ql-glow {
+  animation: ql-glow 2.5s ease-in-out infinite;
+}
+
+.ql-spin {
+  animation: ql-spin 7s linear infinite;
+}
+
+.ql-bubble {
+  animation: ql-bubble 2.4s ease-in-out infinite;
+}
+
+.ql-kick {
+  animation: ql-kick 2.2s cubic-bezier(0.2, 0.9, 0.2, 1) infinite;
+}
+
+.ql-pop {
+  animation: ql-pop 1.9s ease-in-out infinite;
+}
+
+.ql-think {
+  animation: ql-think 2.7s ease-in-out infinite;
+}
+
+.ql-wiggle {
+  animation: ql-wiggle 2.1s ease-in-out infinite;
+  transform-origin: 50% 82%;
+}
+
+.ql-frame-glow {
+  animation: ql-frame-glow 2.6s ease-in-out infinite;
+}
+
+.ql-frame-dash {
+  animation: ql-frame-dash 4s linear infinite;
+}
+
+.ql-neon-flicker {
+  animation: ql-neon-flicker 3.2s steps(1, end) infinite;
+}
+
+@keyframes ql-float {
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+@keyframes ql-bounce {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  45% {
+    transform: translate3d(0, -12px, 0) scale(1.035);
+  }
+  62% {
+    transform: translate3d(0, 2px, 0) scale(0.99);
+  }
+}
+
+@keyframes ql-tilt {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes ql-pulse {
+  50% {
+    transform: scale(1.045);
+    opacity: 0.88;
+  }
+}
+
+@keyframes ql-rotate {
+  0%,
+  100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+}
+
+@keyframes ql-bob {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, 8px, 0);
+  }
+}
+
+@keyframes ql-shake {
+  0%,
+  88%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  90% {
+    transform: translate3d(-3px, 0, 0);
+  }
+  92% {
+    transform: translate3d(3px, 0, 0);
+  }
+  94% {
+    transform: translate3d(-2px, 0, 0);
+  }
+}
+
+@keyframes ql-glow {
+  50% {
+    filter: drop-shadow(0 0 14px rgba(57, 213, 255, 0.7));
+  }
+}
+
+@keyframes ql-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ql-bubble {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -6px, 0) scale(1.06);
+  }
+}
+
+@keyframes ql-kick {
+  0%,
+  78%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0);
+  }
+  84% {
+    transform: translate3d(7px, -5px, 0) rotate(5deg);
+  }
+  90% {
+    transform: translate3d(-2px, 1px, 0) rotate(-2deg);
+  }
+}
+
+@keyframes ql-pop {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  48% {
+    transform: scale(1.09);
+  }
+}
+
+@keyframes ql-think {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0);
+  }
+  50% {
+    transform: translate3d(0, -4px, 0) rotate(-4deg);
+  }
+}
+
+@keyframes ql-wiggle {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(-3deg);
+  }
+  75% {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes ql-frame-glow {
+  50% {
+    filter: drop-shadow(0 0 16px rgba(255, 213, 74, 0.58));
+  }
+}
+
+@keyframes ql-frame-dash {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(3px, -2px, 0) scale(1.015);
+  }
+}
+
+@keyframes ql-neon-flicker {
+  0%,
+  12%,
+  15%,
+  54%,
+  57%,
+  100% {
+    opacity: 1;
+  }
+  13%,
+  56% {
+    opacity: 0.72;
+  }
+}
+
+@media (max-width: 640px) {
+  .ql-float,
+  .ql-bounce,
+  .ql-tilt,
+  .ql-pulse,
+  .ql-rotate,
+  .ql-bob,
+  .ql-shake,
+  .ql-glow,
+  .ql-spin,
+  .ql-bubble,
+  .ql-kick,
+  .ql-pop,
+  .ql-think,
+  .ql-wiggle,
+  .ql-frame-glow,
+  .ql-frame-dash,
+  .ql-neon-flicker {
+    animation-duration: 4s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ql-float,
+  .ql-bounce,
+  .ql-tilt,
+  .ql-pulse,
+  .ql-rotate,
+  .ql-bob,
+  .ql-shake,
+  .ql-glow,
+  .ql-spin,
+  .ql-bubble,
+  .ql-kick,
+  .ql-pop,
+  .ql-think,
+  .ql-wiggle,
+  .ql-frame-glow,
+  .ql-frame-dash,
+  .ql-neon-flicker {
+    animation: none !important;
+  }
+}

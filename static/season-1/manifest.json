@@ -1,0 +1,187 @@
+{
+  "season": "Season 1",
+  "basePath": "/season-1",
+  "icons": [
+    {
+      "id": "gaming",
+      "label": "Gaming",
+      "src": "/season-1/icons/gaming.svg"
+    },
+    {
+      "id": "cinema",
+      "label": "Cinema",
+      "src": "/season-1/icons/cinema.svg"
+    },
+    {
+      "id": "series",
+      "label": "Series",
+      "src": "/season-1/icons/series.svg"
+    },
+    {
+      "id": "musique",
+      "label": "Musique",
+      "src": "/season-1/icons/musique.svg"
+    },
+    {
+      "id": "rap-fr",
+      "label": "Rap FR",
+      "src": "/season-1/icons/rap-fr.svg"
+    },
+    {
+      "id": "anime",
+      "label": "Anime",
+      "src": "/season-1/icons/anime.svg"
+    },
+    {
+      "id": "memes",
+      "label": "Memes",
+      "src": "/season-1/icons/memes.svg"
+    },
+    {
+      "id": "discord",
+      "label": "Discord",
+      "src": "/season-1/icons/discord.svg"
+    },
+    {
+      "id": "geographie",
+      "label": "Geographie",
+      "src": "/season-1/icons/geographie.svg"
+    },
+    {
+      "id": "sciences",
+      "label": "Sciences",
+      "src": "/season-1/icons/sciences.svg"
+    },
+    {
+      "id": "football",
+      "label": "Football",
+      "src": "/season-1/icons/football.svg"
+    },
+    {
+      "id": "histoire",
+      "label": "Histoire",
+      "src": "/season-1/icons/histoire.svg"
+    },
+    {
+      "id": "sport",
+      "label": "Sport",
+      "src": "/season-1/icons/sport.svg"
+    },
+    {
+      "id": "culture-gen",
+      "label": "Culture Gen.",
+      "src": "/season-1/icons/culture-gen.svg"
+    },
+    {
+      "id": "pieges",
+      "label": "Pieges",
+      "src": "/season-1/icons/pieges.svg"
+    },
+    {
+      "id": "rap-us",
+      "label": "Rap US",
+      "src": "/season-1/icons/rap-us.svg"
+    },
+    {
+      "id": "logo-quiz",
+      "label": "Logo Quiz",
+      "src": "/season-1/icons/logo-quiz.svg"
+    },
+    {
+      "id": "blindtest",
+      "label": "Blindtest",
+      "src": "/season-1/icons/blindtest.svg"
+    },
+    {
+      "id": "duel",
+      "label": "Duel",
+      "src": "/season-1/icons/duel.svg"
+    },
+    {
+      "id": "chaos",
+      "label": "Chaos",
+      "src": "/season-1/icons/chaos.svg"
+    },
+    {
+      "id": "crown",
+      "label": "Crown",
+      "src": "/season-1/icons/crown.svg"
+    },
+    {
+      "id": "timer",
+      "label": "Timer",
+      "src": "/season-1/icons/timer.svg"
+    }
+  ],
+  "frames": [
+    {
+      "id": "fire",
+      "label": "Fire",
+      "src": "/season-1/frames/fire.svg"
+    },
+    {
+      "id": "neon-glitch",
+      "label": "Neon Glitch",
+      "src": "/season-1/frames/neon-glitch.svg"
+    },
+    {
+      "id": "royal",
+      "label": "Royal",
+      "src": "/season-1/frames/royal.svg"
+    },
+    {
+      "id": "electric",
+      "label": "Electric",
+      "src": "/season-1/frames/electric.svg"
+    },
+    {
+      "id": "slime",
+      "label": "Slime",
+      "src": "/season-1/frames/slime.svg"
+    },
+    {
+      "id": "space",
+      "label": "Space",
+      "src": "/season-1/frames/space.svg"
+    },
+    {
+      "id": "love",
+      "label": "Love",
+      "src": "/season-1/frames/love.svg"
+    },
+    {
+      "id": "golden",
+      "label": "Golden",
+      "src": "/season-1/frames/golden.svg"
+    },
+    {
+      "id": "ice",
+      "label": "Ice",
+      "src": "/season-1/frames/ice.svg"
+    },
+    {
+      "id": "halloween",
+      "label": "Halloween",
+      "src": "/season-1/frames/halloween.svg"
+    }
+  ],
+  "animations": [
+    "ql-float",
+    "ql-bounce",
+    "ql-tilt",
+    "ql-pulse",
+    "ql-rotate",
+    "ql-bob",
+    "ql-shake",
+    "ql-glow",
+    "ql-spin",
+    "ql-bubble",
+    "ql-kick",
+    "ql-pop",
+    "ql-think",
+    "ql-wiggle",
+    "ql-frame-glow",
+    "ql-frame-dash",
+    "ql-neon-flicker"
+  ]
+}
