@@ -1,10 +1,46 @@
 import { validateQuestionPack } from '../../../server/lib/questionValidator.js';
 
 export const quizThemes = [
-  { id: 'neon', name: 'Néon Pop', className: 'theme-neon' },
-  { id: 'candy', name: 'Bonbon', className: 'theme-candy' },
-  { id: 'arcade', name: 'Arcade', className: 'theme-arcade' },
-  { id: 'studio', name: 'Studio', className: 'theme-studio' }
+  {
+    id: 'neon',
+    name: 'Néon Pop',
+    label: 'Rose électrique + cyan',
+    className: 'theme-neon',
+    icon: '/season-1/icons/theme-neon.svg',
+    colors: ['#ff4f79', '#39d5ff'],
+    motion: 'float',
+    badge: 'Live'
+  },
+  {
+    id: 'candy',
+    name: 'Candy Rush',
+    label: 'Corail + miel',
+    className: 'theme-candy',
+    icon: '/season-1/icons/theme-candy.svg',
+    colors: ['#ff5a5f', '#ffd54a'],
+    motion: 'bounce',
+    badge: 'Fun'
+  },
+  {
+    id: 'arcade',
+    name: 'Arcade Volt',
+    label: 'Vert laser + bleu',
+    className: 'theme-arcade',
+    icon: '/season-1/icons/theme-arcade.svg',
+    colors: ['#36d27c', '#39d5ff'],
+    motion: 'glitch',
+    badge: 'Boost'
+  },
+  {
+    id: 'studio',
+    name: 'Studio Dark',
+    label: 'Graphite + rouge',
+    className: 'theme-studio',
+    icon: '/season-1/icons/theme-studio.svg',
+    colors: ['#e6e8ef', '#e53935'],
+    motion: 'pulse',
+    badge: 'Focus'
+  }
 ];
 
 export const categories = ['culture', 'science', 'web', 'cinéma', 'sport'];

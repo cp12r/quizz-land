@@ -1,32 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
   <title id="title">Sport</title>
-  <desc id="desc">Ic?ne Season 1 Sport pour QuizzLand.</desc>
+  <desc id="desc">Trophée sport Season 1 pour QuizzLand.</desc>
   <defs>
-    <radialGradient id="bg" cx="35%" cy="22%" r="72%">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.92"/>
-      <stop offset="0.32" stop-color="#ffd54a"/>
-      <stop offset="1" stop-color="#0b1020"/>
-    </radialGradient>
-    <linearGradient id="rim" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0" stop-color="#f97316"/>
-      <stop offset="0.55" stop-color="#ffd54a"/>
+    <linearGradient id="g" x1="50" x2="206" y1="38" y2="218" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffd54a"/>
+      <stop offset=".52" stop-color="#36d27c"/>
       <stop offset="1" stop-color="#0b1020"/>
     </linearGradient>
-    <filter id="softShadow" x="-35%" y="-35%" width="170%" height="180%">
-      <feDropShadow dx="0" dy="18" stdDeviation="13" flood-color="#000000" flood-opacity="0.48"/>
-      <feDropShadow dx="0" dy="0" stdDeviation="7" flood-color="#f97316" flood-opacity="0.5"/>
-    </filter>
   </defs>
-  <rect width="256" height="256" rx="52" fill="#070a16"/>
-  <ellipse cx="128" cy="205" rx="74" ry="20" fill="#f97316" opacity="0.3"/>
-  <ellipse cx="128" cy="203" rx="92" ry="27" fill="none" stroke="url(#rim)" stroke-width="5" opacity="0.72"/>
-  <g filter="url(#softShadow)">
-    <circle cx="128" cy="112" r="67" fill="url(#bg)"/>
-    <circle cx="128" cy="112" r="67" fill="none" stroke="#ffffff" stroke-opacity="0.34" stroke-width="3"/>
-    <path d="M73 119c16 36 80 52 112 5" fill="none" stroke="#ffffff" stroke-opacity="0.22" stroke-width="12" stroke-linecap="round"/>
-    <text x="128" y="128" text-anchor="middle" dominant-baseline="middle" font-family="Inter, Arial Black, Arial, sans-serif" font-size="44" font-weight="900" fill="#fffaf0">??</text>
-  </g>
-  <path d="M50 59 61 36l11 23 23 11-23 11-11 23-11-23-23-11 23-11Z" fill="#f97316" opacity="0.76"/>
-  <path d="M202 56h16v16h-16zM207 173h12v12h-12zM35 164h10v10H35z" fill="#ffd54a" opacity="0.78"/>
-  <text x="128" y="235" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="900" letter-spacing="1" fill="#e6e8ef">13. SPORT</text>
+  <rect width="256" height="256" rx="52" fill="#07140e"/>
+  <path d="M82 58h92v34c0 44-22 72-46 72S82 136 82 92V58Z" fill="url(#g)"/>
+  <path d="M82 78H56v20c0 24 18 43 42 45M174 78h26v20c0 24-18 43-42 45" fill="none" stroke="#ffd54a" stroke-width="12" stroke-linecap="round"/>
+  <path d="M128 164v30M94 202h68" stroke="#e6e8ef" stroke-opacity=".86" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="128" cy="102" r="24" fill="#07140e" opacity=".42"/>
+  <path d="m128 82 7 14 15 2-11 10 3 15-14-8-14 8 3-15-11-10 15-2 7-14Z" fill="#ffd54a"/>
 </svg>

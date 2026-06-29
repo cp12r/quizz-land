@@ -83,6 +83,11 @@
       "src": "/season-1/icons/rap-us.svg"
     },
     {
+      "id": "internet",
+      "label": "Internet",
+      "src": "/season-1/icons/internet.svg"
+    },
+    {
       "id": "logo-quiz",
       "label": "Logo Quiz",
       "src": "/season-1/icons/logo-quiz.svg"

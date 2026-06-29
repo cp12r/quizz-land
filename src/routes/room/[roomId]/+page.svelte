@@ -591,10 +591,10 @@
     --paper: #e6e8ef;
     --paper-dim: rgba(230, 232, 239, 0.72);
     --line: rgba(230, 232, 239, 0.18);
-    --hot: #e53935;
-    --cyan: #39d5ff;
-    --yellow: #ffd54a;
-    --lime: #36d27c;
+    --hot: var(--color-accent);
+    --cyan: var(--color-cyan);
+    --yellow: var(--color-yellow);
+    --lime: var(--color-mint);
     position: relative;
     isolation: isolate;
     overflow: hidden;

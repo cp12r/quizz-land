@@ -1,7 +1,8 @@
-<script>
+﻿<script>
   import { onMount } from 'svelte';
   import { pageTitle, siteMeta } from '$lib/config/site.js';
   import SceneBackground3D from '$lib/components/SceneBackground3D.svelte';
+  import ThemeCard from '$lib/components/ThemeCard.svelte';
   import { createRoom } from '$lib/utils/api.js';
   import { getSeasonIcon } from '$lib/utils/seasonAssets.js';
   import { initSound, playSound, soundMuted, toggleSound } from '$lib/utils/sound.js';
@@ -14,44 +15,64 @@
   const TIME_MIN = 10;
   const TIME_MAX = 120;
   const answerLabels = ['A', 'B', 'C', 'D'];
-  const title = pageTitle('Créer un quiz multijoueur');
+  const title = pageTitle('CrÃ©er un quiz multijoueur');
   const description = siteMeta.description;
 
-  const themeMeta = {
-    neon: {
-      name: 'Néon',
-      label: 'Rose et bleu',
-      colors: ['#e53935', '#39d5ff'],
-      mark: 'NE'
-    },
-    candy: {
-      name: 'Coloré',
-      label: 'Orange et jaune',
-      colors: ['#ff5a5f', '#ffd54a'],
-      mark: 'CO'
-    },
-    arcade: {
-      name: 'Arcade',
-      label: 'Vert et bleu',
-      colors: ['#36d27c', '#39d5ff'],
-      mark: 'AR'
-    },
-    studio: {
-      name: 'Simple',
-      label: 'Noir et rose',
-      colors: ['#ffffff', '#e53935'],
-      mark: 'SI'
-    }
+  const fallbackTheme = data.themes[0] || {
+    id: 'neon',
+    name: 'Néon Pop',
+    label: 'Rose électrique + cyan',
+    icon: '/season-1/icons/theme-neon.svg',
+    colors: ['#ff4f79', '#39d5ff']
   };
 
-  const categoryMeta = [
-    { mark: 'Culture', label: 'Culture', stamp: '01' },
-    { mark: 'Science', label: 'Science', stamp: '02' },
-    { mark: 'Web', label: 'Web', stamp: '03' },
-    { mark: 'Cinéma', label: 'Cinéma', stamp: '04' },
-    { mark: 'Sport', label: 'Sport', stamp: '05' }
-  ];
-
+  const categoryMeta = {
+    culture: {
+      label: 'Culture générale',
+      short: 'Culture',
+      stamp: '01',
+      toneA: '#ffd54a',
+      toneB: '#7c5cff',
+      motion: 'float',
+      detail: 'Classiques et surprises'
+    },
+    science: {
+      label: 'Sciences',
+      short: 'Sciences',
+      stamp: '02',
+      toneA: '#36d27c',
+      toneB: '#39d5ff',
+      motion: 'bubble',
+      detail: 'Atomes, espace, logique'
+    },
+    web: {
+      label: 'Internet',
+      short: 'Internet',
+      stamp: '03',
+      toneA: '#39d5ff',
+      toneB: '#7c5cff',
+      motion: 'glitch',
+      detail: 'Web, culture tech'
+    },
+    cinéma: {
+      label: 'Cinéma',
+      short: 'Cinéma',
+      stamp: '04',
+      toneA: '#e53935',
+      toneB: '#ffd54a',
+      motion: 'glow',
+      detail: 'Films et pop culture'
+    },
+    sport: {
+      label: 'Sport',
+      short: 'Sport',
+      stamp: '05',
+      toneA: '#36d27c',
+      toneB: '#ffd54a',
+      motion: 'kick',
+      detail: 'Stades et champions'
+    }
+  };
   let draftId = 1;
   let name = '';
   let selectedCategories = data.categories.slice(0, 3);
@@ -65,7 +86,7 @@
   let pointerX = 50;
   let pointerY = 42;
   let activeDraftId;
-  let customDrafts = [createQuestionDraft('Quelle équipe gagne ce quiz ?', ['Équipe A', 'Équipe B', 'Équipe C', 'Équipe D'], 0)];
+  let customDrafts = [createQuestionDraft('Quelle Ã©quipe gagne ce quiz ?', ['Ã‰quipe A', 'Ã‰quipe B', 'Ã‰quipe C', 'Ã‰quipe D'], 0)];
 
   activeDraftId = customDrafts[0].id;
 
@@ -233,25 +254,28 @@
   }
 
   function getThemeMeta(themeId) {
-    return themeMeta[themeId] || themeMeta.neon;
+    return data.themes.find((theme) => theme.id === themeId) || fallbackTheme;
   }
 
-  function themeStyle(themeId) {
-    const meta = getThemeMeta(themeId);
-    return `--tone-a:${meta.colors[0]}; --tone-b:${meta.colors[1]};`;
-  }
-
-  function categoryStyle(index) {
-    const tilts = [-5, 3, -2, 5, -4, 2];
-    return `--tilt:${tilts[index % tilts.length]}deg; --delay:${index * 80}ms;`;
+  function categoryStyle(category, index) {
+    const meta = getCategoryMeta(category);
+    return `--cat-a:${meta.toneA}; --cat-b:${meta.toneB}; --delay:${index * 70}ms;`;
   }
 
   function readableCategory(category) {
-    return categoryMeta.find((item) => item.label.toLowerCase() === category.toLowerCase())?.label || category;
+    return getCategoryMeta(category).label;
   }
 
-  function getCategoryMeta(index) {
-    return categoryMeta[index % categoryMeta.length];
+  function getCategoryMeta(category) {
+    return categoryMeta[category] || {
+      label: category,
+      short: category,
+      stamp: 'QL',
+      toneA: '#ffd54a',
+      toneB: '#39d5ff',
+      motion: 'float',
+      detail: 'Pack quiz'
+    };
   }
 
   function getDraftState(draft) {
@@ -264,14 +288,14 @@
       .filter(({ answer }) => answer);
 
     if (filledAnswers.length < 2) {
-      return { ready: false, label: 'brouillon', detail: 'Deux réponses minimum' };
+      return { ready: false, label: 'brouillon', detail: 'Deux rÃ©ponses minimum' };
     }
 
     if (!filledAnswers.some(({ answerIndex }) => answerIndex === draft.correctIndex)) {
-      return { ready: false, label: 'brouillon', detail: 'Bonne réponse manquante' };
+      return { ready: false, label: 'brouillon', detail: 'Bonne rÃ©ponse manquante' };
     }
 
-    return { ready: true, label: 'prêt', detail: 'Question prête' };
+    return { ready: true, label: 'prÃªt', detail: 'Question prÃªte' };
   }
 
   function trackPointer(event) {
@@ -284,7 +308,7 @@
     error = '';
 
     if (!selectedCategories.length && !readyCustomQuestions.length) {
-      error = 'Choisis une catégorie ou ajoute une question prête.';
+      error = 'Choisis une catÃ©gorie ou ajoute une question prÃªte.';
       return;
     }
 
@@ -303,8 +327,8 @@
       });
       location.href = `/room/${room.id}`;
     } catch (err) {
-      console.error('Création du salon impossible', err);
-      error = 'Impossible de créer le salon pour le moment.';
+      console.error('CrÃ©ation du salon impossible', err);
+      error = 'Impossible de crÃ©er le salon pour le moment.';
       creating = false;
     }
   }
@@ -343,7 +367,7 @@
       <div class="hero-copy">
         <p class="brand-line">QUIZZ LAND / QUIZ ENTRE AMIS</p>
         <h1>
-          <span>Crée</span>
+          <span>CrÃ©e</span>
           <span>ton quiz.</span>
         </h1>
         <div class="hero-marquee" aria-hidden="true">
@@ -362,11 +386,11 @@
           aria-label={$soundMuted ? 'Activer le son' : 'Couper le son'}
           aria-pressed={!$soundMuted}
         >
-          <span aria-hidden="true">{$soundMuted ? '🔇' : '🔊'}</span>
+          <span aria-hidden="true">{$soundMuted ? 'ðŸ”‡' : 'ðŸ”Š'}</span>
         </button>
 
         <button class="launch-button" type="submit" disabled={creating}>
-          <span>{creating ? 'Ouverture' : 'Créer'}</span>
+          <span>{creating ? 'Ouverture' : 'CrÃ©er'}</span>
           <strong>{creating ? '...' : 'le salon'}</strong>
         </button>
 
@@ -378,7 +402,7 @@
       </div>
     </header>
 
-    <section class="live-scene" aria-label="Aperçu du salon">
+    <section class="live-scene" aria-label="AperÃ§u du salon">
       <div class="screen-stack">
         <div class="signal-strip" aria-hidden="true">
           <span></span><span></span><span></span><span></span><span></span>
@@ -411,7 +435,7 @@
       </div>
     </section>
 
-    <section class="control-table" aria-label="Préparation du salon">
+    <section class="control-table" aria-label="PrÃ©paration du salon">
       <div class="name-console console-panel">
         <div class="panel-tag">Nom</div>
         <label class="name-field">
@@ -425,43 +449,33 @@
       </div>
 
       <div class="vibe-console console-panel">
-        <div class="panel-tag">Thème</div>
+        <div class="panel-tag">ThÃ¨me</div>
         <div class="theme-rack">
           {#each data.themes as theme}
-            {@const meta = getThemeMeta(theme.id)}
-            <button
-              type="button"
-              class:active={selectedTheme === theme.id}
-              class="theme-cartridge"
-              style={themeStyle(theme.id)}
-              on:click={() => setTheme(theme.id)}
-              aria-pressed={selectedTheme === theme.id}
-            >
-              <span>{meta.mark}</span>
-              <strong>{meta.name}</strong>
-              <em>{meta.label}</em>
-            </button>
+            <div class="theme-card-shell" on:click={() => setTheme(theme.id)} role="presentation">
+              <ThemeCard {theme} selected={selectedTheme === theme.id} />
+            </div>
           {/each}
         </div>
       </div>
 
       <div class="category-console console-panel">
-        <div class="panel-tag">Catégories</div>
+        <div class="panel-tag">CatÃ©gories</div>
         <div class="category-deck">
           {#each data.categories as category, index}
-            {@const meta = getCategoryMeta(index)}
+            {@const meta = getCategoryMeta(category)}
             <button
               type="button"
               class:active={selectedCategories.includes(category)}
-              class="category-token"
-              style={categoryStyle(index)}
+              class={`category-token motion-${meta.motion}`}
+              style={categoryStyle(category, index)}
               on:click={() => toggleCategory(category)}
               aria-pressed={selectedCategories.includes(category)}
             >
               <span>{meta.stamp}</span>
-              <img class="category-asset ql-bob" src={getSeasonIcon(category)} alt="" aria-hidden="true" loading="lazy" />
-              <strong>{readableCategory(category)}</strong>
-              <em>{selectedCategories.includes(category) ? 'choisi' : meta.mark}</em>
+              <img class="category-asset" src={getSeasonIcon(category)} alt="" aria-hidden="true" loading="lazy" />
+              <strong>{meta.short}</strong>
+              <em>{selectedCategories.includes(category) ? 'sélectionné' : meta.detail}</em>
             </button>
           {/each}
         </div>
@@ -480,7 +494,7 @@
               -
             </button>
             <div class="dial-face">
-              <span>{selectedCategories.length ? 'questions' : 'perso prêtes'}</span>
+              <span>{selectedCategories.length ? 'questions' : 'perso prÃªtes'}</span>
               <strong>{effectiveQuestionCount}</strong>
             </div>
             <button
@@ -536,11 +550,11 @@
       </div>
     </section>
 
-    <section class="question-lab" aria-label="Éditeur de questions maison">
+    <section class="question-lab" aria-label="Ã‰diteur de questions maison">
       <div class="lab-header">
         <div>
           <p class="panel-tag">Questions perso</p>
-          <h2>Questions personnalisées</h2>
+          <h2>Questions personnalisÃ©es</h2>
         </div>
         <button type="button" class="add-card" on:click={addDraft}>
           <span>+</span>
@@ -548,7 +562,7 @@
         </button>
       </div>
 
-      <div class="draft-strip" aria-label="Questions personnalisées">
+      <div class="draft-strip" aria-label="Questions personnalisÃ©es">
         {#each customDrafts as draft, index (draft.id)}
           {@const state = getDraftState(draft)}
           <div class:active={activeDraftId === draft.id} class:ready={state.ready} class="draft-item">
@@ -596,7 +610,7 @@
               value={activeDraft.text}
               on:input={(event) => updateDraft(activeDraft.id, { text: event.currentTarget.value })}
               maxlength="220"
-              placeholder="Écris ta question..."
+              placeholder="Ã‰cris ta question..."
             ></textarea>
           </label>
 
@@ -607,7 +621,7 @@
                   type="button"
                   class="answer-key"
                   on:click={() => setCorrectAnswer(activeDraft.id, index)}
-                  aria-label={`Marquer la réponse ${answerLabels[index]} comme correcte`}
+                  aria-label={`Marquer la rÃ©ponse ${answerLabels[index]} comme correcte`}
                   aria-pressed={activeDraft.correctIndex === index}
                 >
                   {answerLabels[index]}
@@ -616,7 +630,7 @@
                   value={answer}
                   on:input={(event) => updateAnswer(activeDraft.id, index, event.currentTarget.value)}
                   maxlength="90"
-                  placeholder={`Réponse ${answerLabels[index]}`}
+                  placeholder={`RÃ©ponse ${answerLabels[index]}`}
                 />
               </div>
             {/each}
@@ -624,7 +638,7 @@
 
           <div class="metadata-board">
             <label>
-              <span>Catégorie</span>
+              <span>CatÃ©gorie</span>
               <input
                 value={activeDraft.category}
                 on:input={(event) => updateDraft(activeDraft.id, { category: event.currentTarget.value })}
@@ -656,8 +670,8 @@
 
           {#if activeDraft.image.trim()}
             <figure class="image-preview">
-              <img src={activeDraft.image.trim()} alt={activeDraft.imageAlt.trim() || 'Aperçu de l’image'} loading="lazy" />
-              <figcaption>{activeDraft.imageAlt.trim() || 'Aperçu image'}</figcaption>
+              <img src={activeDraft.image.trim()} alt={activeDraft.imageAlt.trim() || 'AperÃ§u de lâ€™image'} loading="lazy" />
+              <figcaption>{activeDraft.imageAlt.trim() || 'AperÃ§u image'}</figcaption>
             </figure>
           {/if}
         </div>
@@ -665,8 +679,8 @@
 
       <details class="json-sync">
         <summary>
-          <span>Aperçu des questions</span>
-          <strong>{customCount} prête{customCount > 1 ? 's' : ''}</strong>
+          <span>AperÃ§u des questions</span>
+          <strong>{customCount} prÃªte{customCount > 1 ? 's' : ''}</strong>
         </summary>
         <pre>{syncPreview}</pre>
       </details>
@@ -674,7 +688,7 @@
 
     <footer class="creator-footer">
       <div id="creator-status" class="creator-status" role="status" aria-live="polite">
-        <span>{selectedCategories.length} catégories</span>
+        <span>{selectedCategories.length} catÃ©gories</span>
         <span>{customCountLabel}</span>
         <span>{estimatedDuration} minutes</span>
       </div>
@@ -700,10 +714,10 @@
     --paper: #e6e8ef;
     --paper-dim: rgba(230, 232, 239, 0.72);
     --line: rgba(230, 232, 239, 0.18);
-    --hot: #e53935;
-    --cyan: #39d5ff;
-    --yellow: #ffd54a;
-    --lime: #36d27c;
+    --hot: var(--color-accent);
+    --cyan: var(--color-cyan);
+    --yellow: var(--color-yellow);
+    --lime: var(--color-mint);
     --orange: #ff5a5f;
     position: relative;
     isolation: isolate;
@@ -975,7 +989,6 @@
 
   .launch-button:focus-visible,
   .sound-puck:focus-visible,
-  .theme-cartridge:focus-visible,
   .category-token:focus-visible,
   .dial-control button:focus-visible,
   .flip-toggle:focus-visible,
@@ -1317,162 +1330,150 @@
 
   .theme-rack {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(min(172px, 100%), 1fr));
+    gap: 12px;
   }
 
-  .theme-cartridge {
-    position: relative;
+  .theme-card-shell {
     display: grid;
-    min-height: 116px;
-    gap: 6px;
-    justify-items: start;
-    overflow: hidden;
-    border: 1px solid rgba(230, 232, 239, 0.18);
-    border-radius: 8px;
-    padding: 12px;
-    background:
-      linear-gradient(135deg, color-mix(in srgb, var(--tone-a) 24%, transparent), transparent 52%),
-      rgba(230, 232, 239, 0.07);
-    color: var(--paper);
-    text-align: left;
-    transition:
-      transform 260ms cubic-bezier(0.16, 1.1, 0.3, 1),
-      border-color 260ms ease,
-      background 260ms ease;
-  }
-
-  .theme-cartridge::after {
-    content: '';
-    position: absolute;
-    right: -18px;
-    bottom: -18px;
-    width: 74px;
-    aspect-ratio: 1;
-    border: 12px solid var(--tone-b);
-    border-radius: 50%;
-    opacity: 0.62;
-  }
-
-  .theme-cartridge span {
-    display: grid;
-    width: 44px;
-    aspect-ratio: 1;
-    place-items: center;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--tone-a), var(--tone-b));
-    color: var(--ink);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
-    font-weight: 900;
-  }
-
-  .theme-cartridge strong,
-  .theme-cartridge em {
-    position: relative;
-    z-index: 1;
-  }
-
-  .theme-cartridge strong {
-    font-size: 1.05rem;
-    line-height: 1;
-    text-transform: uppercase;
-  }
-
-  .theme-cartridge em {
-    color: var(--paper-dim);
-    font-size: 0.75rem;
-    font-style: normal;
-    font-weight: 800;
-  }
-
-  .theme-cartridge:hover,
-  .theme-cartridge.active {
-    border-color: color-mix(in srgb, var(--tone-b) 70%, white);
-    transform: translateY(-5px) rotate(-2deg);
-  }
-
-  .theme-cartridge.active {
-    background:
-      linear-gradient(135deg, color-mix(in srgb, var(--tone-a) 48%, transparent), transparent 56%),
-      rgba(230, 232, 239, 0.14);
+    min-width: 0;
   }
 
   .category-deck {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(158px, 100%), 1fr));
     gap: 12px;
   }
 
   .category-token {
+    position: relative;
     display: grid;
-    min-height: 152px;
+    min-height: 174px;
+    aspect-ratio: 1 / 1.05;
     align-content: space-between;
     justify-items: start;
-    border: 1px solid rgba(11, 16, 32, 0.2);
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--cat-b) 38%, rgba(11, 16, 32, 0.2));
     border-radius: 8px;
-    padding: 12px;
+    padding: 14px;
     background:
-      linear-gradient(160deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.48)),
+      radial-gradient(circle at 80% 18%, color-mix(in srgb, var(--cat-b) 28%, transparent), transparent 32%),
+      linear-gradient(160deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.54)),
       var(--paper);
     color: var(--ink);
     text-align: left;
-    transform: rotate(var(--tilt));
     transition:
       transform 260ms cubic-bezier(0.16, 1.1, 0.3, 1),
+      border-color 260ms ease,
       filter 260ms ease,
       box-shadow 260ms ease;
     animation: token-enter 600ms cubic-bezier(0.16, 1.1, 0.3, 1) both;
     animation-delay: var(--delay);
-    clip-path: polygon(0 0, 92% 0, 100% 18%, 100% 100%, 8% 100%, 0 82%);
+  }
+
+  .category-token::before {
+    content: '';
+    position: absolute;
+    inset: -45% -70%;
+    background: linear-gradient(115deg, transparent 42%, rgba(255, 255, 255, 0.56), transparent 58%);
+    opacity: 0;
+    transform: translateX(-36%);
+    transition:
+      opacity 220ms ease,
+      transform 620ms ease;
+  }
+
+  .category-token::after {
+    content: '';
+    position: absolute;
+    right: -20px;
+    bottom: -20px;
+    width: 78px;
+    aspect-ratio: 1;
+    border-radius: 22px;
+    background: linear-gradient(135deg, var(--cat-a), var(--cat-b));
+    opacity: 0.28;
+    transform: rotate(18deg);
   }
 
   .category-token span {
+    position: relative;
+    z-index: 1;
     display: inline-grid;
     min-width: 44px;
     min-height: 28px;
     place-items: center;
-    background: var(--ink);
-    color: var(--yellow);
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--cat-a), var(--cat-b));
+    color: var(--ink);
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.68rem;
     font-weight: 900;
   }
 
   .category-token strong {
-    font-size: 1.2rem;
+    position: relative;
+    z-index: 1;
+    font-size: clamp(1rem, 1.5vw, 1.22rem);
     line-height: 1;
     text-transform: uppercase;
   }
 
   .category-asset {
-    width: clamp(44px, 5vw, 62px);
+    position: relative;
+    z-index: 1;
+    width: clamp(58px, 7vw, 78px);
     aspect-ratio: 1;
     justify-self: end;
     object-fit: contain;
-    transform: translateY(-4px);
+    filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.18));
+    animation: category-idle 4.6s ease-in-out infinite;
   }
 
   .category-token em {
+    position: relative;
+    z-index: 1;
     color: rgba(11, 16, 32, 0.65);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.68rem;
+    font-size: 0.74rem;
     font-style: normal;
-    font-weight: 900;
-    text-transform: uppercase;
+    font-weight: 850;
+    line-height: 1.25;
   }
 
   .category-token:hover {
     filter: saturate(1.18);
-    transform: rotate(0deg) translateY(-8px) scale(1.03);
+    transform: translateY(-7px) rotateX(3deg) rotateY(-3deg);
     box-shadow: 0 26px 34px rgba(0, 0, 0, 0.2);
   }
 
+  .category-token:hover::before {
+    opacity: 1;
+    transform: translateX(42%);
+  }
+
   .category-token.active {
+    border-color: color-mix(in srgb, var(--cat-b) 68%, white);
     background:
-      linear-gradient(135deg, var(--yellow), var(--hot)),
+      radial-gradient(circle at 82% 18%, color-mix(in srgb, var(--cat-b) 36%, transparent), transparent 32%),
+      linear-gradient(135deg, color-mix(in srgb, var(--cat-a) 56%, white), color-mix(in srgb, var(--cat-b) 48%, white)),
       var(--paper);
-    box-shadow: 0 0 36px rgba(255, 213, 74, 0.2);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--cat-b) 42%, transparent), 0 24px 44px rgba(0, 0, 0, 0.2);
+  }
+
+  .motion-bubble .category-asset {
+    animation-name: category-bubble;
+  }
+
+  .motion-glitch .category-asset {
+    animation-name: category-glitch;
+  }
+
+  .motion-glow .category-asset {
+    animation-name: category-glow;
+  }
+
+  .motion-kick .category-asset {
+    animation-name: category-kick;
   }
 
   .dial-grid {
@@ -2115,11 +2116,55 @@
   @keyframes token-enter {
     from {
       opacity: 0;
-      transform: translateY(22px) rotate(var(--tilt));
+      transform: translateY(22px) scale(0.96);
     }
     to {
       opacity: 1;
-      transform: rotate(var(--tilt));
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes category-idle {
+    50% {
+      transform: translate3d(0, -6px, 0);
+    }
+  }
+
+  @keyframes category-bubble {
+    50% {
+      transform: translate3d(0, -7px, 0) scale(1.04);
+    }
+  }
+
+  @keyframes category-glitch {
+    0%,
+    88%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    90% {
+      transform: translate3d(3px, -1px, 0);
+    }
+    92% {
+      transform: translate3d(-2px, 1px, 0);
+    }
+  }
+
+  @keyframes category-glow {
+    50% {
+      filter: drop-shadow(0 0 14px color-mix(in srgb, var(--cat-b) 72%, transparent));
+      transform: translate3d(0, -4px, 0);
+    }
+  }
+
+  @keyframes category-kick {
+    0%,
+    78%,
+    100% {
+      transform: translate3d(0, 0, 0) rotate(0);
+    }
+    84% {
+      transform: translate3d(5px, -4px, 0) rotate(4deg);
     }
   }
 

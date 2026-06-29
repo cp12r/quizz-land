@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">Internet</title>
+  <desc id="desc">Icone Internet et web pour QuizzLand.</desc>
+  <defs>
+    <linearGradient id="g" x1="46" x2="214" y1="38" y2="218" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#39d5ff"/>
+      <stop offset=".52" stop-color="#3b82f6"/>
+      <stop offset="1" stop-color="#7c5cff"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="52" fill="#07101f"/>
+  <circle cx="128" cy="122" r="72" fill="none" stroke="url(#g)" stroke-width="12"/>
+  <path d="M56 122h144M128 50c22 20 34 44 34 72s-12 52-34 72M128 50c-22 20-34 44-34 72s12 52 34 72" fill="none" stroke="#e6e8ef" stroke-opacity=".76" stroke-width="9" stroke-linecap="round"/>
+  <path d="M78 76c24 13 76 13 100 0M78 168c24-13 76-13 100 0" fill="none" stroke="#39d5ff" stroke-opacity=".72" stroke-width="8" stroke-linecap="round"/>
+  <path d="M51 213h154" stroke="#39d5ff" stroke-opacity=".45" stroke-width="8" stroke-linecap="round"/>
+</svg>
