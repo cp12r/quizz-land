@@ -1,4 +1,6 @@
 <script>
+  import { getSeasonAssetLabel, getSeasonFrame, getSeasonIcon } from '$lib/utils/seasonAssets.js';
+
   export let question = null;
   export let selected = null;
   export let locked = false;
@@ -6,12 +8,19 @@
   export let onAnswer = () => {};
 
   $: hasImage = Boolean(question?.image);
+  $: categoryIcon = question ? getSeasonIcon(question.category) : '';
+  $: categoryFrame = question ? getSeasonFrame(question.category) : '';
+  $: categoryLabel = question ? getSeasonAssetLabel(question.category) : 'Quiz';
 </script>
 
 <section class="card question-card">
   {#if question}
+    <img class="season-frame ql-frame-glow" src={categoryFrame} alt="" aria-hidden="true" loading="lazy" />
     <div class="question-head">
-      <p class="mono eyebrow">{question.category}</p>
+      <p class="mono eyebrow">
+        <img class="category-icon ql-bob" src={categoryIcon} alt="" aria-hidden="true" loading="lazy" />
+        <span>{categoryLabel}</span>
+      </p>
       <h1>{question.text}</h1>
     </div>
 
@@ -84,6 +93,17 @@
       repeating-linear-gradient(90deg, rgba(230, 232, 239, 0.026) 0 1px, transparent 1px 72px);
   }
 
+  .season-frame {
+    position: absolute;
+    inset: 4px;
+    z-index: 0;
+    width: calc(100% - 8px);
+    height: calc(100% - 8px);
+    object-fit: fill;
+    opacity: 0.32;
+    pointer-events: none;
+  }
+
   .question-head,
   .answers,
   .feedback,
@@ -94,11 +114,25 @@
   }
 
   .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    justify-self: start;
     margin: 0;
+    border: 1px solid rgba(255, 213, 74, 0.2);
+    border-radius: 999px;
+    background: rgba(11, 16, 32, 0.5);
     color: var(--color-yellow);
+    padding: 5px 10px 5px 6px;
     font-size: 13px;
     font-weight: 900;
     text-transform: uppercase;
+  }
+
+  .category-icon {
+    width: 34px;
+    aspect-ratio: 1;
+    object-fit: contain;
   }
 
   h1 {

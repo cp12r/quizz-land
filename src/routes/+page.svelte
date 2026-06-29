@@ -2,8 +2,8 @@
   import { onMount } from 'svelte';
   import { pageTitle, siteMeta } from '$lib/config/site.js';
   import SceneBackground3D from '$lib/components/SceneBackground3D.svelte';
-  import SeasonAssetShowcase from '$lib/components/SeasonAssetShowcase.svelte';
   import { createRoom } from '$lib/utils/api.js';
+  import { getSeasonIcon } from '$lib/utils/seasonAssets.js';
   import { initSound, playSound, soundMuted, toggleSound } from '$lib/utils/sound.js';
   import { applyTheme } from '$lib/utils/theme.js';
 
@@ -411,10 +411,6 @@
       </div>
     </section>
 
-    <div class="season-home">
-      <SeasonAssetShowcase compact limitIcons={8} limitFrames={4} />
-    </div>
-
     <section class="control-table" aria-label="Préparation du salon">
       <div class="name-console console-panel">
         <div class="panel-tag">Nom</div>
@@ -463,6 +459,7 @@
               aria-pressed={selectedCategories.includes(category)}
             >
               <span>{meta.stamp}</span>
+              <img class="category-asset ql-bob" src={getSeasonIcon(category)} alt="" aria-hidden="true" loading="lazy" />
               <strong>{readableCategory(category)}</strong>
               <em>{selectedCategories.includes(category) ? 'choisi' : meta.mark}</em>
             </button>
@@ -805,7 +802,6 @@
     grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.78fr);
     grid-template-areas:
       'hero live'
-      'season live'
       'controls live'
       'lab lab'
       'footer footer';
@@ -1018,11 +1014,6 @@
     grid-area: live;
     min-height: 720px;
     perspective: 1200px;
-  }
-
-  .season-home {
-    grid-area: season;
-    min-width: 0;
   }
 
   .screen-stack {
@@ -1415,7 +1406,7 @@
 
   .category-token {
     display: grid;
-    min-height: 132px;
+    min-height: 152px;
     align-content: space-between;
     justify-items: start;
     border: 1px solid rgba(11, 16, 32, 0.2);
@@ -1452,6 +1443,14 @@
     font-size: 1.2rem;
     line-height: 1;
     text-transform: uppercase;
+  }
+
+  .category-asset {
+    width: clamp(44px, 5vw, 62px);
+    aspect-ratio: 1;
+    justify-self: end;
+    object-fit: contain;
+    transform: translateY(-4px);
   }
 
   .category-token em {
@@ -2130,7 +2129,6 @@
       grid-template-areas:
         'hero'
         'live'
-        'season'
         'controls'
         'lab'
         'footer';

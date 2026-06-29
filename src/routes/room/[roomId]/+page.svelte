@@ -8,6 +8,7 @@
   import SceneBackground3D from '$lib/components/SceneBackground3D.svelte';
   import TimerCircle from '$lib/components/TimerCircle.svelte';
   import { getPlayerId } from '$lib/stores/user.js';
+  import { getSeasonIcon } from '$lib/utils/seasonAssets.js';
   import { initSound, playSound, soundMuted, toggleSound } from '$lib/utils/sound.js';
   import { applyTheme } from '$lib/utils/theme.js';
   import { connectRoom } from '$lib/utils/ws.js';
@@ -45,6 +46,7 @@
   let countdownTimer = null;
 
   $: currentQuestion = room.status === 'playing' ? room.questions[room.currentQuestion] : null;
+  $: currentQuestionIcon = currentQuestion ? getSeasonIcon(currentQuestion.category) : '';
   $: shareUrl = typeof location === 'undefined' ? '' : `${location.origin}/room/${room.id}`;
   $: isHost = player && room.hostId === player.id;
   $: canStart = Boolean(isHost && room.players.length >= 2 && !countdownActive);
@@ -551,7 +553,10 @@
       <section class="grid">
         <div class="play">
           <div class="hud">
-            <div>
+            <div class="hud-question">
+              {#if currentQuestionIcon}
+                <img class="hud-season-icon ql-float" src={currentQuestionIcon} alt="" aria-hidden="true" loading="lazy" />
+              {/if}
               <span class="mono">Question {progressText}</span>
               <strong>{answeredCount}/{room.players.length} réponses</strong>
             </div>
@@ -971,6 +976,22 @@
   .hud > div {
     display: grid;
     gap: 4px;
+  }
+
+  .hud-question {
+    position: relative;
+    min-height: 54px;
+    padding-left: 62px;
+  }
+
+  .hud-season-icon {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 50px;
+    aspect-ratio: 1;
+    object-fit: contain;
+    transform: translateY(-50%);
   }
 
   .hud span {
