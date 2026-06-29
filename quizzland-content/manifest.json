@@ -1,0 +1,29 @@
+{
+  "name": "QuizzLand Content",
+  "version": "1.0.0",
+  "basePath": "quizzland-content",
+  "questionFormat": "quizzland-v1",
+  "categories": [
+    { "id": "gaming", "label": "Gaming", "file": "gaming.json" },
+    { "id": "cinema", "label": "Cinéma", "file": "cinema.json" },
+    { "id": "anime", "label": "Anime", "file": "anime.json" },
+    { "id": "musique", "label": "Musique", "file": "musique.json" },
+    { "id": "rap_fr", "label": "Rap FR", "file": "rap_fr.json" },
+    { "id": "rap_us", "label": "Rap US", "file": "rap_us.json" },
+    { "id": "pop_culture", "label": "Pop culture", "file": "pop_culture.json" },
+    { "id": "internet", "label": "Internet", "file": "internet.json" },
+    { "id": "memes", "label": "Mèmes", "file": "memes.json" },
+    { "id": "discord", "label": "Discord", "file": "discord.json" },
+    { "id": "science", "label": "Sciences", "file": "science.json" },
+    { "id": "histoire", "label": "Histoire", "file": "histoire.json" },
+    { "id": "geographie", "label": "Géographie", "file": "geographie.json" },
+    { "id": "sport", "label": "Sport", "file": "sport.json" },
+    { "id": "nourriture", "label": "Nourriture", "file": "nourriture.json" },
+    { "id": "drapeaux", "label": "Drapeaux", "file": "drapeaux.json" },
+    { "id": "logos", "label": "Logos", "file": "logos.json" }
+  ],
+  "assets": {
+    "images": "images",
+    "sounds": "sounds"
+  }
+}
