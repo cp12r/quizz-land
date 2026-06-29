@@ -1,3 +1,5 @@
+import { validateQuestionPack } from '../../../server/lib/questionValidator.js';
+
 export const quizThemes = [
   { id: 'neon', name: 'Néon Pop', className: 'theme-neon' },
   { id: 'candy', name: 'Bonbon', className: 'theme-candy' },
@@ -7,7 +9,7 @@ export const quizThemes = [
 
 export const categories = ['culture', 'science', 'web', 'cinéma', 'sport'];
 
-export const questions = [
+const rawQuestions = [
   {
     id: 'q1',
     category: 'culture',
@@ -94,6 +96,8 @@ export const questions = [
   }
 ];
 
+export const { questions } = validateQuestionPack(rawQuestions, 'builtin');
+
 function cleanString(value, fallback = '') {
   return String(value ?? fallback).trim();
 }
@@ -108,37 +112,16 @@ export function normalizeTheme(themeId) {
 }
 
 export function normalizeQuestions(input = []) {
-  const source = Array.isArray(input) ? input : [];
-
-  return source
-    .slice(0, 80)
-    .map((item, index) => {
-      const answers = Array.isArray(item.answers)
-        ? item.answers
-        : Array.isArray(item.choices)
-          ? item.choices
-          : [];
-      const cleanAnswers = answers.map((answer) => cleanString(answer)).filter(Boolean).slice(0, 6);
-      const correctIndex = Number(item.correctIndex ?? item.correct ?? item.answerIndex);
-      const category = normalizeCategory(item.category || 'perso').slice(0, 32) || 'perso';
-      const text = cleanString(item.text ?? item.question).slice(0, 220);
-      const image = cleanString(item.image ?? item.imageUrl).slice(0, 600);
-      const imageAlt = cleanString(item.imageAlt ?? item.alt).slice(0, 140);
-
-      if (!text || cleanAnswers.length < 2 || !Number.isInteger(correctIndex)) return null;
-      if (correctIndex < 0 || correctIndex >= cleanAnswers.length) return null;
-
-      return {
-        id: cleanString(item.id, `custom-${index + 1}`).slice(0, 80),
-        category,
-        text,
-        answers: cleanAnswers,
-        correctIndex,
-        ...(image ? { image } : {}),
-        ...(imageAlt ? { imageAlt } : {})
-      };
-    })
-    .filter(Boolean);
+  const source = Array.isArray(input) ? input.slice(0, 80) : [];
+  const prepared = source.map((item, index) => ({
+    ...item,
+    id: cleanString(item?.id, `custom-${index + 1}`),
+    category: normalizeCategory(item?.category || 'perso')
+  }));
+  return validateQuestionPack(prepared, 'custom').questions.map((question) => ({
+    ...question,
+    category: normalizeCategory(question.category)
+  }));
 }
 
 function withUniqueQuestionIds(items) {

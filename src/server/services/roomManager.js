@@ -1,15 +1,20 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
+import { config as serverConfig } from '../../../server/config.js';
 import { normalizeCategory, normalizeQuestions, normalizeTheme, pickQuestions, questions as questionBank } from './questions.js';
 import { log } from './logger.js';
 
 const dataFile = join(process.cwd(), 'data', 'rooms.json');
+const backupFile = join(process.cwd(), 'data', 'rooms.backup.json');
 const resultsFile = join(process.cwd(), 'data', 'results.json');
 const rooms = new Map();
 let writeQueue = Promise.resolve();
 let resultWriteQueue = Promise.resolve();
 let hydrated = false;
 let hydrateQueue = null;
+let persistTimer = null;
+let lastPersistLogAt = 0;
+let lastPersistRoomCount = null;
 const DEFAULT_CATEGORIES = ['culture', 'science', 'web'];
 const QUESTION_MAX = 50;
 const ALL_ANSWERED_DELAY_MS = 5000;
@@ -50,14 +55,88 @@ function shouldKeepRoom(room, now = Date.now()) {
   return new Date(room.createdAt).getTime() > now - activeRetentionMs();
 }
 
-async function persist() {
+async function readJsonArray(file) {
+  const raw = await readFile(file, 'utf8');
+  const parsed = JSON.parse(raw);
+  return Array.isArray(parsed) ? parsed : [];
+}
+
+async function restoreRoomsBackup() {
+  const saved = await readJsonArray(backupFile);
+  await mkdir(dirname(dataFile), { recursive: true });
+  const tmpFile = `${dataFile}.restore-${process.pid}-${Date.now()}.tmp`;
+  await writeFile(tmpFile, JSON.stringify(saved, null, 2));
+  await rename(tmpFile, dataFile);
+  log('success', 'rooms restored from backup', { count: saved.length });
+  return saved;
+}
+
+async function readRoomsFromDisk() {
+  try {
+    return await readJsonArray(dataFile);
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      log('info', 'rooms storage missing');
+      return [];
+    }
+
+    log('warn', 'rooms storage corrupted', { error: error.message });
+    try {
+      return await restoreRoomsBackup();
+    } catch (backupError) {
+      log('error', 'rooms backup restore failed', { error: backupError.message });
+      return [];
+    }
+  }
+}
+
+async function writeRoomsAtomically() {
+  await mkdir(dirname(dataFile), { recursive: true });
+
+  try {
+    await copyFile(dataFile, backupFile);
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+  }
+
+  const tmpFile = `${dataFile}.${process.pid}-${Date.now()}.tmp`;
+  try {
+    await writeFile(tmpFile, JSON.stringify([...rooms.values()], null, 2));
+    await rename(tmpFile, dataFile);
+    const now = Date.now();
+    const shouldLog = rooms.size !== lastPersistRoomCount || now - lastPersistLogAt > 30_000;
+    log(shouldLog ? 'success' : 'debug', 'rooms persisted', { activeRooms: rooms.size });
+    lastPersistLogAt = now;
+    lastPersistRoomCount = rooms.size;
+  } catch (error) {
+    try {
+      await unlink(tmpFile);
+    } catch {
+      // temp cleanup best effort
+    }
+    throw error;
+  }
+}
+
+async function flushPersist() {
+  persistTimer = null;
+
   writeQueue = writeQueue.catch((error) => {
-    log('error', 'rooms_storage_write_queue_recovered', { error: error.message });
-  }).then(async () => {
-    await mkdir(dirname(dataFile), { recursive: true });
-    await writeFile(dataFile, JSON.stringify([...rooms.values()], null, 2));
-  });
-  return writeQueue;
+    log('error', 'rooms storage write queue recovered', { error: error.message });
+  }).then(writeRoomsAtomically);
+
+  try {
+    await writeQueue;
+  } catch (error) {
+    log('error', 'rooms storage write failed', { error: error.message });
+  }
+}
+
+async function persist() {
+  if (persistTimer) clearTimeout(persistTimer);
+  persistTimer = setTimeout(() => {
+    flushPersist();
+  }, serverConfig.PERSIST_DEBOUNCE_MS);
 }
 
 async function readResultSnapshots() {
@@ -191,19 +270,12 @@ export async function hydrateRooms(force = false) {
   if (hydrateQueue) return hydrateQueue;
 
   hydrateQueue = (async () => {
-  try {
-    const raw = await readFile(dataFile, 'utf8');
-    const saved = JSON.parse(raw);
+    const saved = await readRoomsFromDisk();
     rooms.clear();
 
     for (const room of saved) {
       if (shouldKeepRoom(room)) rooms.set(room.id, room);
     }
-  } catch (error) {
-    if (error.code !== 'ENOENT') {
-      log('error', 'rooms_storage_read_failed', { error: error.message });
-    }
-  }
 
     hydrated = true;
     await persist();
@@ -263,6 +335,7 @@ export async function createRoom(config = {}) {
   };
   rooms.set(id, room);
   await persist();
+  log('success', 'room created', { roomId: id, maxPlayers: serverConfig.MAX_PLAYERS_PER_ROOM });
   return publicRoom(room);
 }
 
@@ -297,6 +370,7 @@ export async function joinRoom(roomId, playerName, playerId = crypto.randomUUID(
     player.name = playerName || player.name;
   }
   await persist();
+  log('info', 'player joined', { roomId, total: room.players.length });
   return { room: publicRoom(room), player };
 }
 
@@ -309,6 +383,7 @@ export async function startGame(roomId, playerId) {
   room.roundEndsAt = Date.now() + room.config.timePerQuestion * 1000;
   room.answers = [];
   await persist();
+  log('info', 'game started', { roomId, questions: room.questions.length });
   return publicRoom(room);
 }
 
@@ -338,7 +413,10 @@ export async function closeRoom(roomId, reason = 'player_left', delayMs = ROOM_C
 export async function deleteRoom(roomId) {
   await ensureRoomLoaded(roomId);
   const deleted = rooms.delete(roomId);
-  if (deleted) await persist();
+  if (deleted) {
+    await persist();
+    log('info', 'room deleted', { roomId });
+  }
   return deleted;
 }
 
@@ -389,6 +467,8 @@ export async function advanceRound(roomId) {
     room.finishedAt = new Date().toISOString();
     room.deleteAfter = new Date(Date.now() + resultRetentionMs()).toISOString();
     await archiveResult(room);
+    const durationMs = Date.now() - new Date(room.createdAt).getTime();
+    log('success', 'game finished', { roomId, duration: formatDuration(durationMs) });
   } else {
     room.currentQuestion += 1;
     room.roundEndsAt = Date.now() + room.config.timePerQuestion * 1000;
@@ -396,6 +476,13 @@ export async function advanceRound(roomId) {
   room.answers = [];
   await persist();
   return publicRoom(room);
+}
+
+function formatDuration(ms) {
+  const totalSeconds = Math.max(0, Math.round(ms / 1000));
+  const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+  const seconds = String(totalSeconds % 60).padStart(2, '0');
+  return `${minutes}:${seconds}`;
 }
 
 export function getResults(room) {

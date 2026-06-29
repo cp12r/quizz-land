@@ -12,7 +12,7 @@ import {
   submitAnswer,
   updateQuestionCount
 } from '../src/server/services/roomManager.js';
-import { log } from '../src/server/services/logger.js';
+import { log } from './lib/logger.js';
 
 const port = Number(process.env.PORT || 3000);
 const server = createServer(handler);
@@ -145,9 +145,15 @@ wss.on('connection', (ws) => {
         await syncRoom(payload.roomId);
       }
     } catch (error) {
-      log('error', 'websocket_message_failed', { error: error.message });
+      const client = clients.get(ws);
+      log('error', 'ws error', { roomId: client?.roomId, error: 'invalid payload' });
       send(ws, 'error', { message: 'Message invalide.' });
     }
+  });
+
+  ws.on('error', (error) => {
+    const client = clients.get(ws);
+    log('error', 'ws error', { roomId: client?.roomId, error: error.message });
   });
 
   ws.on('close', () => {
@@ -162,5 +168,5 @@ wss.on('connection', (ws) => {
 });
 
 server.listen(port, () => {
-  log('info', 'server_started', { port });
+  log('success', 'server started', { port });
 });
