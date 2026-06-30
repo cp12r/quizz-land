@@ -15,7 +15,9 @@
   let imageLoaded = false;
   let audioFailed = false;
   let audioPlaying = false;
+  let audioLoading = false;
   let audioStopTimer = null;
+  let lastQuestionId = null;
 
   $: media = questionMedia(question);
   $: displayImage = imageFailed && media.imageFallback ? media.imageFallback : media.image;
@@ -26,12 +28,14 @@
   $: categoryLabel = question ? getSeasonAssetLabel(question.category) : 'Quiz';
   $: revealedCorrectIndex = feedback?.correctIndex ?? question?.correctIndex;
 
-  $: if (question?.id) {
+  $: if (question?.id && question.id !== lastQuestionId) {
+    lastQuestionId = question.id;
     imageFailed = false;
     fallbackFailed = false;
     imageLoaded = false;
     audioFailed = false;
     audioPlaying = false;
+    audioLoading = false;
     if (audioEl) {
       stopAudio();
       audioEl.currentTime = 0;
@@ -54,11 +58,13 @@
       audioStopTimer = null;
     }
     audioEl?.pause();
+    audioLoading = false;
     audioPlaying = false;
   }
 
   function playAudioExcerpt() {
     stopAudio();
+    audioLoading = true;
     const start = Number.isFinite(media.audioStart) ? media.audioStart : 0;
     const duration = Number.isFinite(media.audioDuration) ? media.audioDuration : 8;
 
@@ -70,8 +76,10 @@
       }
 
       audioEl.play().then(() => {
+        audioLoading = false;
         audioStopTimer = setTimeout(stopAudio, Math.max(3, Math.min(15, duration)) * 1000);
       }).catch(() => {
+        audioLoading = false;
         audioFailed = true;
       });
     }
@@ -80,6 +88,10 @@
     else {
       audioEl.load();
       audioEl.addEventListener('loadedmetadata', begin, { once: true });
+      audioEl.addEventListener('error', () => {
+        audioLoading = false;
+        audioFailed = true;
+      }, { once: true });
     }
   }
 
@@ -132,11 +144,11 @@
     {#if hasAudio}
       <div class="audio-panel">
         <button type="button" on:click={toggleAudio} aria-label={audioPlaying ? 'Mettre l’extrait en pause' : 'Lire l’extrait audio'}>
-          <span aria-hidden="true">{audioPlaying ? 'Pause' : 'Play'}</span>
+          <span aria-hidden="true">{audioLoading ? '...' : audioPlaying ? 'Pause' : 'Play'}</span>
         </button>
         <div>
           <strong>{media.audioLabel}</strong>
-          <span>{audioPlaying ? 'Lecture en cours' : 'Prêt à écouter'}</span>
+          <span>{audioLoading ? 'Chargement' : audioPlaying ? 'Lecture en cours' : 'Prêt à écouter'}</span>
         </div>
         <audio
           bind:this={audioEl}
