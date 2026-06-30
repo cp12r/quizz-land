@@ -22,7 +22,7 @@
   $: totalScore = resultsData.reduce((sum, player) => sum + player.score, 0);
   $: siteUrl = typeof location === 'undefined' ? '' : location.origin;
   $: title = pageTitle(winner ? `${winner.name} remporte le quiz` : 'Classement final');
-  $: description = `Classement final du salon ${roomData.id} sur ${siteMeta.name}. Resultats temporaires disponibles apres la partie.`;
+  $: description = `Classement final du salon ${roomData.id} sur ${siteMeta.name}. Résultats temporaires disponibles après la partie.`;
 
   function restoreResultBackup() {
     if (typeof sessionStorage === 'undefined' || resultsData.length) return;
@@ -102,8 +102,8 @@
       <EmptyState
         icon="?"
         eyebrow="Scores"
-        title="Resultats indisponibles"
-        detail="La partie est terminee, mais le classement n'a pas pu etre recupere sur cet appareil."
+        title="Résultats indisponibles"
+        detail="La partie est terminée, mais le classement n'a pas pu être récupéré sur cet appareil."
         actionLabel="Nouveau salon"
         href="/"
       />
@@ -113,7 +113,7 @@
       <div class="board-head">
         <div>
           <p class="mono">Scores</p>
-          <h2>Resultats</h2>
+          <h2>Résultats</h2>
         </div>
         <span class="total mono">{totalScore} pts</span>
       </div>
@@ -123,7 +123,7 @@
         <article
           class:leader={index === 0}
           class="row"
-          aria-label={`${index + 1}e place : ${player.name}, ${revealed ? `${player.score} points` : 'score masque'}`}
+          aria-label={`${index + 1}e place : ${player.name}, ${revealed ? `${player.score} points` : 'score masqué'}`}
           style={`--row-delay:${Math.min(index, 10) * 38}ms; --badge-tone:${badge.tone};`}
         >
           <span class="rank-badge mono">{index + 1}</span>
@@ -138,12 +138,12 @@
     </section>
 
     {#if roomData.deleteAfter}
-      <p class="retention mono">Donnees temporaires jusqu'a {new Date(roomData.deleteAfter).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</p>
+      <p class="retention mono">Données temporaires jusqu'à {new Date(roomData.deleteAfter).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</p>
     {/if}
 
     <div class="actions">
       <Button href="/">Nouveau salon</Button>
-      <Button variant="secondary" onclick={copyResults}>{copied ? 'JSON copie' : 'Exporter JSON'}</Button>
+      <Button variant="secondary" onclick={copyResults}>{copied ? 'JSON copié' : 'Exporter JSON'}</Button>
     </div>
   </section>
 </main>

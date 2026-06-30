@@ -4,7 +4,7 @@
   export let disabled = false;
 
   const fallback = {
-    name: 'Theme',
+    name: 'Thème',
     label: 'Preset visuel',
     icon: '/season-1/icons/theme-neon.svg',
     colors: ['#ff4f79', '#39d5ff'],

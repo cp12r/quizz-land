@@ -22,7 +22,7 @@
   }
 </script>
 
-<section class="theme-picker" aria-label="Selection du theme">
+<section class="theme-picker" aria-label="Sélection du thème">
   {#if themes.length}
     <div class="theme-grid">
       {#each themes as theme, index (theme.id)}
@@ -43,15 +43,15 @@
             {/each}
           </div>
           <button type="button" on:click={() => onSelect(theme.id)} aria-pressed={selected === theme.id}>
-            {selected === theme.id ? 'Selectionne' : 'Selectionner'}
+            {selected === theme.id ? 'Sélectionné' : 'Sélectionner'}
           </button>
         </article>
       {/each}
     </div>
   {:else}
     <div class="empty-themes">
-      <strong>Aucun theme disponible</strong>
-      <span>Relance la page ou cree une room avec les reglages par defaut.</span>
+      <strong>Aucun thème disponible</strong>
+      <span>Relance la page ou crée une room avec les réglages par défaut.</span>
     </div>
   {/if}
 </section>
@@ -63,7 +63,7 @@
 
   .theme-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr));
     gap: 12px;
   }
 
@@ -71,6 +71,7 @@
     position: relative;
     display: grid;
     min-width: 0;
+    min-height: 246px;
     gap: 12px;
     overflow: hidden;
     border: 1px solid rgba(230, 232, 239, 0.16);
@@ -124,6 +125,10 @@
     gap: 8px;
   }
 
+  .theme-copy {
+    min-width: 0;
+  }
+
   img {
     width: 50px;
     aspect-ratio: 1;
@@ -145,10 +150,11 @@
   }
 
   h3 {
-    overflow-wrap: anywhere;
-    font-size: 1.08rem;
+    font-size: clamp(1rem, 1.7vw, 1.16rem);
     line-height: 1;
     text-transform: uppercase;
+    word-break: normal;
+    overflow-wrap: anywhere;
   }
 
   p {
@@ -181,12 +187,17 @@
 
   button {
     min-height: 42px;
+    width: 100%;
     border: 1px solid rgba(230, 232, 239, 0.18);
     border-radius: 8px;
     background: #e6e8ef;
     color: #0b1020;
+    padding: 0 8px;
+    font-size: clamp(0.78rem, 1.5vw, 0.9rem);
     font-weight: 950;
+    line-height: 1.05;
     text-transform: uppercase;
+    white-space: normal;
   }
 
   .selected button {

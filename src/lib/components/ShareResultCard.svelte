@@ -29,7 +29,7 @@
   async function shareResult() {
     if (typeof navigator === 'undefined') return copyResult();
     if (navigator.share) {
-      await navigator.share({ title: 'Resultat QuizzLand', text: shareText, url: shareLink }).catch(() => {});
+      await navigator.share({ title: 'Résultat QuizzLand', text: shareText, url: shareLink }).catch(() => {});
       return;
     }
     await copyResult();
@@ -70,7 +70,7 @@
       <img src={qrUrl} alt="QR code QuizzLand" loading="lazy" />
     {/if}
     <div class="share-actions">
-      <button type="button" on:click={copyResult}>{copied ? 'Resultat copie' : 'Copier le resultat'}</button>
+      <button type="button" on:click={copyResult}>{copied ? 'Résultat copié' : 'Copier le résultat'}</button>
       <button type="button" class="share-main" on:click={shareResult}>Partager</button>
     </div>
   </div>

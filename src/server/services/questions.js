@@ -45,6 +45,64 @@ export const quizThemes = [
 
 export const categories = ['culture', 'science', 'web', 'cinéma', 'sport'];
 
+export const gameModes = [
+  {
+    id: 'classic',
+    name: 'Classic Quiz',
+    label: 'Quiz net, rapide, efficace',
+    questionCount: 8,
+    timePerQuestion: 30,
+    bonusTimer: true,
+    scoreMultiplier: 1,
+    categories: null,
+    shuffleAnswers: false
+  },
+  {
+    id: 'chaos',
+    name: 'Chaos Mode',
+    label: 'Questions pièges et rythme nerveux',
+    questionCount: 12,
+    timePerQuestion: 15,
+    bonusTimer: true,
+    scoreMultiplier: 1.15,
+    categories: null,
+    shuffleAnswers: true
+  },
+  {
+    id: 'world-cup-2026',
+    name: 'World Cup 2026',
+    label: 'Ambiance stade et clutch',
+    questionCount: 10,
+    timePerQuestion: 25,
+    bonusTimer: true,
+    scoreMultiplier: 1.2,
+    categories: ['sport'],
+    shuffleAnswers: false
+  },
+  {
+    id: 'blindtest',
+    name: 'Blindtest',
+    label: 'Prêt pour les sons',
+    questionCount: 8,
+    timePerQuestion: 20,
+    bonusTimer: true,
+    scoreMultiplier: 1.1,
+    categories: ['culture', 'web'],
+    shuffleAnswers: true
+  },
+  {
+    id: 'duel',
+    name: 'Duel',
+    label: 'Face-a-face express',
+    questionCount: 7,
+    timePerQuestion: 18,
+    bonusTimer: true,
+    scoreMultiplier: 1.25,
+    categories: null,
+    shuffleAnswers: false
+  }
+];
+
 const rawQuestions = [
   {
     id: 'q1',
@@ -145,6 +203,10 @@ export function normalizeCategory(value) {
 
 export function normalizeTheme(themeId) {
   return quizThemes.find((theme) => theme.id === themeId) || quizThemes[0];
+}
+
+export function normalizeGameMode(modeId) {
+  return gameModes.find((mode) => mode.id === modeId) || gameModes[0];
 }
 
 export function normalizeQuestions(input = []) {

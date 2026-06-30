@@ -28,24 +28,24 @@
         {@const badge = getPlayerBadge(player, index, rankedPlayers)}
         <li
           class:podium={index < 3}
-          aria-label={maskScores ? `${player.name}, rang et score masques` : undefined}
+          aria-label={maskScores ? `${player.name}, rang et score masqués` : undefined}
           style={`--row-delay:${Math.min(index, 8) * 42}ms; --badge-tone:${badge.tone};`}
         >
           <span class:masked={maskScores} class="rank mono" aria-hidden={maskScores}>
             {rankLabel(index)}
           </span>
           <span class="avatar" aria-hidden="true">{player.name?.slice(0, 1) || '?'}</span>
-          {#if maskScores}<span class="sr-only">Rang masque</span>{/if}
+          {#if maskScores}<span class="sr-only">Rang masqué</span>{/if}
           <span class="player-copy">
             <strong class:masked={maskScores} aria-hidden={maskScores}>{player.name}</strong>
             <em>{badge.label}</em>
           </span>
-          {#if maskScores}<span class="sr-only">Pseudo masque</span>{/if}
+          {#if maskScores}<span class="sr-only">Pseudo masqué</span>{/if}
           {#if player.id === hostId}<small>Host</small>{/if}
           <span class:masked={maskScores} class="score mono" aria-hidden={maskScores}>
             {maskScores ? '---' : player.score}
           </span>
-          {#if maskScores}<span class="sr-only">Score masque</span>{/if}
+          {#if maskScores}<span class="sr-only">Score masqué</span>{/if}
         </li>
       {/each}
     </ol>

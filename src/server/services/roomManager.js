@@ -1,7 +1,14 @@
 import { copyFile, mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { config as serverConfig } from '../../../server/config.js';
-import { normalizeCategory, normalizeQuestions, normalizeTheme, pickQuestions, questions as questionBank } from './questions.js';
+import {
+  normalizeCategory,
+  normalizeGameMode,
+  normalizeQuestions,
+  normalizeTheme,
+  pickQuestions,
+  questions as questionBank
+} from './questions.js';
 import { log } from './logger.js';
 
 const dataFile = join(process.cwd(), 'data', 'rooms.json');
@@ -235,11 +242,32 @@ function pickRoomQuestions(selectedCategories, count, customQuestions = []) {
   return pickQuestions(categories, count, normalizedCustom);
 }
 
+function shuffleQuestionAnswers(question) {
+  const answers = question.answers.map((answer, index) => ({ answer, index }));
+  const shuffled = answers.sort(() => Math.random() - 0.5);
+  return {
+    ...question,
+    answers: shuffled.map((item) => item.answer),
+    correctIndex: shuffled.findIndex((item) => item.index === question.correctIndex)
+  };
+}
+
+function applyModeToQuestions(questions, mode) {
+  if (!mode.shuffleAnswers) return questions;
+  return questions.map(shuffleQuestionAnswers);
+}
+
+function scoreMultiplier(room) {
+  const multiplier = Number(room.config?.mode?.scoreMultiplier || 1);
+  return Number.isFinite(multiplier) ? Math.max(0.5, Math.min(2, multiplier)) : 1;
+}
+
 function applyQuestionConfig(room, requestedQuestionCount) {
   const customQuestions = roomCustomQuestions(room);
   const categories = normalizedRoomCategories(room.config.categories);
+  const mode = normalizeGameMode(room.config.modeId);
   const questionCount = clampQuestionCount(requestedQuestionCount, categories, customQuestions);
-  const pickedQuestions = pickRoomQuestions(categories, questionCount, customQuestions);
+  const pickedQuestions = applyModeToQuestions(pickRoomQuestions(categories, questionCount, customQuestions), mode);
   const max = maxQuestionCount(categories, customQuestions);
   const min = minQuestionCount(categories);
 
@@ -296,16 +324,19 @@ export async function createRoom(config = {}) {
   await hydrateRooms();
   const id = roomCode();
   const customQuestions = normalizeQuestions(config.customQuestions);
+  const mode = normalizeGameMode(config.modeId);
+  const modeCategories = Array.isArray(mode.categories) ? mode.categories : null;
   const selectedCategories = Array.isArray(config.categories)
     ? config.categories.map(normalizeCategory).filter(Boolean)
-    : DEFAULT_CATEGORIES;
+    : modeCategories || DEFAULT_CATEGORIES;
+  const effectiveCategories = modeCategories || selectedCategories;
   const customOnly = selectedCategories.length === 0 && customQuestions.length > 0;
   const questionCount = customOnly
     ? customQuestions.length
-    : clampQuestionCount(config.questionCount || 8, selectedCategories, customQuestions);
+    : clampQuestionCount(config.questionCount || mode.questionCount || 8, effectiveCategories, customQuestions);
   const theme = normalizeTheme(config.themeId);
-  const pickedQuestions = pickRoomQuestions(selectedCategories, questionCount, customQuestions);
-  const max = maxQuestionCount(selectedCategories, customQuestions);
+  const pickedQuestions = applyModeToQuestions(pickRoomQuestions(effectiveCategories, questionCount, customQuestions), mode);
+  const max = maxQuestionCount(effectiveCategories, customQuestions);
   const room = {
     id,
     name: config.name?.trim() || `Salon ${id}`,
@@ -316,15 +347,24 @@ export async function createRoom(config = {}) {
     finishedAt: null,
     deleteAfter: null,
     config: {
-      categories: selectedCategories,
+      categories: effectiveCategories,
       questionCount: pickedQuestions.length,
       requestedQuestionCount: questionCount,
       availableQuestionCount: max,
-      minQuestionCount: minQuestionCount(selectedCategories),
-      timePerQuestion: Number(config.timePerQuestion || 30),
-      bonusTimer: Boolean(config.bonusTimer),
+      minQuestionCount: minQuestionCount(effectiveCategories),
+      timePerQuestion: Number(config.timePerQuestion || mode.timePerQuestion || 30),
+      bonusTimer: config.bonusTimer === undefined ? Boolean(mode.bonusTimer) : Boolean(config.bonusTimer),
       themeId: theme.id,
       themeName: theme.name,
+      modeId: mode.id,
+      modeName: mode.name,
+      mode: {
+        id: mode.id,
+        name: mode.name,
+        label: mode.label,
+        scoreMultiplier: mode.scoreMultiplier,
+        shuffleAnswers: mode.shuffleAnswers
+      },
       customQuestionCount: customQuestions.length
     },
     players: [],
@@ -435,7 +475,8 @@ export async function submitAnswer(roomId, playerId, answerIndex) {
 
   const correct = Number(answerIndex) === question.correctIndex;
   const remaining = Math.max(0, room.roundEndsAt - now);
-  const points = correct ? 100 + Math.round(remaining / 1000) : 0;
+  const basePoints = 100 + Math.round(remaining / 1000);
+  const points = correct ? Math.round(basePoints * scoreMultiplier(room)) : 0;
   const feedback = {
     playerId,
     questionId: question.id,

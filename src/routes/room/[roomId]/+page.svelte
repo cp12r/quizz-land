@@ -182,7 +182,7 @@
       timerWarningKey = key;
       playSound('timer-low');
       if (payload.remaining === 5 || payload.remaining === 3) {
-        addNotice('Dernieres secondes', `${payload.remaining} secondes restantes`, 'warning');
+        addNotice('Dernières secondes', `${payload.remaining} secondes restantes`, 'warning');
       }
     }
   }
@@ -457,7 +457,7 @@
             eyebrow="Connexion"
             title="Erreur serveur"
             detail={connectionError}
-            actionLabel="Reessayer"
+            actionLabel="Réessayer"
             onAction={join}
           />
         {/if}
@@ -548,7 +548,7 @@
               eyebrow="Host"
               title="Attente de joueurs"
               detail="Il faut au moins 2 joueurs pour lancer une partie."
-              actionLabel={copied ? 'Lien copie' : 'Copier le lien'}
+              actionLabel={copied ? 'Lien copié' : 'Copier le lien'}
               onAction={copyLink}
             />
           {/if}

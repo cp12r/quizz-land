@@ -15,7 +15,7 @@
   const TIME_MIN = 10;
   const TIME_MAX = 120;
   const answerLabels = ['A', 'B', 'C', 'D'];
-  const title = pageTitle('CrÃ©er un quiz multijoueur');
+  const title = pageTitle('Créer un quiz multijoueur');
   const description = siteMeta.description;
 
   const fallbackTheme = data.themes[0] || {
@@ -81,17 +81,19 @@
   let bonusTimer = true;
   let chillMode = false;
   let selectedTheme = data.themes[0]?.id || 'neon';
+  let selectedMode = data.modes?.[0]?.id || 'classic';
   let joinCode = '';
   let creating = false;
   let error = '';
   let pointerX = 50;
   let pointerY = 42;
   let activeDraftId;
-  let customDrafts = [createQuestionDraft('Quelle Ã©quipe gagne ce quiz ?', ['Ã‰quipe A', 'Ã‰quipe B', 'Ã‰quipe C', 'Ã‰quipe D'], 0)];
+  let customDrafts = [createQuestionDraft('Quelle équipe gagne ce quiz ?', ['Équipe A', 'Équipe B', 'Équipe C', 'Équipe D'], 0)];
 
   activeDraftId = customDrafts[0].id;
 
   $: selectedThemeMeta = getThemeMeta(selectedTheme);
+  $: selectedModeMeta = getModeMeta(selectedMode);
   $: roomName = name.trim() || 'Quiz entre amis';
   $: readyCustomQuestions = buildCustomQuestions(customDrafts);
   $: customCount = readyCustomQuestions.length;
@@ -258,6 +260,24 @@
     return data.themes.find((theme) => theme.id === themeId) || fallbackTheme;
   }
 
+  function getModeMeta(modeId) {
+    return (data.modes || []).find((mode) => mode.id === modeId) || {
+      id: 'classic',
+      name: 'Classic Quiz',
+      label: 'Quiz net, rapide, efficace'
+    };
+  }
+
+  function setMode(modeId) {
+    const mode = getModeMeta(modeId);
+    selectedMode = mode.id;
+    if (mode.categories?.length) selectedCategories = mode.categories;
+    if (mode.questionCount) questionCount = clamp(mode.questionCount, QUESTION_MIN, QUESTION_MAX);
+    if (mode.timePerQuestion) timePerQuestion = clamp(mode.timePerQuestion, TIME_MIN, TIME_MAX);
+    if (mode.bonusTimer !== undefined) bonusTimer = Boolean(mode.bonusTimer);
+    playSound('ui');
+  }
+
   function categoryStyle(category, index) {
     const meta = getCategoryMeta(category);
     return `--cat-a:${meta.toneA}; --cat-b:${meta.toneB}; --delay:${index * 70}ms;`;
@@ -289,14 +309,14 @@
       .filter(({ answer }) => answer);
 
     if (filledAnswers.length < 2) {
-      return { ready: false, label: 'brouillon', detail: 'Deux rÃ©ponses minimum' };
+      return { ready: false, label: 'brouillon', detail: 'Deux réponses minimum' };
     }
 
     if (!filledAnswers.some(({ answerIndex }) => answerIndex === draft.correctIndex)) {
-      return { ready: false, label: 'brouillon', detail: 'Bonne rÃ©ponse manquante' };
+      return { ready: false, label: 'brouillon', detail: 'Bonne réponse manquante' };
     }
 
-    return { ready: true, label: 'prÃªt', detail: 'Question prÃªte' };
+    return { ready: true, label: 'prêt', detail: 'Question prête' };
   }
 
   function trackPointer(event) {
@@ -309,7 +329,7 @@
     error = '';
 
     if (!selectedCategories.length && !readyCustomQuestions.length) {
-      error = 'Choisis une catÃ©gorie ou ajoute une question prÃªte.';
+      error = 'Choisis une catégorie ou ajoute une question prête.';
       return;
     }
 
@@ -323,13 +343,14 @@
         timePerQuestion,
         bonusTimer,
         themeId: selectedTheme,
+        modeId: selectedMode,
         questionCount: selectedCategories.length ? questionCount : readyCustomQuestions.length,
         customQuestions: readyCustomQuestions
       });
       location.href = `/room/${room.id}`;
     } catch (err) {
-      console.error('CrÃ©ation du salon impossible', err);
-      error = 'Impossible de crÃ©er le salon pour le moment.';
+      console.error('Création du salon impossible', err);
+      error = 'Impossible de créer le salon pour le moment.';
       creating = false;
     }
   }
@@ -374,12 +395,13 @@
       <div class="hero-copy">
         <p class="brand-line">QUIZZ LAND / QUIZ ENTRE AMIS</p>
         <h1>
-          <span>Cree ta room</span>
-          <span>en 10 secondes.</span>
+          <span>Crée</span>
+          <span>ton quiz.</span>
         </h1>
+        <p class="hero-speed mono">Room prête en 10 secondes</p>
         <div class="quick-actions" aria-label="Actions rapides">
-          <button type="submit" disabled={creating}>Creer une room</button>
-          <a href="#theme-picker">Choisir un theme</a>
+          <button type="submit" disabled={creating}>Créer une room</button>
+          <a href="#theme-picker">Choisir un thème</a>
           <button type="submit" disabled={creating}>Partie rapide</button>
         </div>
         <div class="quick-join" id="join-room">
@@ -391,6 +413,7 @@
           <span>{estimatedDuration} minutes</span>
           <span>{customCountLabel}</span>
           <span>{selectedThemeMeta.name}</span>
+          <span>{selectedModeMeta.name}</span>
         </div>
       </div>
 
@@ -402,11 +425,11 @@
           aria-label={$soundMuted ? 'Activer le son' : 'Couper le son'}
           aria-pressed={!$soundMuted}
         >
-          <span aria-hidden="true">{$soundMuted ? 'ðŸ”‡' : 'ðŸ”Š'}</span>
+          <span aria-hidden="true">{$soundMuted ? 'OFF' : 'ON'}</span>
         </button>
 
         <button class="launch-button" type="submit" disabled={creating}>
-          <span>{creating ? 'Ouverture' : 'CrÃ©er'}</span>
+          <span>{creating ? 'Ouverture' : 'Créer'}</span>
           <strong>{creating ? '...' : 'le salon'}</strong>
         </button>
 
@@ -419,22 +442,22 @@
     </header>
 
     <section class="mode-showcase" aria-label="Modes de jeu">
-      {#each [
-        ['Classic Quiz', 'Quiz net, rapide, efficace'],
-        ['Chaos Mode', 'Questions pieges et rythme nerveux'],
-        ['World Cup 2026', 'Ambiance stade et clutch'],
-        ['Blindtest', 'Pret pour les sons'],
-        ['Duel', 'Face-a-face express']
-      ] as mode, index}
-        <article style={`--mode-delay:${index * 55}ms;`}>
+      {#each data.modes || [] as mode, index}
+        <button
+          type="button"
+          class:active={selectedMode === mode.id}
+          style={`--mode-delay:${index * 55}ms;`}
+          on:click={() => setMode(mode.id)}
+          aria-pressed={selectedMode === mode.id}
+        >
           <span class="mono">{String(index + 1).padStart(2, '0')}</span>
-          <strong>{mode[0]}</strong>
-          <em>{mode[1]}</em>
-        </article>
+          <strong>{mode.name}</strong>
+          <em>{mode.label}</em>
+        </button>
       {/each}
     </section>
 
-    <section class="live-scene" aria-label="AperÃ§u du salon">
+    <section class="live-scene" aria-label="Aperçu du salon">
       <div class="screen-stack">
         <div class="signal-strip" aria-hidden="true">
           <span></span><span></span><span></span><span></span><span></span>
@@ -467,7 +490,7 @@
       </div>
     </section>
 
-    <section class="control-table" aria-label="PrÃ©paration du salon">
+    <section class="control-table" aria-label="Préparation du salon">
       <div class="name-console console-panel">
         <div class="panel-tag">Nom</div>
         <label class="name-field">
@@ -481,12 +504,12 @@
       </div>
 
       <div class="vibe-console console-panel" id="theme-picker">
-        <div class="panel-tag">ThÃ¨me</div>
+        <div class="panel-tag">Thème</div>
         <ThemePicker themes={data.themes} selected={selectedTheme} onSelect={setTheme} />
       </div>
 
       <div class="category-console console-panel">
-        <div class="panel-tag">CatÃ©gories</div>
+        <div class="panel-tag">Catégories</div>
         <div class="category-deck">
           {#each data.categories as category, index}
             {@const meta = getCategoryMeta(category)}
@@ -520,7 +543,7 @@
               -
             </button>
             <div class="dial-face">
-              <span>{selectedCategories.length ? 'questions' : 'perso prÃªtes'}</span>
+              <span>{selectedCategories.length ? 'questions' : 'perso prêtes'}</span>
               <strong>{effectiveQuestionCount}</strong>
             </div>
             <button
@@ -576,11 +599,11 @@
       </div>
     </section>
 
-    <section class="question-lab" aria-label="Ã‰diteur de questions maison">
+    <section class="question-lab" aria-label="Éditeur de questions maison">
       <div class="lab-header">
         <div>
           <p class="panel-tag">Questions perso</p>
-          <h2>Questions personnalisÃ©es</h2>
+          <h2>Questions personnalisées</h2>
         </div>
         <button type="button" class="add-card" on:click={addDraft}>
           <span>+</span>
@@ -588,7 +611,7 @@
         </button>
       </div>
 
-      <div class="draft-strip" aria-label="Questions personnalisÃ©es">
+      <div class="draft-strip" aria-label="Questions personnalisées">
         {#each customDrafts as draft, index (draft.id)}
           {@const state = getDraftState(draft)}
           <div class:active={activeDraftId === draft.id} class:ready={state.ready} class="draft-item">
@@ -636,7 +659,7 @@
               value={activeDraft.text}
               on:input={(event) => updateDraft(activeDraft.id, { text: event.currentTarget.value })}
               maxlength="220"
-              placeholder="Ã‰cris ta question..."
+              placeholder="Écris ta question..."
             ></textarea>
           </label>
 
@@ -647,7 +670,7 @@
                   type="button"
                   class="answer-key"
                   on:click={() => setCorrectAnswer(activeDraft.id, index)}
-                  aria-label={`Marquer la rÃ©ponse ${answerLabels[index]} comme correcte`}
+                  aria-label={`Marquer la réponse ${answerLabels[index]} comme correcte`}
                   aria-pressed={activeDraft.correctIndex === index}
                 >
                   {answerLabels[index]}
@@ -656,7 +679,7 @@
                   value={answer}
                   on:input={(event) => updateAnswer(activeDraft.id, index, event.currentTarget.value)}
                   maxlength="90"
-                  placeholder={`RÃ©ponse ${answerLabels[index]}`}
+                  placeholder={`Réponse ${answerLabels[index]}`}
                 />
               </div>
             {/each}
@@ -664,7 +687,7 @@
 
           <div class="metadata-board">
             <label>
-              <span>CatÃ©gorie</span>
+              <span>Catégorie</span>
               <input
                 value={activeDraft.category}
                 on:input={(event) => updateDraft(activeDraft.id, { category: event.currentTarget.value })}
@@ -696,8 +719,8 @@
 
           {#if activeDraft.image.trim()}
             <figure class="image-preview">
-              <img src={activeDraft.image.trim()} alt={activeDraft.imageAlt.trim() || 'AperÃ§u de lâ€™image'} loading="lazy" />
-              <figcaption>{activeDraft.imageAlt.trim() || 'AperÃ§u image'}</figcaption>
+              <img src={activeDraft.image.trim()} alt={activeDraft.imageAlt.trim() || 'Aperçu image'} loading="lazy" />
+              <figcaption>{activeDraft.imageAlt.trim() || 'Aperçu image'}</figcaption>
             </figure>
           {/if}
         </div>
@@ -705,8 +728,8 @@
 
       <details class="json-sync">
         <summary>
-          <span>AperÃ§u des questions</span>
-          <strong>{customCount} prÃªte{customCount > 1 ? 's' : ''}</strong>
+          <span>Aperçu des questions</span>
+          <strong>{customCount} prête{customCount > 1 ? 's' : ''}</strong>
         </summary>
         <pre>{syncPreview}</pre>
       </details>
@@ -714,7 +737,7 @@
 
     <footer class="creator-footer">
       <div id="creator-status" class="creator-status" role="status" aria-live="polite">
-        <span>{selectedCategories.length} catÃ©gories</span>
+        <span>{selectedCategories.length} catégories</span>
         <span>{customCountLabel}</span>
         <span>{estimatedDuration} minutes</span>
       </div>
@@ -885,8 +908,8 @@
 
   h1 {
     display: grid;
-    max-width: 790px;
-    font-size: 6.9rem;
+    max-width: 700px;
+    font-size: clamp(4.6rem, 8.2vw, 7.6rem);
     line-height: 0.84;
     letter-spacing: 0;
     text-transform: uppercase;
@@ -896,6 +919,19 @@
     color: transparent;
     -webkit-text-stroke: 2px var(--paper);
     text-shadow: 0 20px 55px rgba(229, 57, 53, 0.32);
+  }
+
+  .hero-speed {
+    justify-self: start;
+    margin: -4px 0 0;
+    border: 1px solid rgba(255, 213, 74, 0.26);
+    border-radius: 999px;
+    background: rgba(255, 213, 74, 0.1);
+    color: var(--yellow);
+    padding: 8px 12px;
+    font-size: 0.78rem;
+    font-weight: 950;
+    text-transform: uppercase;
   }
 
   .hero-marquee {
@@ -979,7 +1015,7 @@
     gap: 10px;
   }
 
-  .mode-showcase article {
+  .mode-showcase button {
     display: grid;
     min-width: 0;
     min-height: 132px;
@@ -988,6 +1024,7 @@
     border: 1px solid rgba(230, 232, 239, 0.15);
     border-radius: 8px;
     padding: 14px;
+    text-align: left;
     background:
       radial-gradient(circle at 20% 0%, rgba(57, 213, 255, 0.16), transparent 42%),
       linear-gradient(145deg, rgba(230, 232, 239, 0.09), rgba(230, 232, 239, 0.035)),
@@ -1001,10 +1038,20 @@
       box-shadow 180ms ease;
   }
 
-  .mode-showcase article:hover {
+  .mode-showcase button:hover,
+  .mode-showcase button:focus-visible,
+  .mode-showcase button.active {
     border-color: rgba(57, 213, 255, 0.38);
     box-shadow: 0 22px 44px rgba(0, 0, 0, 0.24), 0 0 24px rgba(57, 213, 255, 0.1);
     transform: translateY(-5px) rotateX(4deg);
+  }
+
+  .mode-showcase button.active {
+    border-color: rgba(255, 213, 74, 0.56);
+    background:
+      radial-gradient(circle at 20% 0%, rgba(255, 213, 74, 0.2), transparent 42%),
+      linear-gradient(145deg, rgba(230, 232, 239, 0.11), rgba(230, 232, 239, 0.04)),
+      rgba(11, 16, 32, 0.78);
   }
 
   .mode-showcase span {
@@ -1032,7 +1079,9 @@
     display: grid;
     justify-items: center;
     gap: 14px;
-    transform: translateY(-18px) rotate(4deg);
+    align-self: start;
+    margin-top: 54px;
+    transform: translateY(-42px) rotate(4deg);
   }
 
   .sound-puck,
@@ -2341,6 +2390,7 @@
 
     .launch-pod {
       justify-items: start;
+      margin-top: 0;
       transform: none;
     }
 
@@ -2390,7 +2440,7 @@
     }
 
     h1 {
-      font-size: 3.05rem;
+      font-size: 3.25rem;
     }
 
     .brand-line,
@@ -2467,7 +2517,7 @@
       scroll-snap-type: x mandatory;
     }
 
-    .mode-showcase article {
+    .mode-showcase button {
       flex: 0 0 min(78vw, 260px);
       scroll-snap-align: start;
     }
