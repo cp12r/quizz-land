@@ -72,6 +72,42 @@
       toneB: '#ffd54a',
       motion: 'kick',
       detail: 'Stades et champions'
+    },
+    chaos: {
+      label: 'Chaos Mode',
+      short: 'Chaos',
+      stamp: '??',
+      toneA: '#ff4f79',
+      toneB: '#7c5cff',
+      motion: 'glitch',
+      detail: 'Pièges rapides'
+    },
+    'world-cup-2026': {
+      label: 'World Cup 2026',
+      short: 'Mondial',
+      stamp: '26',
+      toneA: '#36d27c',
+      toneB: '#ffd54a',
+      motion: 'kick',
+      detail: 'Format et villes hôtes'
+    },
+    blindtest: {
+      label: 'Blindtest',
+      short: 'Blindtest',
+      stamp: 'BT',
+      toneA: '#ff5a5f',
+      toneB: '#ffd54a',
+      motion: 'glow',
+      detail: 'Artistes et classiques'
+    },
+    duel: {
+      label: 'Duel',
+      short: 'Duel',
+      stamp: '1V1',
+      toneA: '#e53935',
+      toneB: '#39d5ff',
+      motion: 'float',
+      detail: 'Face-à-face'
     }
   };
   let draftId = 1;
@@ -95,6 +131,9 @@
 
   $: selectedThemeMeta = getThemeMeta(selectedTheme);
   $: selectedModeMeta = getModeMeta(selectedMode);
+  $: modeUsesDedicatedPool = Boolean(
+    selectedModeMeta.categories?.some((category) => !data.categories.includes(category))
+  );
   $: roomName = name.trim() || 'Quiz entre amis';
   $: readyCustomQuestions = buildCustomQuestions(customDrafts);
   $: customCount = readyCustomQuestions.length;
@@ -104,7 +143,9 @@
   $: activeDraft = customDrafts.find((draft) => draft.id === activeDraftId) || customDrafts[0];
   $: activeDraftIndex = Math.max(0, customDrafts.findIndex((draft) => draft.id === activeDraft?.id));
   $: activeDraftState = activeDraft ? getDraftState(activeDraft) : null;
-  $: categoryLabel = selectedCategories.length
+  $: categoryLabel = modeUsesDedicatedPool
+    ? selectedModeMeta.name
+    : selectedCategories.length
     ? selectedCategories.map((category) => readableCategory(category)).join(' + ')
     : customCount
       ? customCountLabel
@@ -154,6 +195,7 @@
   }
 
   function toggleCategory(category) {
+    if (modeUsesDedicatedPool) return;
     selectedCategories = selectedCategories.includes(category)
       ? selectedCategories.filter((item) => item !== category)
       : [...selectedCategories, category];
@@ -273,6 +315,9 @@
     const mode = getModeMeta(modeId);
     selectedMode = mode.id;
     if (mode.categories?.length) selectedCategories = mode.categories;
+    else if (selectedCategories.some((category) => !data.categories.includes(category))) {
+      selectedCategories = data.categories.slice(0, 3);
+    }
     if (mode.questionCount) questionCount = clamp(mode.questionCount, QUESTION_MIN, QUESTION_MAX);
     if (mode.timePerQuestion) timePerQuestion = clamp(mode.timePerQuestion, TIME_MIN, TIME_MAX);
     if (mode.bonusTimer !== undefined) bonusTimer = Boolean(mode.bonusTimer);
