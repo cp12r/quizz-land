@@ -51,7 +51,7 @@
   {:else}
     <div class="empty-themes">
       <strong>Aucun thème disponible</strong>
-      <span>Relance la page ou crée une room avec les réglages par défaut.</span>
+      <span>Relance la page ou crée un salon avec les réglages par défaut.</span>
     </div>
   {/if}
 </section>

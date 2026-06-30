@@ -48,7 +48,7 @@ export const categories = ['culture', 'science', 'web', 'cinéma', 'sport'];
 export const gameModes = [
   {
     id: 'classic',
-    name: 'Classic Quiz',
+    name: 'Quiz classique',
     label: 'Quiz net, rapide, efficace',
     questionCount: 8,
     timePerQuestion: 30,
@@ -59,7 +59,7 @@ export const gameModes = [
   },
   {
     id: 'chaos',
-    name: 'Chaos Mode',
+    name: 'Mode chaos',
     label: 'Questions pièges et rythme nerveux',
     questionCount: 12,
     timePerQuestion: 15,
@@ -70,7 +70,7 @@ export const gameModes = [
   },
   {
     id: 'world-cup-2026',
-    name: 'World Cup 2026',
+    name: 'Coupe du monde 2026',
     label: 'Format 48 équipes, villes hôtes et grands repères',
     questionCount: 10,
     timePerQuestion: 25,

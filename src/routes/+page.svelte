@@ -74,7 +74,7 @@
       detail: 'Stades et champions'
     },
     chaos: {
-      label: 'Chaos Mode',
+      label: 'Mode chaos',
       short: 'Chaos',
       stamp: '??',
       toneA: '#ff4f79',
@@ -83,7 +83,7 @@
       detail: 'Pièges rapides'
     },
     'world-cup-2026': {
-      label: 'World Cup 2026',
+      label: 'Coupe du monde 2026',
       short: 'Mondial',
       stamp: '26',
       toneA: '#36d27c',
@@ -150,6 +150,9 @@
     : customCount
       ? customCountLabel
       : 'questions perso';
+  $: categoryStatusLabel = modeUsesDedicatedPool
+    ? selectedModeMeta.name
+    : `${selectedCategories.length} catégorie${selectedCategories.length > 1 ? 's' : ''}`;
   $: questionDial = progressDeg(selectedCategories.length ? questionCount : customCount, QUESTION_MIN, QUESTION_MAX);
   $: timeDial = progressDeg(timePerQuestion, TIME_MIN, TIME_MAX);
   $: syncPreview = readyCustomQuestions.length
@@ -306,7 +309,7 @@
   function getModeMeta(modeId) {
     return (data.modes || []).find((mode) => mode.id === modeId) || {
       id: 'classic',
-      name: 'Classic Quiz',
+      name: 'Quiz classique',
       label: 'Quiz net, rapide, efficace'
     };
   }
@@ -444,16 +447,12 @@
           <span>Crée</span>
           <span>ton quiz.</span>
         </h1>
-        <p class="hero-speed mono">Room prête en 10 secondes</p>
-        <div class="quick-actions" aria-label="Actions rapides">
-          <button type="submit" disabled={creating}>Créer une room</button>
-          <a href="#theme-picker">Choisir un thème</a>
-          <button type="submit" disabled={creating}>Partie rapide</button>
-        </div>
-        <div class="quick-join" id="join-room">
-          <input bind:value={joinCode} maxlength="12" placeholder="Code room" aria-label="Code room" />
+        <p class="hero-speed mono">Salon prêt en quelques secondes</p>
+        <label class="quick-join" id="join-room">
+          <span>Déjà invité ?</span>
+          <input bind:value={joinCode} maxlength="12" placeholder="Code du salon" aria-label="Code du salon" />
           <button type="button" on:click={joinRoom}>Rejoindre</button>
-        </div>
+        </label>
         <div class="hero-marquee" aria-hidden="true">
           <span>{categoryLabel}</span>
           <span>{estimatedDuration} minutes</span>
@@ -477,7 +476,7 @@
         </button>
 
         <button class="launch-button" type="submit" disabled={creating}>
-          <span>{creating ? 'Ouverture' : 'Créer'}</span>
+          <span>{creating ? 'Création' : 'Créer'}</span>
           <strong>{creating ? '...' : 'le salon'}</strong>
         </button>
 
@@ -556,27 +555,29 @@
         <ThemePicker themes={data.themes} selected={selectedTheme} onSelect={setTheme} />
       </div>
 
-      <div class="category-console console-panel">
-        <div class="panel-tag">Catégories</div>
-        <div class="category-deck">
-          {#each data.categories as category, index}
-            {@const meta = getCategoryMeta(category)}
-            <button
-              type="button"
-              class:active={selectedCategories.includes(category)}
-              class={`category-token motion-${meta.motion}`}
-              style={categoryStyle(category, index)}
-              on:click={() => toggleCategory(category)}
-              aria-pressed={selectedCategories.includes(category)}
-            >
-              <span>{meta.stamp}</span>
-              <img class="category-asset" src={getSeasonIcon(category)} alt="" aria-hidden="true" loading="lazy" />
-              <strong>{meta.short}</strong>
-              <em>{selectedCategories.includes(category) ? 'sélectionné' : meta.detail}</em>
-            </button>
-          {/each}
+      {#if !modeUsesDedicatedPool}
+        <div class="category-console console-panel">
+          <div class="panel-tag">Catégories</div>
+          <div class="category-deck">
+            {#each data.categories as category, index}
+              {@const meta = getCategoryMeta(category)}
+              <button
+                type="button"
+                class:active={selectedCategories.includes(category)}
+                class={`category-token motion-${meta.motion}`}
+                style={categoryStyle(category, index)}
+                on:click={() => toggleCategory(category)}
+                aria-pressed={selectedCategories.includes(category)}
+              >
+                <span>{meta.stamp}</span>
+                <img class="category-asset" src={getSeasonIcon(category)} alt="" aria-hidden="true" loading="lazy" />
+                <strong>{meta.short}</strong>
+                <em>{selectedCategories.includes(category) ? 'sélectionné' : meta.detail}</em>
+              </button>
+            {/each}
+          </div>
         </div>
-      </div>
+      {/if}
 
       <div class="tempo-console console-panel">
         <div class="panel-tag">Temps</div>
@@ -785,7 +786,7 @@
 
     <footer class="creator-footer">
       <div id="creator-status" class="creator-status" role="status" aria-live="polite">
-        <span>{selectedCategories.length} catégories</span>
+        <span>{categoryStatusLabel}</span>
         <span>{customCountLabel}</span>
         <span>{estimatedDuration} minutes</span>
       </div>
@@ -819,7 +820,7 @@
     position: relative;
     isolation: isolate;
     min-height: 100svh;
-    overflow: hidden;
+    overflow-x: hidden;
     padding: 28px;
     background:
       linear-gradient(118deg, rgba(229, 57, 53, 0.18), transparent 32%),
@@ -957,7 +958,7 @@
   h1 {
     display: grid;
     max-width: 700px;
-    font-size: clamp(4.6rem, 8.2vw, 7.6rem);
+    font-size: clamp(4.6rem, 6.6rem, 7.6rem);
     line-height: 0.84;
     letter-spacing: 0;
     text-transform: uppercase;
@@ -1008,19 +1009,17 @@
     border-right: 1px solid var(--line);
   }
 
-  .quick-actions,
   .quick-join {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(160px, 1fr) auto;
     width: min(720px, 100%);
-    flex-wrap: wrap;
+    align-items: end;
     gap: 10px;
   }
 
-  .quick-actions button,
-  .quick-actions a,
   .quick-join button,
   .quick-join input {
-    min-height: 46px;
+    min-height: 50px;
     border: 1px solid rgba(230, 232, 239, 0.18);
     border-radius: 8px;
     padding: 0 14px;
@@ -1028,8 +1027,15 @@
     text-transform: uppercase;
   }
 
-  .quick-actions button,
-  .quick-actions a,
+  .quick-join span {
+    grid-column: 1 / -1;
+    color: var(--paper-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
   .quick-join button {
     display: inline-grid;
     place-items: center;
@@ -1042,8 +1048,6 @@
       background 180ms ease;
   }
 
-  .quick-actions button:hover,
-  .quick-actions a:hover,
   .quick-join button:hover {
     border-color: rgba(255, 213, 74, 0.42);
     background: rgba(255, 213, 74, 0.12);
@@ -1051,7 +1055,8 @@
   }
 
   .quick-join input {
-    min-width: min(220px, 100%);
+    min-width: 0;
+    width: 100%;
     background: rgba(11, 16, 32, 0.62);
     color: var(--paper);
   }
@@ -2402,14 +2407,15 @@
       grid-template-areas:
         'hero'
         'modes'
-        'live'
         'controls'
         'lab'
+        'live'
         'footer';
     }
 
     .hero {
       min-height: auto;
+      align-items: center;
     }
 
     .live-scene {
@@ -2430,6 +2436,8 @@
 
     .hero {
       grid-template-columns: 1fr;
+      gap: 18px;
+      padding-top: 18px;
     }
 
     h1 {
@@ -2437,9 +2445,15 @@
     }
 
     .launch-pod {
+      grid-template-columns: auto auto;
       justify-items: start;
+      align-items: center;
       margin-top: 0;
       transform: none;
+    }
+
+    .pod-readout {
+      grid-column: 1 / -1;
     }
 
     .control-table,
@@ -2480,15 +2494,25 @@
 
   @media (max-width: 620px) {
     .party-page {
-      padding: 12px;
+      padding: max(14px, env(safe-area-inset-top)) 14px max(18px, env(safe-area-inset-bottom));
     }
 
     .party-stage {
+      gap: 18px;
+    }
+
+    .hero-copy {
       gap: 14px;
     }
 
+    .hero-speed {
+      padding: 7px 10px;
+      font-size: 0.7rem;
+    }
+
     h1 {
-      font-size: 3.25rem;
+      font-size: 3.15rem;
+      line-height: 0.9;
     }
 
     .brand-line,
@@ -2501,6 +2525,7 @@
       min-height: auto;
       flex-wrap: wrap;
       padding: 8px;
+      clip-path: none;
     }
 
     .hero-marquee span {
@@ -2510,24 +2535,42 @@
     }
 
     .launch-button {
-      width: 178px;
+      width: 154px;
     }
 
     .launch-button span {
-      font-size: 1.55rem;
+      font-size: 1.35rem;
     }
 
     .launch-button strong {
-      font-size: 0.94rem;
+      font-size: 0.84rem;
+    }
+
+    .sound-puck {
+      width: 62px;
+    }
+
+    .sound-puck span {
+      font-size: 1.55rem;
     }
 
     .live-scene {
-      min-height: 560px;
+      min-height: auto;
+    }
+
+    .screen-stack {
+      transform: none;
+    }
+
+    .signal-strip,
+    .floating-score {
+      display: none;
     }
 
     .room-screen {
-      min-height: 490px;
-      padding: 20px;
+      min-height: 360px;
+      padding: 18px;
+      clip-path: none;
     }
 
     .room-screen h2 {
@@ -2536,18 +2579,6 @@
 
     .question-broadcast strong {
       font-size: 1.2rem;
-    }
-
-    .floating-score {
-      width: min(230px, 82%);
-    }
-
-    .score-a {
-      top: 454px;
-    }
-
-    .score-b {
-      top: 112px;
     }
 
     .theme-rack,
@@ -2570,7 +2601,6 @@
       scroll-snap-align: start;
     }
 
-    .quick-actions,
     .quick-join {
       display: grid;
       grid-template-columns: 1fr;

@@ -13,7 +13,7 @@ async function readResponse(response) {
 
   if (!response.ok) {
     console.error('Non JSON error response', { status: response.status, contentType, text });
-    throw new Error(`Erreur serveur ${response.status}. Vérifie que Render a bien déployé la dernière version.`);
+    throw new Error(`Erreur serveur ${response.status}. Réessaie dans un instant.`);
   }
 
   console.error('Unexpected non JSON response', { status: response.status, contentType, text });

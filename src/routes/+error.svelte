@@ -25,8 +25,8 @@
       icon={String(status || '!')}
       eyebrow="QuizzLand"
       title={error?.message || 'Page introuvable'}
-      detail="La room est introuvable ou le serveur ne repond pas pour le moment."
-      actionLabel="Retour accueil"
+      detail="Ce salon est introuvable ou temporairement indisponible."
+      actionLabel="Retour à l’accueil"
       href="/"
     />
   </section>
