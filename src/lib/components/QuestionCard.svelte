@@ -11,12 +11,14 @@
 
   let audioEl;
   let imageFailed = false;
+  let fallbackFailed = false;
   let imageLoaded = false;
   let audioFailed = false;
   let audioPlaying = false;
 
   $: media = questionMedia(question);
-  $: hasImage = Boolean(media.image && !imageFailed);
+  $: displayImage = imageFailed && media.imageFallback ? media.imageFallback : media.image;
+  $: hasImage = Boolean(displayImage && !(imageFailed && (!media.imageFallback || fallbackFailed)));
   $: hasAudio = Boolean(media.audio && !audioFailed);
   $: categoryIcon = question ? getSeasonIcon(question.category) : '';
   $: categoryFrame = question ? getSeasonFrame(question.category) : '';
@@ -25,6 +27,7 @@
 
   $: if (question?.id) {
     imageFailed = false;
+    fallbackFailed = false;
     imageLoaded = false;
     audioFailed = false;
     audioPlaying = false;
@@ -67,16 +70,24 @@
     </div>
 
     {#if media.image}
-      <figure class:image-ready={imageLoaded} class:image-missing={imageFailed}>
+      <figure class:image-ready={imageLoaded} class:image-missing={!hasImage}>
         {#if hasImage}
           <div class="media-placeholder" aria-hidden={imageLoaded ? 'true' : 'false'}>Chargement image</div>
           <img
-            src={media.image}
+            src={displayImage}
             alt={media.imageAlt}
             loading="eager"
             decoding="async"
             on:load={() => (imageLoaded = true)}
-            on:error={() => (imageFailed = true)}
+            on:error={() => {
+              if (!imageFailed && media.imageFallback) {
+                imageFailed = true;
+                imageLoaded = false;
+              } else {
+                fallbackFailed = true;
+                imageFailed = true;
+              }
+            }}
           />
         {:else}
           <figcaption>Média indisponible, la question continue.</figcaption>

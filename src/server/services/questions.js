@@ -46,25 +46,29 @@ export const quizThemes = [
 export const categories = ['culture', 'science', 'web', 'cinéma', 'sport'];
 
 const categoryMediaAssets = {
-  anime: { image: '/assets/quiz/images/categories/anime.svg', imageAlt: 'Visuel anime Quizz Land' },
-  blindtest: { image: '/assets/quiz/images/categories/musique.svg', imageAlt: 'Visuel blindtest musical Quizz Land' },
-  cinema: { image: '/assets/quiz/images/categories/cinema.svg', imageAlt: 'Visuel cinéma Quizz Land' },
-  'cinéma': { image: '/assets/quiz/images/categories/cinema.svg', imageAlt: 'Visuel cinéma Quizz Land' },
-  drapeaux: { image: '/assets/quiz/images/categories/drapeaux.svg', imageAlt: 'Drapeaux stylisés Quizz Land' },
-  gaming: { image: '/assets/quiz/images/categories/gaming.svg', imageAlt: 'Visuel jeux vidéo Quizz Land' },
-  geographie: { image: '/assets/quiz/images/categories/geographie.svg', imageAlt: 'Globe stylisé Quizz Land' },
-  'géographie': { image: '/assets/quiz/images/categories/geographie.svg', imageAlt: 'Globe stylisé Quizz Land' },
-  histoire: { image: '/assets/quiz/images/categories/histoire.svg', imageAlt: 'Portrait historique stylisé Quizz Land' },
-  internet: { image: '/assets/quiz/images/categories/internet.svg', imageAlt: 'Fenêtre web stylisée Quizz Land' },
-  logos: { image: '/assets/quiz/images/categories/logos.svg', imageAlt: 'Logos stylisés Quizz Land' },
-  musique: { image: '/assets/quiz/images/categories/musique.svg', imageAlt: 'Notes de musique stylisées Quizz Land' },
-  rap_fr: { image: '/assets/quiz/images/categories/musique.svg', imageAlt: 'Visuel musique Quizz Land' },
-  rap_us: { image: '/assets/quiz/images/categories/musique.svg', imageAlt: 'Visuel musique Quizz Land' },
-  science: { image: '/assets/quiz/images/categories/science.svg', imageAlt: 'Schéma scientifique stylisé Quizz Land' },
-  sport: { image: '/assets/quiz/images/categories/sport.svg', imageAlt: 'Terrain de sport stylisé Quizz Land' },
-  'world-cup-2026': { image: '/assets/quiz/images/categories/sport.svg', imageAlt: 'Terrain de football stylisé Quizz Land' },
-  web: { image: '/assets/quiz/images/categories/internet.svg', imageAlt: 'Fenêtre web stylisée Quizz Land' }
+  anime: mediaImage('https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80', 'Illustration anime depuis Unsplash', '/assets/quiz/images/categories/anime.svg'),
+  blindtest: mediaImage('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80', 'Guitare et ambiance musicale depuis Unsplash', '/assets/quiz/images/categories/musique.svg'),
+  cinema: mediaImage('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80', 'Salle de cinéma depuis Unsplash', '/assets/quiz/images/categories/cinema.svg'),
+  'cinéma': mediaImage('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80', 'Salle de cinéma depuis Unsplash', '/assets/quiz/images/categories/cinema.svg'),
+  drapeaux: mediaImage('https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=1200&q=80', 'Carte et repères de voyage depuis Unsplash', '/assets/quiz/images/categories/drapeaux.svg'),
+  gaming: mediaImage('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80', 'Manette de jeu vidéo depuis Unsplash', '/assets/quiz/images/categories/gaming.svg'),
+  geographie: mediaImage('https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1200&q=80', 'Carte du monde depuis Unsplash', '/assets/quiz/images/categories/geographie.svg'),
+  'géographie': mediaImage('https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1200&q=80', 'Carte du monde depuis Unsplash', '/assets/quiz/images/categories/geographie.svg'),
+  histoire: mediaImage('https://images.unsplash.com/photo-1461360370896-922624d12aa1?auto=format&fit=crop&w=1200&q=80', 'Livres et archives depuis Unsplash', '/assets/quiz/images/categories/histoire.svg'),
+  internet: mediaImage('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80', 'Circuit électronique depuis Unsplash', '/assets/quiz/images/categories/internet.svg'),
+  logos: mediaImage('https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&w=1200&q=80', 'Travail de design graphique depuis Unsplash', '/assets/quiz/images/categories/logos.svg'),
+  musique: mediaImage('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80', 'Guitare et ambiance musicale depuis Unsplash', '/assets/quiz/images/categories/musique.svg'),
+  rap_fr: mediaImage('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80', 'Micro de concert depuis Unsplash', '/assets/quiz/images/categories/musique.svg'),
+  rap_us: mediaImage('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80', 'Micro de concert depuis Unsplash', '/assets/quiz/images/categories/musique.svg'),
+  science: mediaImage('https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1200&q=80', 'Laboratoire scientifique depuis Unsplash', '/assets/quiz/images/categories/science.svg'),
+  sport: mediaImage('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1200&q=80', 'Stade de football depuis Unsplash', '/assets/quiz/images/categories/sport.svg'),
+  'world-cup-2026': mediaImage('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1200&q=80', 'Stade de football depuis Unsplash', '/assets/quiz/images/categories/sport.svg'),
+  web: mediaImage('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80', 'Circuit électronique depuis Unsplash', '/assets/quiz/images/categories/internet.svg')
 };
+
+function mediaImage(image, imageAlt, imageFallback) {
+  return { image, imageAlt, imageFallback };
+}
 
 export const gameModes = [
   {

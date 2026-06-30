@@ -9,6 +9,7 @@ const maxQuestionsPerPack = 500;
 const mediaRoot = '/assets/quiz';
 const imageExtensions = new Set(['.avif', '.gif', '.jpg', '.jpeg', '.png', '.svg', '.webp']);
 const audioExtensions = new Set(['.aac', '.m4a', '.mp3', '.ogg', '.wav', '.webm']);
+const externalImageHosts = new Set(['images.unsplash.com']);
 
 function cleanString(value, maxLength) {
   const text = String(value ?? '').trim();
@@ -39,7 +40,11 @@ function isExistingStaticAsset(path) {
 
 function isSafeMedia(value, kind) {
   if (!value) return true;
-  if (isExternalUrl(value)) return kind === 'image' && config.ALLOW_EXTERNAL_IMAGES;
+  if (isExternalUrl(value)) {
+    if (kind !== 'image') return false;
+    const host = new URL(value).hostname.toLowerCase();
+    return config.ALLOW_EXTERNAL_IMAGES || externalImageHosts.has(host);
+  }
   if (value.includes('..') || value.includes('\\')) return false;
 
   const path = normalizeAssetPath(value);
@@ -58,13 +63,14 @@ export function validateQuestion(item, index = 0) {
   const answers = Array.isArray(item.answers) ? item.answers : Array.isArray(item.choices) ? item.choices : null;
   const correctIndex = Number(item.correctIndex ?? item.correct ?? item.answerIndex);
   const image = normalizeAssetPath(item.image ?? item.imageUrl);
+  const imageFallback = normalizeAssetPath(item.imageFallback ?? item.fallbackImage);
   const audio = normalizeAssetPath(item.audio ?? item.audioUrl ?? item.sound ?? item.soundUrl);
   const explanation = cleanString(item.explanation, config.MAX_EXPLANATION_LENGTH);
   const difficulty = cleanString(item.difficulty, 16);
 
   if (!Array.isArray(answers) || answers.length < 2 || answers.length > 4) return null;
   if (!Number.isInteger(correctIndex) || correctIndex < 0 || correctIndex >= answers.length) return null;
-  if (!isSafeMedia(image, 'image') || !isSafeMedia(audio, 'audio')) return null;
+  if (!isSafeMedia(image, 'image') || !isSafeMedia(imageFallback, 'image') || !isSafeMedia(audio, 'audio')) return null;
 
   const normalized = {
     id: cleanString(item.id, 80) || `question-${index + 1}`,
@@ -81,6 +87,7 @@ export function validateQuestion(item, index = 0) {
   if (difficulty && difficulties.has(difficulty)) normalized.difficulty = difficulty;
   if (explanation) normalized.explanation = explanation;
   if (image) normalized.image = image;
+  if (imageFallback) normalized.imageFallback = imageFallback;
   if (audio) normalized.audio = audio;
 
   const imageAlt = cleanString(item.imageAlt ?? item.alt, 140);

@@ -35,19 +35,23 @@ Les anciens JSON restent valides. Les champs média sont optionnels et ne change
 
 Structure publique recommandée :
 
-- Images : `static/assets/quiz/images/...`
+- Images locales/fallback : `static/assets/quiz/images/...`
 - Audio : `static/assets/quiz/audio/...`
 - JSON : `quizzland-content/*.json`
 - Thèmes UI : `static/season-1/...`
 
-Dans un JSON, référence un fichier public avec un chemin absolu simple :
+Les catégories enrichies automatiquement utilisent une banque gratuite servie par CDN via `https://images.unsplash.com/...`.
+Le validateur autorise ce domaine par défaut et garde les SVG locaux comme fallback avec `imageFallback`.
+
+Dans un JSON, référence un fichier public avec un chemin absolu simple ou une image Unsplash CDN :
 
 ```json
 {
   "id": "cinema-poster-001",
   "category": "cinema",
   "text": "Quel film est associé à cette affiche ?",
-  "image": "/assets/quiz/images/cinema/matrix-poster.webp",
+  "image": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80",
+  "imageFallback": "/assets/quiz/images/categories/cinema.svg",
   "imageAlt": "Affiche verte avec code numérique",
   "answers": ["Inception", "The Matrix", "Tron", "Blade Runner"],
   "correctIndex": 1,
@@ -85,6 +89,7 @@ Validation :
 - `image` accepte `.avif`, `.gif`, `.jpg`, `.jpeg`, `.png`, `.svg`, `.webp`.
 - `audio` accepte `.aac`, `.m4a`, `.mp3`, `.ogg`, `.wav`, `.webm`.
 - Les fichiers locaux doivent exister sous `static/assets/quiz/images` ou `static/assets/quiz/audio`.
+- Les images CDN sont limitées à `images.unsplash.com` par défaut.
 - Les chemins avec `..`, antislash ou dossier inattendu sont refusés.
 - Si un média ne charge pas dans le navigateur, la partie continue et affiche un fallback.
 

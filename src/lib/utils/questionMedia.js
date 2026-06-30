@@ -3,6 +3,7 @@ const mediaCache = new Map();
 export function questionMedia(question) {
   return {
     image: question?.image || '',
+    imageFallback: question?.imageFallback || '',
     audio: question?.audio || '',
     imageAlt: question?.imageAlt || question?.text || 'Illustration de la question',
     audioLabel: question?.audioLabel || 'Extrait audio de la question'
@@ -27,6 +28,23 @@ export function preloadQuestionMedia(question) {
       };
       image.decoding = 'async';
       image.src = media.image;
+    }));
+  }
+
+  if (media.imageFallback && !mediaCache.has(media.imageFallback)) {
+    mediaCache.set(media.imageFallback, 'loading');
+    jobs.push(new Promise((resolve) => {
+      const image = new Image();
+      image.onload = () => {
+        mediaCache.set(media.imageFallback, 'ready');
+        resolve(true);
+      };
+      image.onerror = () => {
+        mediaCache.set(media.imageFallback, 'failed');
+        resolve(false);
+      };
+      image.decoding = 'async';
+      image.src = media.imageFallback;
     }));
   }
 
