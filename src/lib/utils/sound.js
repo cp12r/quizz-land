@@ -85,6 +85,10 @@ export function playSound(name) {
       { frequency: 659, duration: 0.16, type: 'triangle', gain: 0.28, delay: 0.18 }
     ],
     select: [{ frequency: 620, duration: 0.08, type: 'sine', gain: 0.30 }],
+    'timer-low': [
+      { frequency: 740, duration: 0.05, type: 'square', gain: 0.18 },
+      { frequency: 520, duration: 0.05, type: 'square', gain: 0.14, delay: 0.06 }
+    ],
     correct: [
       { frequency: 523, duration: 0.09, type: 'triangle', gain: 0.34 },
       { frequency: 784, duration: 0.12, type: 'triangle', gain: 0.32, delay: 0.08 }

@@ -4,7 +4,7 @@
 
   $: progress = total ? Math.max(0, Math.min(1, remaining / total)) : 0;
   $: dash = `${Math.round(progress * 100)} 100`;
-  $: urgent = progress <= 0.25;
+  $: urgent = remaining <= 5 && remaining > 0;
 </script>
 
 <div class:urgent class="timer" aria-label={`${remaining} secondes restantes`}>

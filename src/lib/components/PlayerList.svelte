@@ -1,4 +1,6 @@
 <script>
+  import { getPlayerBadge } from '$lib/utils/playerBadges.js';
+
   export let players = [];
   export let hostId = null;
   export let maskScores = false;
@@ -23,22 +25,27 @@
   {#if players.length}
     <ol>
       {#each rankedPlayers as player, index}
+        {@const badge = getPlayerBadge(player, index, rankedPlayers)}
         <li
           class:podium={index < 3}
-          aria-label={maskScores ? `${player.name}, rang et score masqués` : undefined}
-          style={`--row-delay:${Math.min(index, 8) * 42}ms;`}
+          aria-label={maskScores ? `${player.name}, rang et score masques` : undefined}
+          style={`--row-delay:${Math.min(index, 8) * 42}ms; --badge-tone:${badge.tone};`}
         >
           <span class:masked={maskScores} class="rank mono" aria-hidden={maskScores}>
             {rankLabel(index)}
           </span>
-          {#if maskScores}<span class="sr-only">Rang masqué</span>{/if}
-          <strong class:masked={maskScores} aria-hidden={maskScores}>{player.name}</strong>
-          {#if maskScores}<span class="sr-only">Pseudo masqué</span>{/if}
+          <span class="avatar" aria-hidden="true">{player.name?.slice(0, 1) || '?'}</span>
+          {#if maskScores}<span class="sr-only">Rang masque</span>{/if}
+          <span class="player-copy">
+            <strong class:masked={maskScores} aria-hidden={maskScores}>{player.name}</strong>
+            <em>{badge.label}</em>
+          </span>
+          {#if maskScores}<span class="sr-only">Pseudo masque</span>{/if}
           {#if player.id === hostId}<small>Host</small>{/if}
           <span class:masked={maskScores} class="score mono" aria-hidden={maskScores}>
             {maskScores ? '---' : player.score}
           </span>
-          {#if maskScores}<span class="sr-only">Score masqué</span>{/if}
+          {#if maskScores}<span class="sr-only">Score masque</span>{/if}
         </li>
       {/each}
     </ol>
@@ -97,10 +104,10 @@
 
   li {
     display: grid;
-    grid-template-columns: 42px minmax(0, 1fr) auto auto;
+    grid-template-columns: 42px 38px minmax(0, 1fr) auto auto;
     align-items: center;
     gap: 10px;
-    min-height: 54px;
+    min-height: 58px;
     border: 1px solid rgba(230, 232, 239, 0.12);
     border-radius: 8px;
     background: rgba(33, 42, 69, 0.62);
@@ -123,10 +130,61 @@
     box-shadow: 0 12px 26px rgba(0, 0, 0, 0.16);
   }
 
+  .podium:first-child {
+    border-color: rgba(255, 213, 74, 0.36);
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.16), 0 0 26px rgba(255, 213, 74, 0.12);
+  }
+
+  .rank {
+    display: grid;
+    min-height: 34px;
+    place-items: center;
+    border-radius: 8px;
+    background: rgba(11, 16, 32, 0.6);
+    color: var(--color-yellow);
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .avatar {
+    display: grid;
+    width: 38px;
+    aspect-ratio: 1;
+    place-items: center;
+    border: 1px solid color-mix(in srgb, var(--badge-tone) 48%, white);
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.32), transparent 34%),
+      var(--badge-tone);
+    color: #0b1020;
+    font-weight: 950;
+    text-transform: uppercase;
+  }
+
+  .player-copy {
+    display: grid;
+    min-width: 0;
+    gap: 3px;
+  }
+
   strong {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  em {
+    justify-self: start;
+    border: 1px solid color-mix(in srgb, var(--badge-tone) 38%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--badge-tone) 13%, transparent);
+    color: var(--badge-tone);
+    padding: 3px 7px;
+    font-size: 0.62rem;
+    font-style: normal;
+    font-weight: 950;
+    line-height: 1;
+    text-transform: uppercase;
   }
 
   small {
@@ -140,17 +198,6 @@
     padding: 0 8px;
     font-weight: 900;
     font-size: 12px;
-  }
-
-  .rank {
-    display: grid;
-    min-height: 34px;
-    place-items: center;
-    border-radius: 8px;
-    background: rgba(11, 16, 32, 0.6);
-    color: var(--color-yellow);
-    font-size: 12px;
-    font-weight: 900;
   }
 
   .score {
@@ -177,11 +224,24 @@
 
   @media (max-width: 520px) {
     li {
-      grid-template-columns: 38px minmax(0, 1fr) auto;
+      grid-template-columns: 34px 34px minmax(0, 1fr) auto;
+      gap: 8px;
+      padding-inline: 10px;
     }
 
     small {
       display: none;
+    }
+
+    .avatar {
+      width: 34px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    li {
+      animation: none;
+      transition: none;
     }
   }
 </style>

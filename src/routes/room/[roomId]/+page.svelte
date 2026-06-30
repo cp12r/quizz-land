@@ -3,6 +3,7 @@
   import Button from '$lib/components/Button.svelte';
   import { pageTitle, siteMeta } from '$lib/config/site.js';
   import AnswerImpactEffect from '$lib/components/AnswerImpactEffect.svelte';
+  import EmptyState from '$lib/components/EmptyState.svelte';
   import PlayerList from '$lib/components/PlayerList.svelte';
   import QuestionCard from '$lib/components/QuestionCard.svelte';
   import SceneBackground3D from '$lib/components/SceneBackground3D.svelte';
@@ -176,10 +177,13 @@
     remaining = payload.remaining;
     if (room.status !== 'playing' || !currentQuestion) return;
 
-    const key = `${room.currentQuestion}:3`;
-    if (payload.remaining === 3 && timerWarningKey !== key) {
+    const key = `${room.currentQuestion}:${payload.remaining}`;
+    if (payload.remaining <= 5 && payload.remaining > 0 && timerWarningKey !== key) {
       timerWarningKey = key;
-      addNotice('Dernières secondes', '3 secondes restantes', 'warning');
+      playSound('timer-low');
+      if (payload.remaining === 5 || payload.remaining === 3) {
+        addNotice('Dernieres secondes', `${payload.remaining} secondes restantes`, 'warning');
+      }
     }
   }
 
@@ -447,7 +451,16 @@
           <span>Pseudo</span>
           <input bind:value={playerName} maxlength="24" placeholder="Ton nom" autocomplete="nickname" />
         </label>
-        {#if connectionError}<p id="join-status" class="error" role="alert">{connectionError}</p>{/if}
+        {#if connectionError}
+          <EmptyState
+            icon="!"
+            eyebrow="Connexion"
+            title="Erreur serveur"
+            detail={connectionError}
+            actionLabel="Reessayer"
+            onAction={join}
+          />
+        {/if}
         <Button type="submit" disabled={joining}>
           {joining ? 'Connexion…' : 'Rejoindre'}
         </Button>
@@ -530,9 +543,14 @@
           </div>
 
           {#if isHost && room.players.length < 2}
-            <p class="start-hint" role="status">
-              Il faut au moins 2 joueurs pour lancer une partie.
-            </p>
+            <EmptyState
+              icon="H"
+              eyebrow="Host"
+              title="Attente de joueurs"
+              detail="Il faut au moins 2 joueurs pour lancer une partie."
+              actionLabel={copied ? 'Lien copie' : 'Copier le lien'}
+              onAction={copyLink}
+            />
           {/if}
         </div>
 

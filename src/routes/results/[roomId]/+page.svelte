@@ -1,10 +1,13 @@
 <script>
   import { onMount } from 'svelte';
   import Button from '$lib/components/Button.svelte';
+  import EmptyState from '$lib/components/EmptyState.svelte';
   import { pageTitle, siteMeta } from '$lib/config/site.js';
   import SceneBackground3D from '$lib/components/SceneBackground3D.svelte';
   import ScoreboardStage3D from '$lib/components/ScoreboardStage3D.svelte';
+  import ShareResultCard from '$lib/components/ShareResultCard.svelte';
   import { initSound, playSound, soundMuted, toggleSound } from '$lib/utils/sound.js';
+  import { getPlayerBadge } from '$lib/utils/playerBadges.js';
   import { applyTheme } from '$lib/utils/theme.js';
 
   export let data;
@@ -17,8 +20,9 @@
   $: exportText = JSON.stringify({ room: roomData.id, config: roomData.config, results: resultsData }, null, 2);
   $: winner = resultsData[0];
   $: totalScore = resultsData.reduce((sum, player) => sum + player.score, 0);
+  $: siteUrl = typeof location === 'undefined' ? '' : location.origin;
   $: title = pageTitle(winner ? `${winner.name} remporte le quiz` : 'Classement final');
-  $: description = `Classement final du salon ${roomData.id} sur ${siteMeta.name}. Résultats temporaires disponibles après la partie.`;
+  $: description = `Classement final du salon ${roomData.id} sur ${siteMeta.name}. Resultats temporaires disponibles apres la partie.`;
 
   function restoreResultBackup() {
     if (typeof sessionStorage === 'undefined' || resultsData.length) return;
@@ -87,54 +91,59 @@
         aria-label={$soundMuted ? 'Activer le son' : 'Couper le son'}
         aria-pressed={!$soundMuted}
       >
-        <span aria-hidden="true">{$soundMuted ? '🔇' : '🔊'}</span>
+        <span aria-hidden="true">{$soundMuted ? 'OFF' : 'ON'}</span>
       </button>
     </header>
 
     {#if resultsData.length}
       <ScoreboardStage3D results={resultsData} {revealed} />
+      <ShareResultCard player={winner} results={resultsData} room={roomData} {siteUrl} />
     {:else}
-      <section class="card board empty-results" role="status">
-        <div class="board-head">
-          <div>
-            <p class="mono">Scores</p>
-            <h2>Résultats indisponibles</h2>
-          </div>
-        </div>
-        <p>La partie est terminée, mais le classement n'a pas pu être récupéré sur cet appareil.</p>
-      </section>
+      <EmptyState
+        icon="?"
+        eyebrow="Scores"
+        title="Resultats indisponibles"
+        detail="La partie est terminee, mais le classement n'a pas pu etre recupere sur cet appareil."
+        actionLabel="Nouveau salon"
+        href="/"
+      />
     {/if}
 
     <section class="card board">
       <div class="board-head">
         <div>
           <p class="mono">Scores</p>
-          <h2>Résultats</h2>
+          <h2>Resultats</h2>
         </div>
         <span class="total mono">{totalScore} pts</span>
       </div>
 
       {#each resultsData as player, index}
+        {@const badge = getPlayerBadge(player, index, resultsData)}
         <article
           class:leader={index === 0}
           class="row"
-          aria-label={`${index + 1}e place : ${player.name}, ${revealed ? `${player.score} points` : 'score masqué'}`}
-          style={`--row-delay:${Math.min(index, 10) * 38}ms;`}
+          aria-label={`${index + 1}e place : ${player.name}, ${revealed ? `${player.score} points` : 'score masque'}`}
+          style={`--row-delay:${Math.min(index, 10) * 38}ms; --badge-tone:${badge.tone};`}
         >
           <span class="rank-badge mono">{index + 1}</span>
-          <strong>{player.name}</strong>
+          <span class="avatar" aria-hidden="true">{player.name?.slice(0, 1) || '?'}</span>
+          <span class="result-copy">
+            <strong>{player.name}</strong>
+            <em>{badge.label}</em>
+          </span>
           <span class:masked={!revealed} class="row-score mono" aria-hidden={!revealed}>{player.score} pts</span>
         </article>
       {/each}
     </section>
 
     {#if roomData.deleteAfter}
-      <p class="retention mono">Données temporaires jusqu’à {new Date(roomData.deleteAfter).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</p>
+      <p class="retention mono">Donnees temporaires jusqu'a {new Date(roomData.deleteAfter).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</p>
     {/if}
 
     <div class="actions">
       <Button href="/">Nouveau salon</Button>
-      <Button variant="secondary" onclick={copyResults}>{copied ? 'JSON copié' : 'Exporter JSON'}</Button>
+      <Button variant="secondary" onclick={copyResults}>{copied ? 'JSON copie' : 'Exporter JSON'}</Button>
     </div>
   </section>
 </main>
@@ -225,7 +234,7 @@
     background: rgba(230, 232, 239, 0.08);
     color: var(--paper);
     padding: 0;
-    font-size: 1.35rem;
+    font-size: 0.72rem;
     font-weight: 900;
     box-shadow: 0 16px 38px rgba(0, 0, 0, 0.18);
   }
@@ -254,10 +263,10 @@
 
   .row {
     display: grid;
-    grid-template-columns: 44px minmax(0, 1fr) auto;
+    grid-template-columns: 44px 40px minmax(0, 1fr) auto;
     align-items: center;
     gap: 12px;
-    min-height: 58px;
+    min-height: 64px;
     border: 1px solid rgba(230, 232, 239, 0.12);
     border-radius: 8px;
     background: rgba(230, 232, 239, 0.07);
@@ -277,6 +286,7 @@
 
   .leader {
     background: linear-gradient(135deg, rgba(229, 57, 53, 0.16), rgba(255, 213, 74, 0.12));
+    box-shadow: 0 0 30px rgba(255, 213, 74, 0.11);
   }
 
   .rank-badge {
@@ -289,10 +299,43 @@
     font-weight: 900;
   }
 
+  .avatar {
+    display: grid;
+    width: 40px;
+    aspect-ratio: 1;
+    place-items: center;
+    border: 1px solid color-mix(in srgb, var(--badge-tone) 46%, white);
+    border-radius: 50%;
+    background: var(--badge-tone);
+    color: var(--ink);
+    font-weight: 950;
+    text-transform: uppercase;
+  }
+
+  .result-copy {
+    display: grid;
+    min-width: 0;
+    gap: 4px;
+  }
+
   .row strong {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .result-copy em {
+    justify-self: start;
+    border: 1px solid color-mix(in srgb, var(--badge-tone) 36%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--badge-tone) 12%, transparent);
+    color: var(--badge-tone);
+    padding: 3px 7px;
+    font-size: 0.62rem;
+    font-style: normal;
+    font-weight: 950;
+    line-height: 1;
+    text-transform: uppercase;
   }
 
   .row-score {
@@ -333,7 +376,6 @@
     h1 {
       font-size: 2.45rem;
     }
-
   }
 
   @media (max-width: 520px) {
@@ -342,13 +384,23 @@
     }
 
     .row {
-      grid-template-columns: 38px minmax(0, 1fr);
+      grid-template-columns: 38px 34px minmax(0, 1fr);
+    }
+
+    .avatar {
+      width: 34px;
     }
 
     .row-score {
-      grid-column: 2;
+      grid-column: 3;
       justify-self: start;
     }
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    .row {
+      transition: none;
+      animation: none;
+    }
+  }
 </style>

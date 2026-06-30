@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { pageTitle, siteMeta } from '$lib/config/site.js';
   import SceneBackground3D from '$lib/components/SceneBackground3D.svelte';
-  import ThemeCard from '$lib/components/ThemeCard.svelte';
+  import ThemePicker from '$lib/components/ThemePicker.svelte';
   import { createRoom } from '$lib/utils/api.js';
   import { getSeasonIcon } from '$lib/utils/seasonAssets.js';
   import { initSound, playSound, soundMuted, toggleSound } from '$lib/utils/sound.js';
@@ -81,6 +81,7 @@
   let bonusTimer = true;
   let chillMode = false;
   let selectedTheme = data.themes[0]?.id || 'neon';
+  let joinCode = '';
   let creating = false;
   let error = '';
   let pointerX = 50;
@@ -332,6 +333,12 @@
       creating = false;
     }
   }
+
+  function joinRoom() {
+    const code = joinCode.trim();
+    if (!code) return;
+    location.href = `/room/${code}`;
+  }
 </script>
 
 <svelte:head>
@@ -367,9 +374,18 @@
       <div class="hero-copy">
         <p class="brand-line">QUIZZ LAND / QUIZ ENTRE AMIS</p>
         <h1>
-          <span>CrÃ©e</span>
-          <span>ton quiz.</span>
+          <span>Cree ta room</span>
+          <span>en 10 secondes.</span>
         </h1>
+        <div class="quick-actions" aria-label="Actions rapides">
+          <button type="submit" disabled={creating}>Creer une room</button>
+          <a href="#theme-picker">Choisir un theme</a>
+          <button type="submit" disabled={creating}>Partie rapide</button>
+        </div>
+        <div class="quick-join" id="join-room">
+          <input bind:value={joinCode} maxlength="12" placeholder="Code room" aria-label="Code room" />
+          <button type="button" on:click={joinRoom}>Rejoindre</button>
+        </div>
         <div class="hero-marquee" aria-hidden="true">
           <span>{categoryLabel}</span>
           <span>{estimatedDuration} minutes</span>
@@ -401,6 +417,22 @@
         </div>
       </div>
     </header>
+
+    <section class="mode-showcase" aria-label="Modes de jeu">
+      {#each [
+        ['Classic Quiz', 'Quiz net, rapide, efficace'],
+        ['Chaos Mode', 'Questions pieges et rythme nerveux'],
+        ['World Cup 2026', 'Ambiance stade et clutch'],
+        ['Blindtest', 'Pret pour les sons'],
+        ['Duel', 'Face-a-face express']
+      ] as mode, index}
+        <article style={`--mode-delay:${index * 55}ms;`}>
+          <span class="mono">{String(index + 1).padStart(2, '0')}</span>
+          <strong>{mode[0]}</strong>
+          <em>{mode[1]}</em>
+        </article>
+      {/each}
+    </section>
 
     <section class="live-scene" aria-label="AperÃ§u du salon">
       <div class="screen-stack">
@@ -448,15 +480,9 @@
         </div>
       </div>
 
-      <div class="vibe-console console-panel">
+      <div class="vibe-console console-panel" id="theme-picker">
         <div class="panel-tag">ThÃ¨me</div>
-        <div class="theme-rack">
-          {#each data.themes as theme}
-            <div class="theme-card-shell" on:click={() => setTheme(theme.id)} role="presentation">
-              <ThemeCard {theme} selected={selectedTheme === theme.id} />
-            </div>
-          {/each}
-        </div>
+        <ThemePicker themes={data.themes} selected={selectedTheme} onSelect={setTheme} />
       </div>
 
       <div class="category-console console-panel">
@@ -816,6 +842,7 @@
     grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.78fr);
     grid-template-areas:
       'hero live'
+      'modes live'
       'controls live'
       'lab lab'
       'footer footer';
@@ -895,6 +922,110 @@
 
   .hero-marquee span:not(:last-child) {
     border-right: 1px solid var(--line);
+  }
+
+  .quick-actions,
+  .quick-join {
+    display: flex;
+    width: min(720px, 100%);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .quick-actions button,
+  .quick-actions a,
+  .quick-join button,
+  .quick-join input {
+    min-height: 46px;
+    border: 1px solid rgba(230, 232, 239, 0.18);
+    border-radius: 8px;
+    padding: 0 14px;
+    font-weight: 950;
+    text-transform: uppercase;
+  }
+
+  .quick-actions button,
+  .quick-actions a,
+  .quick-join button {
+    display: inline-grid;
+    place-items: center;
+    background: rgba(230, 232, 239, 0.08);
+    color: var(--paper);
+    text-decoration: none;
+    transition:
+      transform 180ms ease,
+      border-color 180ms ease,
+      background 180ms ease;
+  }
+
+  .quick-actions button:hover,
+  .quick-actions a:hover,
+  .quick-join button:hover {
+    border-color: rgba(255, 213, 74, 0.42);
+    background: rgba(255, 213, 74, 0.12);
+    transform: translateY(-3px) rotateX(4deg);
+  }
+
+  .quick-join input {
+    min-width: min(220px, 100%);
+    background: rgba(11, 16, 32, 0.62);
+    color: var(--paper);
+  }
+
+  .mode-showcase {
+    grid-area: modes;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .mode-showcase article {
+    display: grid;
+    min-width: 0;
+    min-height: 132px;
+    align-content: space-between;
+    overflow: hidden;
+    border: 1px solid rgba(230, 232, 239, 0.15);
+    border-radius: 8px;
+    padding: 14px;
+    background:
+      radial-gradient(circle at 20% 0%, rgba(57, 213, 255, 0.16), transparent 42%),
+      linear-gradient(145deg, rgba(230, 232, 239, 0.09), rgba(230, 232, 239, 0.035)),
+      rgba(11, 16, 32, 0.68);
+    color: var(--paper);
+    animation: token-enter 340ms cubic-bezier(0.16, 1.1, 0.3, 1) both;
+    animation-delay: var(--mode-delay);
+    transition:
+      transform 180ms ease,
+      border-color 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .mode-showcase article:hover {
+    border-color: rgba(57, 213, 255, 0.38);
+    box-shadow: 0 22px 44px rgba(0, 0, 0, 0.24), 0 0 24px rgba(57, 213, 255, 0.1);
+    transform: translateY(-5px) rotateX(4deg);
+  }
+
+  .mode-showcase span {
+    color: var(--yellow);
+    font-size: 0.7rem;
+    font-weight: 950;
+  }
+
+  .mode-showcase strong {
+    overflow-wrap: anywhere;
+    font-size: 1.08rem;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .mode-showcase em {
+    color: var(--paper-dim);
+    font-size: 0.78rem;
+    font-style: normal;
+    font-weight: 850;
+    line-height: 1.25;
   }
 
   .launch-pod {
@@ -2173,6 +2304,7 @@
       grid-template-columns: 1fr;
       grid-template-areas:
         'hero'
+        'modes'
         'live'
         'controls'
         'lab'
@@ -2224,6 +2356,10 @@
     }
 
     .category-deck {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mode-showcase {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
@@ -2321,6 +2457,24 @@
     .toggle-row,
     .answer-board,
     .category-deck {
+      grid-template-columns: 1fr;
+    }
+
+    .mode-showcase {
+      display: flex;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scroll-snap-type: x mandatory;
+    }
+
+    .mode-showcase article {
+      flex: 0 0 min(78vw, 260px);
+      scroll-snap-align: start;
+    }
+
+    .quick-actions,
+    .quick-join {
+      display: grid;
       grid-template-columns: 1fr;
     }
 

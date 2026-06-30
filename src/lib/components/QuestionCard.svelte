@@ -35,6 +35,8 @@
         <button
           type="button"
           class:selected={selected === index}
+          class:correctAnswer={locked && question.correctIndex === index}
+          class:wrongAnswer={feedback && selected === index && !feedback.correct}
           disabled={locked}
           on:click={() => onAnswer(index)}
           aria-label={`Réponse ${String.fromCharCode(65 + index)} : ${answer}`}
@@ -213,6 +215,20 @@
       inset 0 0 0 1px rgba(255, 255, 255, 0.09);
   }
 
+  .answers button.correctAnswer {
+    border-color: rgba(54, 210, 124, 0.68);
+    background:
+      linear-gradient(135deg, rgba(54, 210, 124, 0.78), rgba(57, 213, 255, 0.24)),
+      rgba(33, 42, 69, 0.92);
+    color: #07140f;
+    animation: answer-reveal 420ms cubic-bezier(0.16, 1.1, 0.3, 1) both;
+  }
+
+  .answers button.wrongAnswer {
+    border-color: rgba(229, 57, 53, 0.74);
+    animation: answer-shake 260ms ease both;
+  }
+
   .answers button:disabled:not(.selected) {
     opacity: 0.56;
   }
@@ -265,6 +281,41 @@
 
     .answers {
       grid-template-columns: 1fr;
+    }
+  }
+
+  @keyframes answer-reveal {
+    0% {
+      transform: scale(0.98);
+      filter: brightness(1);
+    }
+    55% {
+      transform: scale(1.025);
+      filter: brightness(1.18);
+    }
+    100% {
+      transform: scale(1);
+      filter: brightness(1);
+    }
+  }
+
+  @keyframes answer-shake {
+    25% {
+      transform: translateX(-4px);
+    }
+    50% {
+      transform: translateX(4px);
+    }
+    75% {
+      transform: translateX(-2px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .question-card,
+    .answers button.correctAnswer,
+    .answers button.wrongAnswer {
+      animation: none;
     }
   }
 </style>
