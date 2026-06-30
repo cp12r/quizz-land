@@ -195,9 +195,9 @@
   onDestroy(() => cleanup());
 </script>
 
-<div bind:this={host} class:ready class:fallback class="floating-logo3d" aria-label="Logo QuizzLand animé en 3D">
+<div bind:this={host} class:ready class:fallback class="floating-logo3d" aria-label="Logo Quizz Land animé en 3D">
   {#if fallback}
-    <img src="/brand/quizzland-logo.svg" alt="QuizzLand" />
+    <img src="/brand/quizzland-logo.svg" alt="Quizz Land" />
   {/if}
 </div>
 

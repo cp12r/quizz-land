@@ -16,7 +16,7 @@
   const TIME_MIN = 10;
   const TIME_MAX = 120;
   const answerLabels = ['A', 'B', 'C', 'D'];
-  const title = pageTitle('Créer un quiz multijoueur');
+  const title = pageTitle('Quiz entre potes');
   const description = siteMeta.description;
 
   const fallbackTheme = data.themes[0] || {
@@ -158,6 +158,8 @@
   $: syncPreview = readyCustomQuestions.length
     ? JSON.stringify({ questions: readyCustomQuestions }, null, 2)
     : '{\n  "questions": []\n}';
+  $: canonicalUrl = data.canonicalUrl;
+  $: ogImage = data.ogImage;
 
   onMount(() => {
     initSound();
@@ -416,14 +418,20 @@
   <meta name="description" content={description} />
   <meta name="keywords" content={siteMeta.keywords} />
   <meta name="robots" content="index,follow" />
+  <meta name="theme-color" content={siteMeta.themeColor} />
+  <link rel="canonical" href={canonicalUrl} />
   <meta property="og:site_name" content={siteMeta.name} />
   <meta property="og:locale" content={siteMeta.locale} />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:alt" content="Quizz Land, quiz entre potes sans compte" />
   <meta property="og:type" content="website" />
-  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage} />
 </svelte:head>
 
 <main
@@ -442,14 +450,14 @@
   <form class="party-stage" on:submit|preventDefault={submit} aria-describedby="creator-status">
     <header class="hero">
       <div class="hero-copy">
-        <p class="brand-line">QUIZZ LAND / QUIZ ENTRE AMIS</p>
+        <p class="brand-line">QUIZZ LAND / QUIZ ENTRE POTES</p>
         <h1>
           <span>Crée</span>
           <span>ton quiz.</span>
         </h1>
         <p class="hero-speed mono">Salon prêt en quelques secondes</p>
         <label class="quick-join" id="join-room">
-          <span>Déjà invité ?</span>
+          <span>Tu as un code ?</span>
           <input bind:value={joinCode} maxlength="12" placeholder="Code du salon" aria-label="Code du salon" />
           <button type="button" on:click={joinRoom}>Rejoindre</button>
         </label>
@@ -514,7 +522,7 @@
           <h2>{roomName}</h2>
           <div class="question-broadcast">
             <span>Question 03</span>
-            <strong>Qui marque le plus de points sur cette question ?</strong>
+            <strong>Qui prend la tête sur cette question ?</strong>
           </div>
           <div class="answer-stack" aria-hidden="true">
             <span class="answer-hot">A / Camille</span>
@@ -539,7 +547,7 @@
 
     <section class="control-table" aria-label="Préparation du salon">
       <div class="name-console console-panel">
-        <div class="panel-tag">Nom</div>
+        <div class="panel-tag">Salon</div>
         <label class="name-field">
           <span>Nom du salon</span>
           <input bind:value={name} maxlength="36" placeholder="Quiz entre amis" autocomplete="off" />
@@ -631,7 +639,7 @@
             aria-pressed={bonusTimer}
           >
             <span></span>
-            <strong>Bonus temps</strong>
+              <strong>Bonus vitesse</strong>
           </button>
 
           <button
@@ -652,11 +660,11 @@
       <div class="lab-header">
         <div>
           <p class="panel-tag">Questions perso</p>
-          <h2>Questions personnalisées</h2>
+          <h2>Ajoute tes questions</h2>
         </div>
         <button type="button" class="add-card" on:click={addDraft}>
           <span>+</span>
-          <strong>Nouvelle question</strong>
+          <strong>Ajouter une question</strong>
         </button>
       </div>
 
@@ -746,7 +754,7 @@
             </label>
 
             <label>
-              <span>URL de l'image</span>
+              <span>Image (URL)</span>
               <input
                 value={activeDraft.image}
                 on:input={(event) => updateDraft(activeDraft.id, { image: event.currentTarget.value })}
@@ -756,7 +764,7 @@
             </label>
 
             <label>
-              <span>Description image</span>
+              <span>Texte image</span>
               <input
                 value={activeDraft.imageAlt}
                 on:input={(event) => updateDraft(activeDraft.id, { imageAlt: event.currentTarget.value })}
@@ -777,7 +785,7 @@
 
       <details class="json-sync">
         <summary>
-          <span>Aperçu des questions</span>
+          <span>JSON des questions</span>
           <strong>{customCount} prête{customCount > 1 ? 's' : ''}</strong>
         </summary>
         <pre>{syncPreview}</pre>
@@ -2535,6 +2543,8 @@
     }
 
     .launch-button {
+      grid-column: 1;
+      grid-row: 1;
       width: 154px;
     }
 
@@ -2547,11 +2557,27 @@
     }
 
     .sound-puck {
+      grid-column: 2;
+      grid-row: 1;
       width: 62px;
     }
 
     .sound-puck span {
       font-size: 1.55rem;
+    }
+
+    .launch-pod {
+      grid-template-columns: 154px 62px;
+      gap: 10px 14px;
+      justify-content: start;
+    }
+
+    .launch-pod :global(.floating-logo3d) {
+      display: none;
+    }
+
+    .pod-readout {
+      grid-column: 1 / -1;
     }
 
     .live-scene {

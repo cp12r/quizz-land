@@ -48,7 +48,7 @@
           {#if player.connected === false}
             <small class="offline">Hors ligne</small>
           {:else if player.id === hostId}
-            <small>Host</small>
+            <small>Créateur</small>
           {/if}
           <span class:masked={maskScores} class="score mono" aria-hidden={maskScores}>
             {maskScores ? '---' : player.score}
@@ -58,7 +58,7 @@
       {/each}
     </ol>
   {:else}
-    <p>En attente.</p>
+    <p>Personne pour l'instant.</p>
   {/if}
 </section>
 

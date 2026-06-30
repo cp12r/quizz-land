@@ -22,7 +22,7 @@
         <img class="category-icon ql-bob" src={categoryIcon} alt="" aria-hidden="true" loading="lazy" />
         <span>{categoryLabel}</span>
       </p>
-      <h1>{question.text}</h1>
+      <h2>{question.text}</h2>
     </div>
 
     {#if hasImage}
@@ -59,8 +59,8 @@
     {/if}
   {:else}
     <div class="empty">
-      <p class="mono eyebrow">Suite</p>
-      <h1>En attente de la prochaine question</h1>
+      <p class="mono eyebrow">Prochaine manche</p>
+      <h2>Le reveal arrive</h2>
     </div>
   {/if}
 </section>
@@ -138,7 +138,7 @@
     object-fit: contain;
   }
 
-  h1 {
+  h2 {
     margin: 0;
     color: var(--gray-900);
     font-size: clamp(1.85rem, 4svw, 3.25rem);
@@ -276,7 +276,7 @@
       padding: 18px;
     }
 
-    h1 {
+    h2 {
       font-size: 1.75rem;
     }
 

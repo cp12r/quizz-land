@@ -91,7 +91,7 @@
           <rect width="520" height="120" rx="26" fill="#071127" opacity=".16"/>
           <text x="260" y="79" text-anchor="middle" filter="url(#glow)"
             font-family="Sora, Inter, Arial, sans-serif" font-size="64" font-weight="950"
-            letter-spacing="0" fill="url(#word)">QuizzLand</text>
+            letter-spacing="0" fill="url(#word)">Quizz Land</text>
         </svg>
       `;
     }

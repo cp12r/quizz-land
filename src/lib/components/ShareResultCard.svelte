@@ -11,9 +11,9 @@
   $: rank = Math.max(0, results.findIndex((item) => item.id === player?.id)) + 1 || 1;
   $: badge = getPlayerBadge(player, rank - 1, results);
   $: topPercent = Math.max(1, Math.round((rank / Math.max(results.length, 1)) * 100));
-  $: themeName = room?.config?.themeName || room?.config?.themeId || 'QuizzLand';
+  $: themeName = room?.config?.themeName || room?.config?.themeId || 'Quizz Land';
   $: shareLink = siteUrl || (typeof location !== 'undefined' ? location.origin : '');
-  $: shareText = `${player?.name || 'Joueur'} termine #${rank} avec ${player?.score || 0} pts sur QuizzLand. TOP ${topPercent}% - ${badge.label}`;
+  $: shareText = `${player?.name || 'Joueur'} termine #${rank} avec ${player?.score || 0} pts sur Quizz Land. TOP ${topPercent}% - ${badge.label}`;
   $: qrValue = encodeURIComponent(shareLink || `room:${room?.id || ''}`);
   $: qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=128x128&data=${qrValue}`;
 
@@ -29,7 +29,7 @@
   async function shareResult() {
     if (typeof navigator === 'undefined') return copyResult();
     if (navigator.share) {
-      await navigator.share({ title: 'Résultat QuizzLand', text: shareText, url: shareLink }).catch(() => {});
+      await navigator.share({ title: 'Résultat Quizz Land', text: shareText, url: shareLink }).catch(() => {});
       return;
     }
     await copyResult();
@@ -40,7 +40,7 @@
   <div class="share-head">
     <span class="badge-icon" aria-hidden="true">{badge.icon}</span>
     <div>
-      <p class="mono">Carte partage</p>
+      <p class="mono">À partager</p>
       <h2>{player?.name || 'Joueur'}</h2>
     </div>
   </div>
@@ -61,13 +61,13 @@
   </div>
 
   <div class="viral-line">
-    <strong>Je suis TOP {topPercent}% sur QuizzLand</strong>
+    <strong>TOP {topPercent}% sur Quizz Land</strong>
     <span>{themeName}</span>
   </div>
 
   <div class="share-footer">
     {#if shareLink}
-      <img src={qrUrl} alt="QR code QuizzLand" loading="lazy" />
+      <img src={qrUrl} alt="QR code du classement Quizz Land" loading="lazy" />
     {/if}
     <div class="share-actions">
       <button type="button" on:click={copyResult}>{copied ? 'Résultat copié' : 'Copier le résultat'}</button>

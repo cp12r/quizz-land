@@ -1,10 +1,10 @@
 {
   "name": "Quizz Land",
   "short_name": "Quizz",
-  "description": "Quiz multijoueur sans compte pour jouer en direct avec ses amis.",
+  "description": "Quiz entre potes, sans compte, avec room partageable et classement en direct.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fbfaf7",
+  "background_color": "#0b1020",
   "theme_color": "#e53935",
   "icons": [
     {

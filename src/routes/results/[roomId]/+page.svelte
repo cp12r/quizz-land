@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import Button from '$lib/components/Button.svelte';
   import EmptyState from '$lib/components/EmptyState.svelte';
-  import { pageTitle, siteMeta } from '$lib/config/site.js';
+  import { resultsMeta, siteMeta } from '$lib/config/site.js';
   import SceneBackground3D from '$lib/components/SceneBackground3D.svelte';
   import ScoreboardStage3D from '$lib/components/ScoreboardStage3D.svelte';
   import ShareResultCard from '$lib/components/ShareResultCard.svelte';
@@ -20,9 +20,13 @@
   $: exportText = JSON.stringify({ room: roomData.id, config: roomData.config, results: resultsData }, null, 2);
   $: winner = resultsData[0];
   $: totalScore = resultsData.reduce((sum, player) => sum + player.score, 0);
-  $: siteUrl = typeof location === 'undefined' ? '' : location.origin;
-  $: title = pageTitle(winner ? `${winner.name} remporte le quiz` : 'Classement final');
-  $: description = `Classement final du salon ${roomData.id} sur ${siteMeta.name}. Résultats temporaires disponibles après la partie.`;
+  $: canonicalUrl = data.canonicalUrl || `${data.origin}/results/${roomData.id}`;
+  $: ogImage = `${data.origin}/og/results/${roomData.id}.svg`;
+  $: twitterImage = `${data.origin}${siteMeta.defaultImage}`;
+  $: shareUrl = canonicalUrl;
+  $: meta = resultsMeta(roomData, resultsData);
+  $: title = meta.title;
+  $: description = meta.description;
 
   function restoreResultBackup() {
     if (typeof sessionStorage === 'undefined' || resultsData.length) return;
@@ -65,14 +69,20 @@
   <title>{title}</title>
   <meta name="description" content={description} />
   <meta name="robots" content="noindex,follow" />
+  <meta name="theme-color" content={siteMeta.themeColor} />
+  <link rel="canonical" href={canonicalUrl} />
   <meta property="og:site_name" content={siteMeta.name} />
   <meta property="og:locale" content={siteMeta.locale} />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:alt" content={`Classement final du salon ${roomData.id}`} />
   <meta property="og:type" content="website" />
-  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={twitterImage} />
 </svelte:head>
 
 <main class="page results-page">
@@ -97,14 +107,14 @@
 
     {#if resultsData.length}
       <ScoreboardStage3D results={resultsData} {revealed} />
-      <ShareResultCard player={winner} results={resultsData} room={roomData} {siteUrl} />
+      <ShareResultCard player={winner} results={resultsData} room={roomData} siteUrl={shareUrl} />
     {:else}
       <EmptyState
         icon="?"
         eyebrow="Scores"
-        title="Résultats indisponibles"
-        detail="La partie est terminée, mais le classement n'a pas pu être récupéré sur cet appareil."
-        actionLabel="Nouveau salon"
+          title="Classement indisponible"
+          detail="La partie est finie, mais ce classement n'est plus disponible sur cet appareil."
+        actionLabel="Rejouer"
         href="/"
       />
     {/if}
@@ -113,7 +123,7 @@
       <div class="board-head">
         <div>
           <p class="mono">Scores</p>
-          <h2>Résultats</h2>
+          <h2>Classement</h2>
         </div>
         <span class="total mono">{totalScore} pts</span>
       </div>
@@ -142,8 +152,8 @@
     {/if}
 
     <div class="actions">
-      <Button href="/">Nouveau salon</Button>
-      <Button variant="secondary" onclick={copyResults}>{copied ? 'JSON copié' : 'Exporter JSON'}</Button>
+      <Button href="/">Rejouer</Button>
+      <Button variant="secondary" onclick={copyResults}>{copied ? 'Scores copiés' : 'Copier les scores'}</Button>
     </div>
   </section>
 </main>

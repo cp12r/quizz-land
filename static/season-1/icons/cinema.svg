@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
   <title id="title">Cinéma</title>
-  <desc id="desc">Clap de cinéma Season 1 pour QuizzLand.</desc>
+  <desc id="desc">Clap de cinéma Season 1 pour Quizz Land.</desc>
   <defs>
     <linearGradient id="g" x1="48" x2="210" y1="42" y2="214" gradientUnits="userSpaceOnUse">
       <stop stop-color="#ffd54a"/>

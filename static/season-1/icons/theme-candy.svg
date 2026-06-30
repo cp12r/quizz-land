@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
   <title id="title">Theme Candy Rush</title>
-  <desc id="desc">Preset visuel Candy Rush pour QuizzLand.</desc>
+  <desc id="desc">Preset visuel Candy Rush pour Quizz Land.</desc>
   <defs>
     <linearGradient id="g" x1="42" x2="218" y1="36" y2="216" gradientUnits="userSpaceOnUse">
       <stop stop-color="#ffd54a"/>

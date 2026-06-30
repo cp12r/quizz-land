@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
   <title id="title">Theme Neon Pop</title>
-  <desc id="desc">Preset visuel Neon Pop pour QuizzLand.</desc>
+  <desc id="desc">Preset visuel Neon Pop pour Quizz Land.</desc>
   <defs>
     <linearGradient id="g" x1="34" x2="222" y1="32" y2="226" gradientUnits="userSpaceOnUse">
       <stop stop-color="#ff4f79"/>

@@ -1,7 +1,7 @@
 <script>
   import { onDestroy, onMount } from 'svelte';
   import Button from '$lib/components/Button.svelte';
-  import { pageTitle, siteMeta } from '$lib/config/site.js';
+  import { roomMeta, siteMeta } from '$lib/config/site.js';
   import AnswerImpactEffect from '$lib/components/AnswerImpactEffect.svelte';
   import EmptyState from '$lib/components/EmptyState.svelte';
   import PlayerList from '$lib/components/PlayerList.svelte';
@@ -48,7 +48,10 @@
 
   $: currentQuestion = room.status === 'playing' ? room.questions[room.currentQuestion] : null;
   $: currentQuestionIcon = currentQuestion ? getSeasonIcon(currentQuestion.category) : '';
-  $: shareUrl = typeof location === 'undefined' ? '' : `${location.origin}/room/${room.id}`;
+  $: canonicalUrl = data.canonicalUrl || `${data.origin}/room/${room.id}`;
+  $: ogImage = `${data.origin}/og/room/${room.id}.svg`;
+  $: twitterImage = `${data.origin}${siteMeta.defaultImage}`;
+  $: shareUrl = canonicalUrl;
   $: isHost = player && room.hostId === player.id;
   $: activePlayers = (room.players || []).filter((item) => item.connected !== false);
   $: activePlayerIds = new Set(activePlayers.map((item) => item.id));
@@ -67,8 +70,9 @@
   $: canDecreaseQuestions = Boolean(isHost && !questionCountUpdating && lobbyQuestionCount > lobbyQuestionMin);
   $: canIncreaseQuestions = Boolean(isHost && !questionCountUpdating && lobbyQuestionCount < lobbyQuestionMax);
   $: allAnswered = Boolean(room.status === 'playing' && activePlayerCount > 0 && answeredCount >= activePlayerCount);
-  $: title = pageTitle(`${room.name} - Salon quiz`);
-  $: description = `Rejoins le salon ${room.name} sur ${siteMeta.name} et réponds au quiz en direct, sans compte.`;
+  $: meta = roomMeta(room);
+  $: title = meta.title;
+  $: description = meta.description;
   $: progressText =
     room.status === 'playing'
       ? `${room.currentQuestion + 1}/${room.questions.length}`
@@ -168,7 +172,7 @@
     if (nextRoom?.id) updateRoom(nextRoom);
     clearCountdown();
     clearClosingTimer();
-    addNotice('Fermeture du salon', payload.message || "Retour à l'accueil en cours", 'warning');
+    addNotice('Salon fermé', payload.message || "Retour à l'accueil en cours", 'warning');
     playSound('wrong');
 
     function tick() {
@@ -251,12 +255,12 @@
       addNotice('Partie lancée', `Question 1/${room.questions.length}`, 'start');
     } else if (changedRound && room.status === 'playing') {
       playSound('transition');
-      addNotice(`Question ${room.currentQuestion + 1}`, room.questions[room.currentQuestion]?.category || 'Nouvelle manche', 'round');
+      addNotice(`Nouvelle manche`, `Question ${room.currentQuestion + 1}/${room.questions.length}`, 'round');
     }
 
     if (everyoneAnsweredNow) {
       playSound('ui');
-      addNotice('Tout le monde a répondu', 'Question suivante dans 5s', 'round');
+      addNotice('Tout le monde a répondu', 'Reveal dans 5s', 'round');
     }
 
     if (room.status === 'finished' && !finishing) {
@@ -265,7 +269,7 @@
       clearClosingTimer();
       saveResultBackup(room);
       playSound('reveal');
-      addNotice('Classement final', 'Calcul des scores', 'finish');
+      addNotice('Classement final', 'Les scores arrivent', 'finish');
       setTimeout(() => {
         location.assign(`/results/${room.id}`);
       }, 700);
@@ -346,13 +350,13 @@
       },
       answer_feedback: (payload) => {
         answerFeedback = payload;
-        addNotice(payload.correct ? `+${payload.points} points` : 'Réponse verrouillée', payload.correct ? 'Bonne réponse' : 'Pas cette fois', payload.correct ? 'success' : 'warning');
+        addNotice(payload.correct ? `+${payload.points} points` : 'Réponse verrouillée', payload.correct ? 'Bien joué' : 'Pas cette fois', payload.correct ? 'success' : 'warning');
         playSound(payload.correct ? 'correct' : 'wrong');
       },
       question_count_updated: (payload) => {
         questionCountUpdating = false;
         updateRoom(payload);
-        addNotice('Questions mises à jour', `${payload.config.questionCount} questions`, 'info');
+        addNotice('Nombre de questions prêt', `${payload.config.questionCount} questions`, 'info');
       },
       room_closing: beginRoomClosing,
       room_closed: (payload) => {
@@ -363,7 +367,7 @@
       timer_tick: handleTimerTick,
       user_joined: (payload) => {
         if (joined && payload.id !== player?.id) {
-          addNotice(`${payload.name} est entré`, `${activePlayerCount + 1} joueurs connectés`, 'join');
+        addNotice(`${payload.name} est entré`, `${activePlayerCount + 1} joueurs connectés`, 'join');
           playSound('join');
         }
       },
@@ -373,7 +377,7 @@
         joined = true;
         joining = false;
         connectionError = '';
-        addNotice('Salon rejoint', 'Tu es synchronisé', 'success');
+        addNotice('Salon rejoint', 'Tu es dedans', 'success');
         playSound('join');
       },
       error: (payload) => {
@@ -409,14 +413,20 @@
   <title>{title}</title>
   <meta name="description" content={description} />
   <meta name="robots" content="noindex,follow" />
+  <meta name="theme-color" content={siteMeta.themeColor} />
+  <link rel="canonical" href={canonicalUrl} />
   <meta property="og:site_name" content={siteMeta.name} />
   <meta property="og:locale" content={siteMeta.locale} />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:alt" content={`Aperçu du salon ${room.name} sur ${siteMeta.name}`} />
   <meta property="og:type" content="website" />
-  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={twitterImage} />
 </svelte:head>
 
 <main class="page room-page" class:closing={roomClosing || room.status === 'closing'}>
@@ -439,7 +449,7 @@
           aria-label={$soundMuted ? 'Activer le son' : 'Couper le son'}
           aria-pressed={!$soundMuted}
         >
-          <span aria-hidden="true">{$soundMuted ? '🔇' : '🔊'}</span>
+          <span aria-hidden="true">{$soundMuted ? 'OFF' : 'ON'}</span>
         </button>
         <Button variant="secondary" onclick={copyLink}>{copied ? 'Lien copié' : 'Copier le lien'}</Button>
       </div>
@@ -457,8 +467,8 @@
     {#if !joined}
       <form class="card join" on:submit|preventDefault={join} aria-describedby="join-status">
         <div class="panel-head">
-          <p class="mono">Entrée</p>
-          <h2>Entre dans le salon</h2>
+          <p class="mono">Jouer</p>
+          <h2>Rejoins la partie</h2>
         </div>
         <label class="field">
           <span>Pseudo</span>
@@ -475,7 +485,7 @@
           />
         {/if}
         <Button type="submit" disabled={joining}>
-          {joining ? 'Connexion…' : 'Rejoindre'}
+          {joining ? 'Entrée...' : 'Rejoindre'}
         </Button>
       </form>
     {:else if room.status === 'waiting'}
@@ -484,7 +494,7 @@
           <div class="lobby-header">
             <div class="panel-head">
               <p class="mono">Salon</p>
-              <h2>Avant-partie</h2>
+              <h2>Lobby</h2>
             </div>
 
             {#if countdownActive}
@@ -549,17 +559,17 @@
 
           <div class="actions">
             <Button disabled={!canStart} onclick={start}>
-              {countdownActive ? 'Attente…' : 'Lancer la partie'}
+              {countdownActive ? 'Décompte...' : 'Lancer la partie'}
             </Button>
 
-            <Button variant="secondary" onclick={copyLink}>Inviter</Button>
+            <Button variant="secondary" onclick={copyLink}>Inviter les potes</Button>
           </div>
 
           {#if isHost && activePlayerCount < 2}
             <EmptyState
               icon="H"
-              eyebrow="Host"
-              title="Attente de joueurs"
+              eyebrow="Créateur"
+              title="En attente des joueurs"
               detail="Il faut au moins 2 joueurs pour lancer une partie."
               actionLabel={copied ? 'Lien copié' : 'Copier le lien'}
               onAction={copyLink}
@@ -573,7 +583,7 @@
       <section class="closing-panel card" role="status" aria-live="assertive">
         <div class="panel-head">
           <p class="mono">Salon</p>
-          <h2>Fermeture</h2>
+          <h2>Salon fermé</h2>
         </div>
         <p>Un joueur a quitté le salon. Retour à l'accueil dans {closingCountdown}s.</p>
         <div class="closing-meter" style={`--close-progress:${closingProgress * 100}%;`} aria-hidden="true">
@@ -595,9 +605,9 @@
           </div>
 
           {#if allAnswered && remaining <= 5 && remaining > 0}
-            <div class="suspense mono" role="status" aria-live="polite">Question suivante dans {remaining}s</div>
+            <div class="suspense mono" role="status" aria-live="polite">Nouvelle manche dans {remaining}s</div>
           {:else if remaining <= 3 && remaining > 0}
-            <div class="suspense mono" role="status" aria-live="polite">Résultat imminent</div>
+            <div class="suspense mono" role="status" aria-live="polite">Le reveal arrive</div>
           {/if}
 
           <div class="question-stage">

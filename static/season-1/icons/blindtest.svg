@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
   <title id="title">Blindtest</title>
-  <desc id="desc">Ic?ne Season 1 Blindtest pour QuizzLand.</desc>
+  <desc id="desc">Icone Season 1 Blindtest pour Quizz Land.</desc>
   <defs>
     <radialGradient id="bg" cx="35%" cy="22%" r="72%">
       <stop offset="0" stop-color="#ffffff" stop-opacity="0.92"/>

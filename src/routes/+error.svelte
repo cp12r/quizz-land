@@ -13,6 +13,7 @@
   <title>{title}</title>
   <meta name="description" content={description} />
   <meta name="robots" content="noindex,follow" />
+  <meta name="theme-color" content={siteMeta.themeColor} />
   <meta property="og:site_name" content={siteMeta.name} />
   <meta property="og:locale" content={siteMeta.locale} />
   <meta property="og:title" content={title} />
@@ -23,7 +24,7 @@
   <section class="shell panel">
     <EmptyState
       icon={String(status || '!')}
-      eyebrow="QuizzLand"
+      eyebrow="Quizz Land"
       title={error?.message || 'Page introuvable'}
       detail="Ce salon est introuvable ou temporairement indisponible."
       actionLabel="Retour à l’accueil"

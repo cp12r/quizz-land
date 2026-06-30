@@ -1,6 +1,6 @@
 <script>
   export let icon = '!';
-  export let eyebrow = 'QuizzLand';
+  export let eyebrow = 'Quizz Land';
   export let title = 'Action impossible';
   export let detail = '';
   export let actionLabel = '';
