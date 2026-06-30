@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Drapeaux">
+  <rect width="1200" height="675" fill="#0b1020"/>
+  <path fill="#e6e8ef" d="M238 102h26v490h-26z"/>
+  <path fill="#e53935" d="M264 118h650v135H264z"/>
+  <path fill="#e6e8ef" d="M264 253h650v135H264z"/>
+  <path fill="#39d5ff" d="M264 388h650v135H264z"/>
+  <text x="600" y="620" text-anchor="middle" fill="#ffd54a" font-family="Arial, Helvetica, sans-serif" font-size="58" font-weight="900">DRAPEAUX</text>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Musique">
+  <rect width="1200" height="675" fill="#101726"/>
+  <circle cx="470" cy="398" r="110" fill="#39d5ff"/>
+  <circle cx="760" cy="334" r="92" fill="#ffd54a"/>
+  <path fill="#e53935" d="M548 160h300v62H548zM548 160h62v250h-62zM848 160h62v186h-62z"/>
+  <path fill="none" stroke="#e6e8ef" stroke-width="14" d="M170 500c90-150 190-150 280 0s190 150 280 0 190-150 300 0"/>
+  <text x="600" y="112" text-anchor="middle" fill="#e6e8ef" font-family="Arial, Helvetica, sans-serif" font-size="66" font-weight="900">BLINDTEST</text>
+</svg>

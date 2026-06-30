@@ -22,7 +22,6 @@
   $: totalScore = resultsData.reduce((sum, player) => sum + player.score, 0);
   $: canonicalUrl = data.canonicalUrl || `${data.origin}/results/${roomData.id}`;
   $: ogImage = `${data.origin}/og/results/${roomData.id}.svg`;
-  $: twitterImage = `${data.origin}${siteMeta.defaultImage}`;
   $: shareUrl = canonicalUrl;
   $: meta = resultsMeta(roomData, resultsData);
   $: title = meta.title;
@@ -77,12 +76,16 @@
   <meta property="og:description" content={description} />
   <meta property="og:url" content={canonicalUrl} />
   <meta property="og:image" content={ogImage} />
+  <meta property="og:image:secure_url" content={ogImage} />
+  <meta property="og:image:type" content="image/svg+xml" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content={`Classement final du salon ${roomData.id}`} />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
-  <meta name="twitter:image" content={twitterImage} />
+  <meta name="twitter:image" content={ogImage} />
 </svelte:head>
 
 <main class="page results-page">

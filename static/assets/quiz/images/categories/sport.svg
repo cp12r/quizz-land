@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Sport">
+  <rect width="1200" height="675" fill="#0d5b3d"/>
+  <path fill="none" stroke="#e6e8ef" stroke-width="12" d="M92 92h1016v491H92zM600 92v491M500 337a100 100 0 1 0 200 0 100 100 0 0 0-200 0z"/>
+  <circle cx="600" cy="337" r="62" fill="#e6e8ef"/>
+  <path fill="#0b1020" d="m600 270 62 45-24 73h-76l-24-73z"/>
+  <text x="600" y="640" text-anchor="middle" fill="#ffd54a" font-family="Arial, Helvetica, sans-serif" font-size="54" font-weight="900">MATCH QUIZ</text>
+</svg>

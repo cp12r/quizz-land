@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Cinéma">
+  <rect width="1200" height="675" fill="#0b1020"/>
+  <path fill="#e53935" d="M0 0h1200v118H0z"/>
+  <g fill="#e6e8ef" opacity=".24">
+    <rect x="70" y="34" width="78" height="50" rx="8"/><rect x="212" y="34" width="78" height="50" rx="8"/><rect x="354" y="34" width="78" height="50" rx="8"/><rect x="496" y="34" width="78" height="50" rx="8"/><rect x="638" y="34" width="78" height="50" rx="8"/><rect x="780" y="34" width="78" height="50" rx="8"/><rect x="922" y="34" width="78" height="50" rx="8"/><rect x="1064" y="34" width="78" height="50" rx="8"/>
+  </g>
+  <circle cx="410" cy="348" r="150" fill="#ffd54a"/>
+  <circle cx="410" cy="348" r="58" fill="#0b1020"/>
+  <path fill="#39d5ff" d="M626 240h330l-88 196H538z"/>
+  <text x="600" y="575" text-anchor="middle" fill="#e6e8ef" font-family="Arial, Helvetica, sans-serif" font-size="74" font-weight="900">QUIZZ LAND CINEMA</text>
+</svg>

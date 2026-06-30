@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Géographie">
+  <rect width="1200" height="675" fill="#0b1020"/>
+  <circle cx="600" cy="338" r="220" fill="#39d5ff"/>
+  <path fill="#36d27c" d="M462 214c54-35 141-58 212-34 35 12 42 50 14 72-37 28-91-6-122 29-24 27 3 68-32 89-43 27-107-9-122-55-14-42 11-78 50-101zm228 208c72-17 118 19 128 68 11 52-40 89-88 71-31-12-24-44-56-62-29-17-63-11-72-43-7-25 23-28 88-34z"/>
+  <path fill="#ffd54a" d="M828 160h42v352h-42zM760 186h168l-34 76 34 76H760z"/>
+  <text x="600" y="625" text-anchor="middle" fill="#e6e8ef" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="900">CAPITALES ET MONDES</text>
+</svg>

@@ -23,7 +23,8 @@
     { "id": "logos", "label": "Logos", "file": "logos.json" }
   ],
   "assets": {
-    "images": "images",
-    "sounds": "sounds"
+    "images": "/assets/quiz/images",
+    "audio": "/assets/quiz/audio",
+    "themes": "/season-1"
   }
 }

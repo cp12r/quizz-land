@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Jeux vidéo">
+  <rect width="1200" height="675" fill="#101726"/>
+  <path fill="#36d27c" d="M188 238h824a96 96 0 0 1 96 96v122a96 96 0 0 1-96 96H188a96 96 0 0 1-96-96V334a96 96 0 0 1 96-96z"/>
+  <path fill="#0b1020" d="M276 326h64v-64h72v64h64v72h-64v64h-72v-64h-64z"/>
+  <circle cx="830" cy="350" r="42" fill="#e53935"/><circle cx="930" cy="430" r="42" fill="#ffd54a"/>
+  <path stroke="#39d5ff" stroke-width="18" d="M534 358h132M600 292v132"/>
+  <text x="600" y="130" text-anchor="middle" fill="#e6e8ef" font-family="Arial, Helvetica, sans-serif" font-size="78" font-weight="900">LEVEL UP</text>
+</svg>

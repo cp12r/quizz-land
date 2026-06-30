@@ -10,6 +10,7 @@
   import TimerCircle from '$lib/components/TimerCircle.svelte';
   import { getPlayerId } from '$lib/stores/user.js';
   import { getSeasonIcon } from '$lib/utils/seasonAssets.js';
+  import { preloadUpcomingQuestionMedia } from '$lib/utils/questionMedia.js';
   import { initSound, playSound, soundMuted, toggleSound } from '$lib/utils/sound.js';
   import { applyTheme } from '$lib/utils/theme.js';
   import { connectRoom } from '$lib/utils/ws.js';
@@ -50,7 +51,6 @@
   $: currentQuestionIcon = currentQuestion ? getSeasonIcon(currentQuestion.category) : '';
   $: canonicalUrl = data.canonicalUrl || `${data.origin}/room/${room.id}`;
   $: ogImage = `${data.origin}/og/room/${room.id}.svg`;
-  $: twitterImage = `${data.origin}${siteMeta.defaultImage}`;
   $: shareUrl = canonicalUrl;
   $: isHost = player && room.hostId === player.id;
   $: activePlayers = (room.players || []).filter((item) => item.connected !== false);
@@ -235,6 +235,7 @@
     );
 
     room = next;
+    preloadUpcomingQuestionMedia(room.questions, room.currentQuestion, 2);
     if (options.resetSelection || changedRound) {
       selected = null;
       answerFeedback = null;
@@ -339,6 +340,7 @@
     playerName = localStorage.getItem('quizz-player-name') || '';
     applyChillClass();
     applyTheme(room.config.themeId);
+    preloadUpcomingQuestionMedia(room.questions, Math.max(0, room.currentQuestion), 2);
 
     ws = connectRoom(room.id, {
       room_state: (payload) => updateRoom(payload),
@@ -421,12 +423,16 @@
   <meta property="og:description" content={description} />
   <meta property="og:url" content={canonicalUrl} />
   <meta property="og:image" content={ogImage} />
+  <meta property="og:image:secure_url" content={ogImage} />
+  <meta property="og:image:type" content="image/svg+xml" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content={`Aperçu du salon ${room.name} sur ${siteMeta.name}`} />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
-  <meta name="twitter:image" content={twitterImage} />
+  <meta name="twitter:image" content={ogImage} />
 </svelte:head>
 
 <main class="page room-page" class:closing={roomClosing || room.status === 'closing'}>

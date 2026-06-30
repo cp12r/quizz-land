@@ -45,6 +45,27 @@ export const quizThemes = [
 
 export const categories = ['culture', 'science', 'web', 'cinéma', 'sport'];
 
+const categoryMediaAssets = {
+  anime: { image: '/assets/quiz/images/categories/anime.svg', imageAlt: 'Visuel anime Quizz Land' },
+  blindtest: { image: '/assets/quiz/images/categories/musique.svg', imageAlt: 'Visuel blindtest musical Quizz Land' },
+  cinema: { image: '/assets/quiz/images/categories/cinema.svg', imageAlt: 'Visuel cinéma Quizz Land' },
+  'cinéma': { image: '/assets/quiz/images/categories/cinema.svg', imageAlt: 'Visuel cinéma Quizz Land' },
+  drapeaux: { image: '/assets/quiz/images/categories/drapeaux.svg', imageAlt: 'Drapeaux stylisés Quizz Land' },
+  gaming: { image: '/assets/quiz/images/categories/gaming.svg', imageAlt: 'Visuel jeux vidéo Quizz Land' },
+  geographie: { image: '/assets/quiz/images/categories/geographie.svg', imageAlt: 'Globe stylisé Quizz Land' },
+  'géographie': { image: '/assets/quiz/images/categories/geographie.svg', imageAlt: 'Globe stylisé Quizz Land' },
+  histoire: { image: '/assets/quiz/images/categories/histoire.svg', imageAlt: 'Portrait historique stylisé Quizz Land' },
+  internet: { image: '/assets/quiz/images/categories/internet.svg', imageAlt: 'Fenêtre web stylisée Quizz Land' },
+  logos: { image: '/assets/quiz/images/categories/logos.svg', imageAlt: 'Logos stylisés Quizz Land' },
+  musique: { image: '/assets/quiz/images/categories/musique.svg', imageAlt: 'Notes de musique stylisées Quizz Land' },
+  rap_fr: { image: '/assets/quiz/images/categories/musique.svg', imageAlt: 'Visuel musique Quizz Land' },
+  rap_us: { image: '/assets/quiz/images/categories/musique.svg', imageAlt: 'Visuel musique Quizz Land' },
+  science: { image: '/assets/quiz/images/categories/science.svg', imageAlt: 'Schéma scientifique stylisé Quizz Land' },
+  sport: { image: '/assets/quiz/images/categories/sport.svg', imageAlt: 'Terrain de sport stylisé Quizz Land' },
+  'world-cup-2026': { image: '/assets/quiz/images/categories/sport.svg', imageAlt: 'Terrain de football stylisé Quizz Land' },
+  web: { image: '/assets/quiz/images/categories/internet.svg', imageAlt: 'Fenêtre web stylisée Quizz Land' }
+};
+
 export const gameModes = [
   {
     id: 'classic',
@@ -204,8 +225,6 @@ const rawQuestions = [
   q('duel-012', 'duel', 'Duel: quel est le symbole chimique de l’eau ?', ['CO2', 'H2O', 'O2', 'NaCl'], 1, 'easy')
 ];
 
-export const { questions } = validateQuestionPack(rawQuestions, 'builtin');
-
 function cleanString(value, fallback = '') {
   return String(value ?? fallback).trim();
 }
@@ -218,6 +237,14 @@ export function normalizeCategory(value) {
 export function normalizeTheme(themeId) {
   return quizThemes.find((theme) => theme.id === themeId) || quizThemes[0];
 }
+
+function enrichQuestionMedia(question) {
+  if (question.image || question.audio) return question;
+  const media = categoryMediaAssets[normalizeCategory(question.category)];
+  return media ? { ...question, ...media } : question;
+}
+
+export const { questions } = validateQuestionPack(rawQuestions.map(enrichQuestionMedia), 'builtin');
 
 export function normalizeGameMode(modeId) {
   return gameModes.find((mode) => mode.id === modeId) || gameModes[0];

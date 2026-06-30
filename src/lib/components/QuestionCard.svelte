@@ -1,5 +1,7 @@
 <script>
+  import { onDestroy } from 'svelte';
   import { getSeasonAssetLabel, getSeasonFrame, getSeasonIcon } from '$lib/utils/seasonAssets.js';
+  import { questionMedia } from '$lib/utils/questionMedia.js';
 
   export let question = null;
   export let selected = null;
@@ -7,11 +9,48 @@
   export let feedback = null;
   export let onAnswer = () => {};
 
-  $: hasImage = Boolean(question?.image);
+  let audioEl;
+  let imageFailed = false;
+  let imageLoaded = false;
+  let audioFailed = false;
+  let audioPlaying = false;
+
+  $: media = questionMedia(question);
+  $: hasImage = Boolean(media.image && !imageFailed);
+  $: hasAudio = Boolean(media.audio && !audioFailed);
   $: categoryIcon = question ? getSeasonIcon(question.category) : '';
   $: categoryFrame = question ? getSeasonFrame(question.category) : '';
   $: categoryLabel = question ? getSeasonAssetLabel(question.category) : 'Quiz';
   $: revealedCorrectIndex = feedback?.correctIndex ?? question?.correctIndex;
+
+  $: if (question?.id) {
+    imageFailed = false;
+    imageLoaded = false;
+    audioFailed = false;
+    audioPlaying = false;
+    if (audioEl) {
+      audioEl.pause();
+      audioEl.currentTime = 0;
+      audioEl.load();
+    }
+  }
+
+  function toggleAudio() {
+    if (!audioEl || audioFailed) return;
+    if (audioEl.paused) {
+      audioEl.play().catch(() => {
+        audioFailed = true;
+      });
+    } else {
+      audioEl.pause();
+    }
+  }
+
+  onDestroy(() => {
+    if (!audioEl) return;
+    audioEl.pause();
+    audioEl.src = '';
+  });
 </script>
 
 <section class="card question-card">
@@ -22,13 +61,50 @@
         <img class="category-icon ql-bob" src={categoryIcon} alt="" aria-hidden="true" loading="lazy" />
         <span>{categoryLabel}</span>
       </p>
-      <h2>{question.text}</h2>
+      {#if question.text}
+        <h2>{question.text}</h2>
+      {/if}
     </div>
 
-    {#if hasImage}
-      <figure>
-        <img src={question.image} alt={question.imageAlt || `Illustration de la question : ${question.text}`} loading="eager" />
+    {#if media.image}
+      <figure class:image-ready={imageLoaded} class:image-missing={imageFailed}>
+        {#if hasImage}
+          <div class="media-placeholder" aria-hidden={imageLoaded ? 'true' : 'false'}>Chargement image</div>
+          <img
+            src={media.image}
+            alt={media.imageAlt}
+            loading="eager"
+            decoding="async"
+            on:load={() => (imageLoaded = true)}
+            on:error={() => (imageFailed = true)}
+          />
+        {:else}
+          <figcaption>Média indisponible, la question continue.</figcaption>
+        {/if}
       </figure>
+    {/if}
+
+    {#if hasAudio}
+      <div class="audio-panel">
+        <button type="button" on:click={toggleAudio} aria-label={audioPlaying ? 'Mettre l’extrait en pause' : 'Lire l’extrait audio'}>
+          <span aria-hidden="true">{audioPlaying ? 'Pause' : 'Play'}</span>
+        </button>
+        <div>
+          <strong>{media.audioLabel}</strong>
+          <span>{audioPlaying ? 'Lecture en cours' : 'Prêt à écouter'}</span>
+        </div>
+        <audio
+          bind:this={audioEl}
+          src={media.audio}
+          preload="metadata"
+          on:play={() => (audioPlaying = true)}
+          on:pause={() => (audioPlaying = false)}
+          on:ended={() => (audioPlaying = false)}
+          on:error={() => (audioFailed = true)}
+        ></audio>
+      </div>
+    {:else if media.audio && audioFailed}
+      <p class="media-fallback mono">Audio indisponible, la question continue.</p>
     {/if}
 
     <div class="answers" class:locked>
@@ -111,6 +187,8 @@
   .answers,
   .feedback,
   figure,
+  .audio-panel,
+  .media-fallback,
   .empty {
     position: relative;
     z-index: 1;
@@ -147,6 +225,9 @@
   }
 
   figure {
+    position: relative;
+    display: grid;
+    min-height: clamp(180px, 30svw, 320px);
     overflow: hidden;
     max-height: 320px;
     margin: 0;
@@ -159,6 +240,104 @@
     width: 100%;
     max-height: 320px;
     object-fit: cover;
+  }
+
+  figure > img {
+    height: 100%;
+    min-height: inherit;
+    opacity: 0;
+    transition: opacity 180ms ease;
+  }
+
+  figure.image-ready > img {
+    opacity: 1;
+  }
+
+  figure.image-missing {
+    min-height: 96px;
+    place-items: center;
+    padding: 18px;
+  }
+
+  figure figcaption,
+  .media-placeholder,
+  .media-fallback {
+    color: rgba(230, 232, 239, 0.72);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .media-placeholder {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background:
+      linear-gradient(90deg, rgba(230, 232, 239, 0.04), rgba(230, 232, 239, 0.12), rgba(230, 232, 239, 0.04)),
+      rgba(11, 16, 32, 0.62);
+    background-size: 220% 100%;
+    animation: media-loading 1.1s linear infinite;
+  }
+
+  .image-ready .media-placeholder {
+    display: none;
+  }
+
+  .audio-panel {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    border: 1px solid rgba(255, 213, 74, 0.22);
+    border-radius: 8px;
+    padding: 12px;
+    background:
+      linear-gradient(90deg, rgba(255, 213, 74, 0.12), rgba(57, 213, 255, 0.08)),
+      rgba(11, 16, 32, 0.58);
+  }
+
+  .audio-panel button {
+    display: grid;
+    width: 58px;
+    aspect-ratio: 1;
+    place-items: center;
+    border: 1px solid rgba(230, 232, 239, 0.2);
+    border-radius: 50%;
+    background: var(--color-yellow);
+    color: var(--color-ink);
+    font-weight: 950;
+  }
+
+  .audio-panel div {
+    display: grid;
+    min-width: 0;
+    gap: 3px;
+  }
+
+  .audio-panel strong,
+  .audio-panel span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .audio-panel strong {
+    color: var(--gray-900);
+    font-weight: 950;
+  }
+
+  .audio-panel span {
+    color: rgba(230, 232, 239, 0.72);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  audio {
+    display: none;
   }
 
   .answers {
@@ -309,6 +488,15 @@
     }
     75% {
       transform: translateX(-2px);
+    }
+  }
+
+  @keyframes media-loading {
+    from {
+      background-position: 220% 0;
+    }
+    to {
+      background-position: -220% 0;
     }
   }
 

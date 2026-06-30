@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Internet">
+  <rect width="1200" height="675" fill="#0b1020"/>
+  <rect x="120" y="120" width="960" height="435" rx="22" fill="#e6e8ef"/>
+  <rect x="120" y="120" width="960" height="78" rx="22" fill="#39d5ff"/>
+  <circle cx="172" cy="159" r="14" fill="#e53935"/><circle cx="218" cy="159" r="14" fill="#ffd54a"/><circle cx="264" cy="159" r="14" fill="#36d27c"/>
+  <path fill="#0b1020" d="M248 274h704v52H248zm0 92h426v52H248zm0 92h588v52H248z"/>
+  <text x="600" y="78" text-anchor="middle" fill="#e6e8ef" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="900">WEB CULTURE</text>
+</svg>

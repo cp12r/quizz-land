@@ -176,6 +176,8 @@
       category: 'perso',
       image: '',
       imageAlt: '',
+      audio: '',
+      audioLabel: '',
       answers: [...answers, '', '', '', ''].slice(0, 4),
       correctIndex
     };
@@ -216,16 +218,18 @@
         const answers = filledAnswers.map(({ answer }) => answer);
         const correctIndex = filledAnswers.findIndex(({ answerIndex }) => answerIndex === draft.correctIndex);
 
-        if (!draft.text.trim() || answers.length < 2 || correctIndex < 0) return null;
+        if ((!draft.text.trim() && !draft.image.trim() && !draft.audio.trim()) || answers.length < 2 || correctIndex < 0) return null;
 
         return {
           id: `custom-${index + 1}`,
-          text: draft.text.trim(),
           answers,
           correctIndex,
           category: draft.category.trim() || 'perso',
+          ...(draft.text.trim() ? { text: draft.text.trim() } : {}),
           ...(draft.image.trim() ? { image: draft.image.trim() } : {}),
-          ...(draft.imageAlt.trim() ? { imageAlt: draft.imageAlt.trim() } : {})
+          ...(draft.imageAlt.trim() ? { imageAlt: draft.imageAlt.trim() } : {}),
+          ...(draft.audio.trim() ? { audio: draft.audio.trim() } : {}),
+          ...(draft.audioLabel.trim() ? { audioLabel: draft.audioLabel.trim() } : {})
         };
       })
       .filter(Boolean);
@@ -262,6 +266,8 @@
     copy.category = source.category;
     copy.image = source.image;
     copy.imageAlt = source.imageAlt;
+    copy.audio = source.audio;
+    copy.audioLabel = source.audioLabel;
     customDrafts = [...customDrafts, copy];
     activeDraftId = copy.id;
     playSound('ui');
@@ -426,6 +432,10 @@
   <meta property="og:description" content={description} />
   <meta property="og:url" content={canonicalUrl} />
   <meta property="og:image" content={ogImage} />
+  <meta property="og:image:secure_url" content={ogImage} />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Quizz Land, quiz entre potes sans compte" />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -770,6 +780,26 @@
                 on:input={(event) => updateDraft(activeDraft.id, { imageAlt: event.currentTarget.value })}
                 maxlength="140"
                 placeholder="description courte"
+              />
+            </label>
+
+            <label>
+              <span>Audio</span>
+              <input
+                value={activeDraft.audio}
+                on:input={(event) => updateDraft(activeDraft.id, { audio: event.currentTarget.value })}
+                maxlength="600"
+                placeholder="/assets/quiz/audio/extrait.mp3"
+              />
+            </label>
+
+            <label>
+              <span>Texte audio</span>
+              <input
+                value={activeDraft.audioLabel}
+                on:input={(event) => updateDraft(activeDraft.id, { audioLabel: event.currentTarget.value })}
+                maxlength="140"
+                placeholder="extrait à identifier"
               />
             </label>
           </div>
@@ -2197,7 +2227,7 @@
 
   .metadata-board {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 12px;
     align-items: end;
   }

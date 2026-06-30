@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Anime">
+  <rect width="1200" height="675" fill="#0b1020"/>
+  <circle cx="600" cy="312" r="210" fill="#ff5a5f"/>
+  <path fill="#e6e8ef" d="M420 292c72-80 137-80 180 0 43-80 108-80 180 0-44 110-116 166-180 166s-136-56-180-166z"/>
+  <circle cx="522" cy="326" r="28" fill="#0b1020"/><circle cx="678" cy="326" r="28" fill="#0b1020"/>
+  <path stroke="#0b1020" stroke-width="12" stroke-linecap="round" d="M546 410c34 25 74 25 108 0"/>
+  <text x="600" y="610" text-anchor="middle" fill="#ffd54a" font-family="Arial, Helvetica, sans-serif" font-size="70" font-weight="900">ANIME</text>
+</svg>
