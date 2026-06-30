@@ -964,9 +964,9 @@
     "deleteAfter": null,
     "config": {
       "categories": [],
-      "questionCount": 8,
-      "requestedQuestionCount": 8,
-      "availableQuestionCount": 8,
+      "questionCount": 13,
+      "requestedQuestionCount": 13,
+      "availableQuestionCount": 13,
       "minQuestionCount": 1,
       "timePerQuestion": 20,
       "bonusTimer": true,
@@ -981,7 +981,7 @@
         "scoreMultiplier": 1,
         "shuffleAnswers": false
       },
-      "customQuestionCount": 8
+      "customQuestionCount": 13
     },
     "players": [],
     "answers": [],
@@ -990,108 +990,112 @@
         "id": "rap-fr-itunes-001",
         "category": "rap_fr",
         "text": "Quel artiste interpr?te cet extrait ?",
-        "answers": [
-          "Orelsan",
-          "Nekfeu",
-          "Vald",
-          "Lomepal"
-        ],
-        "correctIndex": 0,
-        "difficulty": "medium",
         "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/51/25/ca/5125cab0-b354-8427-4296-68401ff6113a/mzaf_13156758261969948918.plus.aac.p.m4a",
         "audioStart": 0,
         "audioDuration": 8,
-        "audioLabel": "Extrait officiel Apple Music / iTunes"
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "Nekfeu",
+          "Orelsan",
+          "Vald",
+          "Lomepal"
+        ],
+        "correctIndex": 1,
+        "difficulty": "medium"
       },
       {
         "id": "rap-fr-itunes-002",
         "category": "rap_fr",
         "text": "Quel artiste interpr?te cet extrait ?",
-        "answers": [
-          "Nekfeu",
-          "Orelsan",
-          "Ninho",
-          "Damso"
-        ],
-        "correctIndex": 0,
-        "difficulty": "medium",
         "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/04/ab/0e/04ab0e10-727e-4825-8189-b67b8450abba/mzaf_11490815668358717707.plus.aac.p.m4a",
         "audioStart": 0,
         "audioDuration": 8,
-        "audioLabel": "Extrait officiel Apple Music / iTunes"
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "Orelsan",
+          "Ninho",
+          "Nekfeu",
+          "Damso"
+        ],
+        "correctIndex": 2,
+        "difficulty": "medium"
       },
       {
         "id": "rap-fr-itunes-003",
         "category": "rap_fr",
         "text": "Quel artiste interpr?te cet extrait ?",
-        "answers": [
-          "Jul",
-          "SCH",
-          "Soprano",
-          "Alonzo"
-        ],
-        "correctIndex": 0,
-        "difficulty": "medium",
         "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/e4/6a/c3/e46ac3ff-d67b-a212-5442-783e41205cc9/mzaf_15281544440280015276.plus.aac.p.m4a",
         "audioStart": 0,
         "audioDuration": 8,
-        "audioLabel": "Extrait officiel Apple Music / iTunes"
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "SCH",
+          "Soprano",
+          "Alonzo",
+          "Jul"
+        ],
+        "correctIndex": 3,
+        "difficulty": "medium"
       },
       {
         "id": "rap-fr-itunes-004",
         "category": "rap_fr",
         "text": "Quel artiste est associ? ? cet extrait ?",
-        "answers": [
-          "GIMS",
-          "Niska",
-          "Dadju",
-          "Soolking"
-        ],
-        "correctIndex": 0,
-        "difficulty": "medium",
         "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/13/6a/6e/136a6ea0-e010-8737-ca21-1da795bc63ed/mzaf_16239423657969391650.plus.aac.p.m4a",
         "audioStart": 0,
         "audioDuration": 8,
-        "audioLabel": "Extrait officiel Apple Music / iTunes"
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "Niska",
+          "GIMS",
+          "Dadju",
+          "Soolking"
+        ],
+        "correctIndex": 1,
+        "difficulty": "medium"
       },
       {
         "id": "rap-fr-itunes-005",
         "category": "rap_fr",
         "text": "Quel duo interpr?te cet extrait ?",
-        "answers": [
-          "Soolking & Gazo",
-          "Ninho & Niska",
-          "PNL",
-          "Koba LaD & Zola"
-        ],
-        "correctIndex": 0,
-        "difficulty": "medium",
         "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/f2/de/61/f2de6185-06f0-0b24-e31d-638388548a74/mzaf_978111458217636083.plus.aac.p.m4a",
         "audioStart": 0,
         "audioDuration": 8,
-        "audioLabel": "Extrait officiel Apple Music / iTunes"
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "Ninho & Niska",
+          "PNL",
+          "Soolking & Gazo",
+          "Koba LaD & Zola"
+        ],
+        "correctIndex": 2,
+        "difficulty": "medium"
       },
       {
         "id": "rap-fr-itunes-006",
         "category": "rap_fr",
         "text": "Quel groupe interpr?te cet extrait ?",
-        "answers": [
-          "PNL",
-          "IAM",
-          "NTM",
-          "Casseurs Flowters"
-        ],
-        "correctIndex": 0,
-        "difficulty": "medium",
         "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/73/e6/55/73e655c5-2c9d-12c2-b090-7509e211d1b6/mzaf_13280662596100551049.plus.aac.p.m4a",
         "audioStart": 0,
         "audioDuration": 8,
-        "audioLabel": "Extrait officiel Apple Music / iTunes"
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "IAM",
+          "NTM",
+          "Casseurs Flowters",
+          "PNL"
+        ],
+        "correctIndex": 3,
+        "difficulty": "medium"
       },
       {
         "id": "rap-fr-itunes-007",
         "category": "rap_fr",
         "text": "Quel rappeur interpr?te cet extrait ?",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/e4/a2/5b/e4a25b42-e8d9-435e-9e58-90bc4c42c7c2/mzaf_17152965285322838818.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
         "answers": [
           "Booba",
           "Kaaris",
@@ -1099,52 +1103,222 @@
           "Lacrim"
         ],
         "correctIndex": 0,
-        "difficulty": "medium",
-        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/e4/a2/5b/e4a25b42-e8d9-435e-9e58-90bc4c42c7c2/mzaf_17152965285322838818.plus.aac.p.m4a",
-        "audioStart": 0,
-        "audioDuration": 8,
-        "audioLabel": "Extrait officiel Apple Music / iTunes"
+        "difficulty": "medium"
       },
       {
         "id": "rap-fr-itunes-008",
         "category": "rap_fr",
         "text": "Quel artiste est associ? ? cet extrait ?",
-        "answers": [
-          "Damso",
-          "Hamza",
-          "Caballero",
-          "Rom?o Elvis"
-        ],
-        "correctIndex": 0,
-        "difficulty": "medium",
         "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/4e/39/51/4e395171-8cfc-c469-f9d8-cba1df7c350a/mzaf_2751427762030817756.plus.aac.p.m4a",
         "audioStart": 0,
         "audioDuration": 8,
-        "audioLabel": "Extrait officiel Apple Music / iTunes"
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "Hamza",
+          "Caballero",
+          "Damso",
+          "Rom?o Elvis"
+        ],
+        "correctIndex": 2,
+        "difficulty": "medium"
+      },
+      {
+        "id": "rap-fr-itunes-009",
+        "category": "rap_fr",
+        "text": "Quel artiste est pr?sent sur cet extrait ?",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/06/ab/7b/06ab7bee-a243-d196-4e76-06c91b01b6e4/mzaf_4586533787945775726.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "Gazo",
+          "Tiakola",
+          "Naza",
+          "Franglish"
+        ],
+        "correctIndex": 1,
+        "difficulty": "medium"
+      },
+      {
+        "id": "rap-fr-itunes-010",
+        "category": "rap_fr",
+        "text": "Quel rappeur est pr?sent sur cet extrait ?",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/73/15/19/731519a1-b013-143e-d2d7-9f9cc559daa2/mzaf_10784176107773234990.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "Zola",
+          "Koba LaD",
+          "Naps",
+          "Leto"
+        ],
+        "correctIndex": 1,
+        "difficulty": "medium"
+      },
+      {
+        "id": "rap-fr-itunes-011",
+        "category": "rap_fr",
+        "text": "Quel rappeur est associ? ? cet extrait ?",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/e3/de/b8/e3deb8d3-ecfd-9e79-171e-80e2fcb69f16/mzaf_178929562660604319.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "Kaaris",
+          "Booba",
+          "Niska",
+          "Lacrim"
+        ],
+        "correctIndex": 1,
+        "difficulty": "medium"
+      },
+      {
+        "id": "rap-fr-itunes-012",
+        "category": "rap_fr",
+        "text": "Quel artiste est associ? ? cet extrait ?",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/ef/92/fb/ef92fbe9-ff12-41d9-2c2b-275d40c119a7/mzaf_8060807301720604441.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "NTM",
+          "Fonky Family",
+          "IAM",
+          "Sniper"
+        ],
+        "correctIndex": 2,
+        "difficulty": "medium"
+      },
+      {
+        "id": "rap-fr-itunes-013",
+        "category": "rap_fr",
+        "text": "Quel artiste est associ? ? cet extrait ?",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/11/5e/53/115e5387-6776-82a5-14e1-8252ffc7a1a5/mzaf_10795028929239060683.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "Ninho",
+          "SCH",
+          "Jul",
+          "Hamza"
+        ],
+        "correctIndex": 1,
+        "difficulty": "medium"
       }
     ],
     "questions": [
       {
+        "id": "rap-fr-itunes-001",
+        "category": "rap_fr",
+        "text": "Quel artiste interpr?te cet extrait ?",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/51/25/ca/5125cab0-b354-8427-4296-68401ff6113a/mzaf_13156758261969948918.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "Nekfeu",
+          "Orelsan",
+          "Vald",
+          "Lomepal"
+        ],
+        "correctIndex": 1,
+        "difficulty": "medium"
+      },
+      {
+        "id": "rap-fr-itunes-002",
+        "category": "rap_fr",
+        "text": "Quel artiste interpr?te cet extrait ?",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/04/ab/0e/04ab0e10-727e-4825-8189-b67b8450abba/mzaf_11490815668358717707.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "Orelsan",
+          "Ninho",
+          "Nekfeu",
+          "Damso"
+        ],
+        "correctIndex": 2,
+        "difficulty": "medium"
+      },
+      {
+        "id": "rap-fr-itunes-003",
+        "category": "rap_fr",
+        "text": "Quel artiste interpr?te cet extrait ?",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/e4/6a/c3/e46ac3ff-d67b-a212-5442-783e41205cc9/mzaf_15281544440280015276.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "SCH",
+          "Soprano",
+          "Alonzo",
+          "Jul"
+        ],
+        "correctIndex": 3,
+        "difficulty": "medium"
+      },
+      {
+        "id": "rap-fr-itunes-004",
+        "category": "rap_fr",
+        "text": "Quel artiste est associ? ? cet extrait ?",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/13/6a/6e/136a6ea0-e010-8737-ca21-1da795bc63ed/mzaf_16239423657969391650.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "Niska",
+          "GIMS",
+          "Dadju",
+          "Soolking"
+        ],
+        "correctIndex": 1,
+        "difficulty": "medium"
+      },
+      {
         "id": "rap-fr-itunes-005",
         "category": "rap_fr",
         "text": "Quel duo interpr?te cet extrait ?",
-        "answers": [
-          "Soolking & Gazo",
-          "Ninho & Niska",
-          "PNL",
-          "Koba LaD & Zola"
-        ],
-        "correctIndex": 0,
-        "difficulty": "medium",
         "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/f2/de/61/f2de6185-06f0-0b24-e31d-638388548a74/mzaf_978111458217636083.plus.aac.p.m4a",
         "audioStart": 0,
         "audioDuration": 8,
-        "audioLabel": "Extrait officiel Apple Music / iTunes"
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "Ninho & Niska",
+          "PNL",
+          "Soolking & Gazo",
+          "Koba LaD & Zola"
+        ],
+        "correctIndex": 2,
+        "difficulty": "medium"
+      },
+      {
+        "id": "rap-fr-itunes-006",
+        "category": "rap_fr",
+        "text": "Quel groupe interpr?te cet extrait ?",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/73/e6/55/73e655c5-2c9d-12c2-b090-7509e211d1b6/mzaf_13280662596100551049.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "IAM",
+          "NTM",
+          "Casseurs Flowters",
+          "PNL"
+        ],
+        "correctIndex": 3,
+        "difficulty": "medium"
       },
       {
         "id": "rap-fr-itunes-007",
         "category": "rap_fr",
         "text": "Quel rappeur interpr?te cet extrait ?",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/e4/a2/5b/e4a25b42-e8d9-435e-9e58-90bc4c42c7c2/mzaf_17152965285322838818.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
         "answers": [
           "Booba",
           "Kaaris",
@@ -1152,113 +1326,109 @@
           "Lacrim"
         ],
         "correctIndex": 0,
-        "difficulty": "medium",
-        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/e4/a2/5b/e4a25b42-e8d9-435e-9e58-90bc4c42c7c2/mzaf_17152965285322838818.plus.aac.p.m4a",
-        "audioStart": 0,
-        "audioDuration": 8,
-        "audioLabel": "Extrait officiel Apple Music / iTunes"
-      },
-      {
-        "id": "rap-fr-itunes-004",
-        "category": "rap_fr",
-        "text": "Quel artiste est associ? ? cet extrait ?",
-        "answers": [
-          "GIMS",
-          "Niska",
-          "Dadju",
-          "Soolking"
-        ],
-        "correctIndex": 0,
-        "difficulty": "medium",
-        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/13/6a/6e/136a6ea0-e010-8737-ca21-1da795bc63ed/mzaf_16239423657969391650.plus.aac.p.m4a",
-        "audioStart": 0,
-        "audioDuration": 8,
-        "audioLabel": "Extrait officiel Apple Music / iTunes"
-      },
-      {
-        "id": "rap-fr-itunes-003",
-        "category": "rap_fr",
-        "text": "Quel artiste interpr?te cet extrait ?",
-        "answers": [
-          "Jul",
-          "SCH",
-          "Soprano",
-          "Alonzo"
-        ],
-        "correctIndex": 0,
-        "difficulty": "medium",
-        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/e4/6a/c3/e46ac3ff-d67b-a212-5442-783e41205cc9/mzaf_15281544440280015276.plus.aac.p.m4a",
-        "audioStart": 0,
-        "audioDuration": 8,
-        "audioLabel": "Extrait officiel Apple Music / iTunes"
+        "difficulty": "medium"
       },
       {
         "id": "rap-fr-itunes-008",
         "category": "rap_fr",
         "text": "Quel artiste est associ? ? cet extrait ?",
-        "answers": [
-          "Damso",
-          "Hamza",
-          "Caballero",
-          "Rom?o Elvis"
-        ],
-        "correctIndex": 0,
-        "difficulty": "medium",
         "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/4e/39/51/4e395171-8cfc-c469-f9d8-cba1df7c350a/mzaf_2751427762030817756.plus.aac.p.m4a",
         "audioStart": 0,
         "audioDuration": 8,
-        "audioLabel": "Extrait officiel Apple Music / iTunes"
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "Hamza",
+          "Caballero",
+          "Damso",
+          "Rom?o Elvis"
+        ],
+        "correctIndex": 2,
+        "difficulty": "medium"
       },
       {
-        "id": "rap-fr-itunes-002",
+        "id": "rap-fr-itunes-009",
         "category": "rap_fr",
-        "text": "Quel artiste interpr?te cet extrait ?",
-        "answers": [
-          "Nekfeu",
-          "Orelsan",
-          "Ninho",
-          "Damso"
-        ],
-        "correctIndex": 0,
-        "difficulty": "medium",
-        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/04/ab/0e/04ab0e10-727e-4825-8189-b67b8450abba/mzaf_11490815668358717707.plus.aac.p.m4a",
+        "text": "Quel artiste est pr?sent sur cet extrait ?",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/06/ab/7b/06ab7bee-a243-d196-4e76-06c91b01b6e4/mzaf_4586533787945775726.plus.aac.p.m4a",
         "audioStart": 0,
         "audioDuration": 8,
-        "audioLabel": "Extrait officiel Apple Music / iTunes"
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "Gazo",
+          "Tiakola",
+          "Naza",
+          "Franglish"
+        ],
+        "correctIndex": 1,
+        "difficulty": "medium"
       },
       {
-        "id": "rap-fr-itunes-006",
+        "id": "rap-fr-itunes-010",
         "category": "rap_fr",
-        "text": "Quel groupe interpr?te cet extrait ?",
+        "text": "Quel rappeur est pr?sent sur cet extrait ?",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/73/15/19/731519a1-b013-143e-d2d7-9f9cc559daa2/mzaf_10784176107773234990.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
         "answers": [
-          "PNL",
-          "IAM",
+          "Zola",
+          "Koba LaD",
+          "Naps",
+          "Leto"
+        ],
+        "correctIndex": 1,
+        "difficulty": "medium"
+      },
+      {
+        "id": "rap-fr-itunes-011",
+        "category": "rap_fr",
+        "text": "Quel rappeur est associ? ? cet extrait ?",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/e3/de/b8/e3deb8d3-ecfd-9e79-171e-80e2fcb69f16/mzaf_178929562660604319.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "Kaaris",
+          "Booba",
+          "Niska",
+          "Lacrim"
+        ],
+        "correctIndex": 1,
+        "difficulty": "medium"
+      },
+      {
+        "id": "rap-fr-itunes-012",
+        "category": "rap_fr",
+        "text": "Quel artiste est associ? ? cet extrait ?",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/ef/92/fb/ef92fbe9-ff12-41d9-2c2b-275d40c119a7/mzaf_8060807301720604441.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
           "NTM",
-          "Casseurs Flowters"
+          "Fonky Family",
+          "IAM",
+          "Sniper"
         ],
-        "correctIndex": 0,
-        "difficulty": "medium",
-        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/73/e6/55/73e655c5-2c9d-12c2-b090-7509e211d1b6/mzaf_13280662596100551049.plus.aac.p.m4a",
-        "audioStart": 0,
-        "audioDuration": 8,
-        "audioLabel": "Extrait officiel Apple Music / iTunes"
+        "correctIndex": 2,
+        "difficulty": "medium"
       },
       {
-        "id": "rap-fr-itunes-001",
+        "id": "rap-fr-itunes-013",
         "category": "rap_fr",
-        "text": "Quel artiste interpr?te cet extrait ?",
-        "answers": [
-          "Orelsan",
-          "Nekfeu",
-          "Vald",
-          "Lomepal"
-        ],
-        "correctIndex": 0,
-        "difficulty": "medium",
-        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/51/25/ca/5125cab0-b354-8427-4296-68401ff6113a/mzaf_13156758261969948918.plus.aac.p.m4a",
+        "text": "Quel artiste est associ? ? cet extrait ?",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/11/5e/53/115e5387-6776-82a5-14e1-8252ffc7a1a5/mzaf_10795028929239060683.plus.aac.p.m4a",
         "audioStart": 0,
         "audioDuration": 8,
-        "audioLabel": "Extrait officiel Apple Music / iTunes"
+        "audioLabel": "Extrait officiel Apple Music / iTunes",
+        "answers": [
+          "Ninho",
+          "SCH",
+          "Jul",
+          "Hamza"
+        ],
+        "correctIndex": 1,
+        "difficulty": "medium"
       }
     ],
     "createdAt": "2026-06-30T18:46:01.403Z"
