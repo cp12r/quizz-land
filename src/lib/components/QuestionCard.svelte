@@ -17,6 +17,7 @@
   let audioPlaying = false;
   let audioLoading = false;
   let audioStopTimer = null;
+  let audioVolume = 0.85;
   let lastQuestionId = null;
 
   $: media = questionMedia(question);
@@ -65,6 +66,7 @@
   function playAudioExcerpt() {
     stopAudio();
     audioLoading = true;
+    audioEl.volume = Math.max(0, Math.min(1, audioVolume));
     const start = Number.isFinite(media.audioStart) ? media.audioStart : 0;
     const duration = Number.isFinite(media.audioDuration) ? media.audioDuration : 8;
 
@@ -93,6 +95,11 @@
         audioFailed = true;
       }, { once: true });
     }
+  }
+
+  function setAudioVolume(value) {
+    audioVolume = Math.max(0, Math.min(1, Number(value) || 0));
+    if (audioEl) audioEl.volume = audioVolume;
   }
 
   onDestroy(() => {
@@ -143,12 +150,28 @@
 
     {#if hasAudio}
       <div class="audio-panel">
-        <button type="button" on:click={toggleAudio} aria-label={audioPlaying ? 'Mettre l’extrait en pause' : 'Lire l’extrait audio'}>
-          <span aria-hidden="true">{audioLoading ? '...' : audioPlaying ? 'Pause' : 'Play'}</span>
+        <button class="audio-toggle" type="button" on:click={toggleAudio} aria-label={audioPlaying ? 'Mettre l’extrait en pause' : 'Lire l’extrait audio'}>
+          <span class:playing={audioPlaying} aria-hidden="true"></span>
         </button>
-        <div>
+        <div class="audio-copy">
           <strong>{media.audioLabel}</strong>
           <span>{audioLoading ? 'Chargement' : audioPlaying ? 'Lecture en cours' : 'Prêt à écouter'}</span>
+        </div>
+        <label class="volume-control">
+          <span class="mono">Vol</span>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.05"
+            value={audioVolume}
+            on:input={(event) => setAudioVolume(event.currentTarget.value)}
+            aria-label="Volume de l’extrait audio"
+          />
+          <output class="mono">{Math.round(audioVolume * 100)}</output>
+        </label>
+        <div class="audio-meter" class:active={audioPlaying} aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
         </div>
         <audio
           bind:this={audioEl}
@@ -157,7 +180,10 @@
           on:play={() => (audioPlaying = true)}
           on:pause={() => (audioPlaying = false)}
           on:ended={() => (audioPlaying = false)}
-          on:error={() => (audioFailed = true)}
+          on:error={() => {
+            audioLoading = false;
+            audioFailed = true;
+          }}
         ></audio>
       </div>
     {:else if media.audio && audioFailed}
@@ -344,7 +370,7 @@
 
   .audio-panel {
     display: grid;
-    grid-template-columns: 58px minmax(0, 1fr);
+    grid-template-columns: 58px minmax(0, 1fr) minmax(140px, 210px) 42px;
     gap: 12px;
     align-items: center;
     border: 1px solid rgba(255, 213, 74, 0.22);
@@ -355,7 +381,8 @@
       rgba(11, 16, 32, 0.58);
   }
 
-  .audio-panel button {
+  .audio-toggle {
+    position: relative;
     display: grid;
     width: 58px;
     aspect-ratio: 1;
@@ -365,32 +392,118 @@
     background: var(--color-yellow);
     color: var(--color-ink);
     font-weight: 950;
+    transition:
+      transform 160ms ease,
+      filter 160ms ease;
   }
 
-  .audio-panel div {
+  .audio-toggle:hover,
+  .audio-toggle:focus-visible {
+    outline: none;
+    transform: scale(1.04);
+    filter: brightness(1.06);
+  }
+
+  .audio-toggle span {
+    display: block;
+    width: 0;
+    height: 0;
+    margin-left: 4px;
+    border-top: 11px solid transparent;
+    border-bottom: 11px solid transparent;
+    border-left: 17px solid var(--color-ink);
+  }
+
+  .audio-toggle span.playing {
+    width: 18px;
+    height: 22px;
+    margin-left: 0;
+    border: 0;
+    background:
+      linear-gradient(90deg, var(--color-ink) 0 6px, transparent 6px 12px, var(--color-ink) 12px 18px);
+  }
+
+  .audio-copy {
     display: grid;
     min-width: 0;
     gap: 3px;
   }
 
-  .audio-panel strong,
-  .audio-panel span {
+  .audio-copy strong,
+  .audio-copy span {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .audio-panel strong {
+  .audio-copy strong {
     color: var(--gray-900);
     font-weight: 950;
   }
 
-  .audio-panel span {
+  .audio-copy span {
     color: rgba(230, 232, 239, 0.72);
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.72rem;
     font-weight: 900;
     text-transform: uppercase;
+  }
+
+  .volume-control {
+    display: grid;
+    grid-template-columns: auto minmax(78px, 1fr) 32px;
+    gap: 8px;
+    align-items: center;
+    min-width: 0;
+    border: 1px solid rgba(230, 232, 239, 0.14);
+    border-radius: 8px;
+    padding: 8px;
+    background: rgba(11, 16, 32, 0.36);
+  }
+
+  .volume-control span,
+  .volume-control output {
+    color: rgba(230, 232, 239, 0.76);
+    font-size: 0.68rem;
+    font-weight: 900;
+  }
+
+  .volume-control input {
+    min-width: 0;
+    width: 100%;
+    accent-color: var(--color-yellow);
+  }
+
+  .audio-meter {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3px;
+    align-items: end;
+    height: 32px;
+  }
+
+  .audio-meter span {
+    display: block;
+    height: 9px;
+    border-radius: 999px;
+    background: rgba(255, 213, 74, 0.32);
+  }
+
+  .audio-meter.active span {
+    animation: audio-bar 620ms ease-in-out infinite alternate;
+    background: var(--color-yellow);
+  }
+
+  .audio-meter span:nth-child(2) {
+    animation-delay: 110ms;
+  }
+
+  .audio-meter span:nth-child(3) {
+    animation-delay: 220ms;
+  }
+
+  .audio-meter span:nth-child(4) {
+    animation-delay: 330ms;
   }
 
   audio {
@@ -519,6 +632,20 @@
     .answers {
       grid-template-columns: 1fr;
     }
+
+    .audio-panel {
+      grid-template-columns: 50px minmax(0, 1fr);
+      gap: 10px;
+    }
+
+    .audio-toggle {
+      width: 50px;
+    }
+
+    .volume-control,
+    .audio-meter {
+      grid-column: 1 / -1;
+    }
   }
 
   @keyframes answer-reveal {
@@ -557,10 +684,22 @@
     }
   }
 
+  @keyframes audio-bar {
+    from {
+      height: 8px;
+      opacity: 0.55;
+    }
+    to {
+      height: 30px;
+      opacity: 1;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .question-card,
     .answers button.correctAnswer,
-    .answers button.wrongAnswer {
+    .answers button.wrongAnswer,
+    .audio-meter.active span {
       animation: none;
     }
   }
