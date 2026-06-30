@@ -27,133 +27,240 @@
         "id": "q1",
         "category": "gaming",
         "text": "Quel personnage porte un masque représentant un crâne dans Call of Duty ?",
-        "answers": ["Ghost", "Soap", "Price", "Gaz"],
+        "answers": [
+          "Ghost",
+          "Soap",
+          "Price",
+          "Gaz"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q2",
         "category": "pokemon",
         "text": "Quel Pokémon porte le numéro 1 du Pokédex ?",
-        "answers": ["Bulbizarre", "Pikachu", "Salamèche", "Carapuce"],
-        "correctIndex": 0
+        "answers": [
+          "Bulbizarre",
+          "Pikachu",
+          "Salamèche",
+          "Carapuce"
+        ],
+        "correctIndex": 0,
+        "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Bulbasaur%20Origami%20Pagekeeper.jpg",
+        "imageAlt": "Illustration de Bulbizarre en origami"
       },
       {
         "id": "q3",
         "category": "gaming",
         "text": "Qui est Matt dans Wii Sports ?",
-        "answers": ["Le champion de boxe", "Le coach de tennis", "Le créateur du jeu", "Le commentateur"],
+        "answers": [
+          "Le champion de boxe",
+          "Le coach de tennis",
+          "Le créateur du jeu",
+          "Le commentateur"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q4",
         "category": "gaming",
         "text": "Quelle est la console la plus vendue de tous les temps ?",
-        "answers": ["PlayStation 2", "Nintendo Switch", "Nintendo DS", "PlayStation 4"],
-        "correctIndex": 0
+        "answers": [
+          "PlayStation 2",
+          "Nintendo Switch",
+          "Nintendo DS",
+          "PlayStation 4"
+        ],
+        "correctIndex": 0,
+        "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Sony-PlayStation-2-30001-Console-BL.jpg",
+        "imageAlt": "Console PlayStation 2 noire"
       },
       {
         "id": "q5",
         "category": "cinema",
         "text": "Comment s'appelle le clown dans le film Ça ?",
-        "answers": ["Pennywise", "Joker", "Art", "Bozo"],
+        "answers": [
+          "Pennywise",
+          "Joker",
+          "Art",
+          "Bozo"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q6",
         "category": "serie",
         "text": "Quelle maison de Harry Potter a le jaune comme couleur principale ?",
-        "answers": ["Gryffondor", "Serpentard", "Serdaigle", "Poufsouffle"],
+        "answers": [
+          "Gryffondor",
+          "Serpentard",
+          "Serdaigle",
+          "Poufsouffle"
+        ],
         "correctIndex": 3
       },
       {
         "id": "q7",
         "category": "gaming",
         "text": "Le célèbre Code Konami commence par quelle combinaison ?",
-        "answers": ["Haut, Haut, Bas, Bas", "Gauche, Droite, Gauche, Droite", "Bas, Bas, Haut, Haut", "A, B, X, Y"],
-        "correctIndex": 0
+        "answers": [
+          "Haut, Haut, Bas, Bas",
+          "Gauche, Droite, Gauche, Droite",
+          "Bas, Bas, Haut, Haut",
+          "A, B, X, Y"
+        ],
+        "correctIndex": 0,
+        "image": "https://placehold.co/1200x700/111827/facc15/png?text=Code+Konami",
+        "imageAlt": "Carte visuelle Code Konami"
       },
       {
         "id": "q8",
         "category": "gaming",
         "text": "Dans Mario Kart, quel objet est célèbre pour renverser le premier de la course ?",
-        "answers": ["Carapace bleue", "Carapace rouge", "Éclair", "Bob-omb"],
+        "answers": [
+          "Carapace bleue",
+          "Carapace rouge",
+          "Éclair",
+          "Bob-omb"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q9",
         "category": "pokemon",
         "text": "Quel Pokémon refuse de rentrer dans sa Poké Ball dans l'animé ?",
-        "answers": ["Pikachu", "Salamèche", "Rondoudou", "Miaouss"],
+        "answers": [
+          "Pikachu",
+          "Salamèche",
+          "Rondoudou",
+          "Miaouss"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q10",
         "category": "gaming",
         "text": "Quelle carte de Call of Duty est devenue culte pour les duels de sniper en 1 contre 1 ?",
-        "answers": ["Rust", "Shipment", "Nuketown", "Terminal"],
+        "answers": [
+          "Rust",
+          "Shipment",
+          "Nuketown",
+          "Terminal"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q11",
         "category": "gaming",
         "text": "D'où vient le célèbre « Press F to Pay Respects » ?",
-        "answers": ["Call of Duty: Advanced Warfare", "Battlefield 4", "GTA V", "Counter-Strike"],
-        "correctIndex": 0
+        "answers": [
+          "Call of Duty: Advanced Warfare",
+          "Battlefield 4",
+          "GTA V",
+          "Counter-Strike"
+        ],
+        "correctIndex": 0,
+        "image": "https://placehold.co/1200x700/101827/e6e8ef/png?text=Press+F",
+        "imageAlt": "Carte visuelle Press F to Pay Respects"
       },
       {
         "id": "q12",
         "category": "gaming",
         "text": "Quelle arme était surnommée le « Noob Tube » dans les anciens Call of Duty ?",
-        "answers": ["Le lance-grenades M203", "Le RPG-7", "L'Intervention", "Le SPAS-12"],
+        "answers": [
+          "Le lance-grenades M203",
+          "Le RPG-7",
+          "L'Intervention",
+          "Le SPAS-12"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q13",
         "category": "science",
         "text": "Combien d'os possède le corps humain à l'âge adulte ?",
-        "answers": ["206", "201", "212", "220"],
+        "answers": [
+          "206",
+          "201",
+          "212",
+          "220"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q14",
         "category": "youtube",
         "text": "Quel YouTubeur français est à l'origine du GP Explorer ?",
-        "answers": ["Squeezie", "Inoxtag", "Michou", "Amixem"],
+        "answers": [
+          "Squeezie",
+          "Inoxtag",
+          "Michou",
+          "Amixem"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q15",
         "category": "marvel",
         "text": "Comment s'appelle le marteau de Thor ?",
-        "answers": ["Mjolnir", "Stormbreaker", "Excalibur", "Gungnir"],
+        "answers": [
+          "Mjolnir",
+          "Stormbreaker",
+          "Excalibur",
+          "Gungnir"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q16",
         "category": "gaming",
         "text": "Dans GTA V, comment s'appelle la ville principale ?",
-        "answers": ["Los Santos", "Vice City", "Liberty City", "San Fierro"],
-        "correctIndex": 0
+        "answers": [
+          "Los Santos",
+          "Vice City",
+          "Liberty City",
+          "San Fierro"
+        ],
+        "correctIndex": 0,
+        "image": "https://placehold.co/1200x700/171e31/39d5ff/png?text=Los+Santos",
+        "imageAlt": "Carte visuelle Los Santos"
       },
       {
         "id": "q17",
         "category": "gaming",
         "text": "Quel personnage répète sans arrêt « Hey! Listen! » ?",
-        "answers": ["Navi", "Zelda", "Link", "Tingle"],
+        "answers": [
+          "Navi",
+          "Zelda",
+          "Link",
+          "Tingle"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q18",
         "category": "pokemon",
         "text": "Comment appelle-t-on un Pokémon d'une couleur extrêmement rare ?",
-        "answers": ["Shiny", "Alpha", "Légendaire", "Fusion"],
-        "correctIndex": 0
+        "answers": [
+          "Shiny",
+          "Alpha",
+          "Légendaire",
+          "Fusion"
+        ],
+        "correctIndex": 0,
+        "image": "https://placehold.co/1200x700/20152b/ff4f79/png?text=Shiny+Pokemon",
+        "imageAlt": "Carte visuelle Pok?mon shiny"
       },
       {
         "id": "q19",
         "category": "cinema",
         "text": "Quel film a rapporté le plus d'argent au box-office mondial ?",
-        "answers": ["Avatar", "Avengers: Endgame", "Titanic", "Star Wars VII"],
+        "answers": [
+          "Avatar",
+          "Avengers: Endgame",
+          "Titanic",
+          "Star Wars VII"
+        ],
         "correctIndex": 0
       }
     ],
@@ -162,136 +269,656 @@
         "id": "q1",
         "category": "gaming",
         "text": "Quel personnage porte un masque représentant un crâne dans Call of Duty ?",
-        "answers": ["Ghost", "Soap", "Price", "Gaz"],
+        "answers": [
+          "Ghost",
+          "Soap",
+          "Price",
+          "Gaz"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q2",
         "category": "pokemon",
         "text": "Quel Pokémon porte le numéro 1 du Pokédex ?",
-        "answers": ["Bulbizarre", "Pikachu", "Salamèche", "Carapuce"],
-        "correctIndex": 0
+        "answers": [
+          "Bulbizarre",
+          "Pikachu",
+          "Salamèche",
+          "Carapuce"
+        ],
+        "correctIndex": 0,
+        "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Bulbasaur%20Origami%20Pagekeeper.jpg",
+        "imageAlt": "Illustration de Bulbizarre en origami"
       },
       {
         "id": "q3",
         "category": "gaming",
         "text": "Qui est Matt dans Wii Sports ?",
-        "answers": ["Le champion de boxe", "Le coach de tennis", "Le créateur du jeu", "Le commentateur"],
+        "answers": [
+          "Le champion de boxe",
+          "Le coach de tennis",
+          "Le créateur du jeu",
+          "Le commentateur"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q4",
         "category": "gaming",
         "text": "Quelle est la console la plus vendue de tous les temps ?",
-        "answers": ["PlayStation 2", "Nintendo Switch", "Nintendo DS", "PlayStation 4"],
-        "correctIndex": 0
+        "answers": [
+          "PlayStation 2",
+          "Nintendo Switch",
+          "Nintendo DS",
+          "PlayStation 4"
+        ],
+        "correctIndex": 0,
+        "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Sony-PlayStation-2-30001-Console-BL.jpg",
+        "imageAlt": "Console PlayStation 2 noire"
       },
       {
         "id": "q5",
         "category": "cinema",
         "text": "Comment s'appelle le clown dans le film Ça ?",
-        "answers": ["Pennywise", "Joker", "Art", "Bozo"],
+        "answers": [
+          "Pennywise",
+          "Joker",
+          "Art",
+          "Bozo"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q6",
         "category": "serie",
         "text": "Quelle maison de Harry Potter a le jaune comme couleur principale ?",
-        "answers": ["Gryffondor", "Serpentard", "Serdaigle", "Poufsouffle"],
+        "answers": [
+          "Gryffondor",
+          "Serpentard",
+          "Serdaigle",
+          "Poufsouffle"
+        ],
         "correctIndex": 3
       },
       {
         "id": "q7",
         "category": "gaming",
         "text": "Le célèbre Code Konami commence par quelle combinaison ?",
-        "answers": ["Haut, Haut, Bas, Bas", "Gauche, Droite, Gauche, Droite", "Bas, Bas, Haut, Haut", "A, B, X, Y"],
-        "correctIndex": 0
+        "answers": [
+          "Haut, Haut, Bas, Bas",
+          "Gauche, Droite, Gauche, Droite",
+          "Bas, Bas, Haut, Haut",
+          "A, B, X, Y"
+        ],
+        "correctIndex": 0,
+        "image": "https://placehold.co/1200x700/111827/facc15/png?text=Code+Konami",
+        "imageAlt": "Carte visuelle Code Konami"
       },
       {
         "id": "q8",
         "category": "gaming",
         "text": "Dans Mario Kart, quel objet est célèbre pour renverser le premier de la course ?",
-        "answers": ["Carapace bleue", "Carapace rouge", "Éclair", "Bob-omb"],
+        "answers": [
+          "Carapace bleue",
+          "Carapace rouge",
+          "Éclair",
+          "Bob-omb"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q9",
         "category": "pokemon",
         "text": "Quel Pokémon refuse de rentrer dans sa Poké Ball dans l'animé ?",
-        "answers": ["Pikachu", "Salamèche", "Rondoudou", "Miaouss"],
+        "answers": [
+          "Pikachu",
+          "Salamèche",
+          "Rondoudou",
+          "Miaouss"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q10",
         "category": "gaming",
         "text": "Quelle carte de Call of Duty est devenue culte pour les duels de sniper en 1 contre 1 ?",
-        "answers": ["Rust", "Shipment", "Nuketown", "Terminal"],
+        "answers": [
+          "Rust",
+          "Shipment",
+          "Nuketown",
+          "Terminal"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q11",
         "category": "gaming",
         "text": "D'où vient le célèbre « Press F to Pay Respects » ?",
-        "answers": ["Call of Duty: Advanced Warfare", "Battlefield 4", "GTA V", "Counter-Strike"],
-        "correctIndex": 0
+        "answers": [
+          "Call of Duty: Advanced Warfare",
+          "Battlefield 4",
+          "GTA V",
+          "Counter-Strike"
+        ],
+        "correctIndex": 0,
+        "image": "https://placehold.co/1200x700/101827/e6e8ef/png?text=Press+F",
+        "imageAlt": "Carte visuelle Press F to Pay Respects"
       },
       {
         "id": "q12",
         "category": "gaming",
         "text": "Quelle arme était surnommée le « Noob Tube » dans les anciens Call of Duty ?",
-        "answers": ["Le lance-grenades M203", "Le RPG-7", "L'Intervention", "Le SPAS-12"],
+        "answers": [
+          "Le lance-grenades M203",
+          "Le RPG-7",
+          "L'Intervention",
+          "Le SPAS-12"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q13",
         "category": "science",
         "text": "Combien d'os possède le corps humain à l'âge adulte ?",
-        "answers": ["206", "201", "212", "220"],
+        "answers": [
+          "206",
+          "201",
+          "212",
+          "220"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q14",
         "category": "youtube",
         "text": "Quel YouTubeur français est à l'origine du GP Explorer ?",
-        "answers": ["Squeezie", "Inoxtag", "Michou", "Amixem"],
+        "answers": [
+          "Squeezie",
+          "Inoxtag",
+          "Michou",
+          "Amixem"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q15",
         "category": "marvel",
         "text": "Comment s'appelle le marteau de Thor ?",
-        "answers": ["Mjolnir", "Stormbreaker", "Excalibur", "Gungnir"],
+        "answers": [
+          "Mjolnir",
+          "Stormbreaker",
+          "Excalibur",
+          "Gungnir"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q16",
         "category": "gaming",
         "text": "Dans GTA V, comment s'appelle la ville principale ?",
-        "answers": ["Los Santos", "Vice City", "Liberty City", "San Fierro"],
-        "correctIndex": 0
+        "answers": [
+          "Los Santos",
+          "Vice City",
+          "Liberty City",
+          "San Fierro"
+        ],
+        "correctIndex": 0,
+        "image": "https://placehold.co/1200x700/171e31/39d5ff/png?text=Los+Santos",
+        "imageAlt": "Carte visuelle Los Santos"
       },
       {
         "id": "q17",
         "category": "gaming",
         "text": "Quel personnage répète sans arrêt « Hey! Listen! » ?",
-        "answers": ["Navi", "Zelda", "Link", "Tingle"],
+        "answers": [
+          "Navi",
+          "Zelda",
+          "Link",
+          "Tingle"
+        ],
         "correctIndex": 0
       },
       {
         "id": "q18",
         "category": "pokemon",
         "text": "Comment appelle-t-on un Pokémon d'une couleur extrêmement rare ?",
-        "answers": ["Shiny", "Alpha", "Légendaire", "Fusion"],
-        "correctIndex": 0
+        "answers": [
+          "Shiny",
+          "Alpha",
+          "Légendaire",
+          "Fusion"
+        ],
+        "correctIndex": 0,
+        "image": "https://placehold.co/1200x700/20152b/ff4f79/png?text=Shiny+Pokemon",
+        "imageAlt": "Carte visuelle Pok?mon shiny"
       },
       {
         "id": "q19",
         "category": "cinema",
         "text": "Quel film a rapporté le plus d'argent au box-office mondial ?",
-        "answers": ["Avatar", "Avengers: Endgame", "Titanic", "Star Wars VII"],
+        "answers": [
+          "Avatar",
+          "Avengers: Endgame",
+          "Titanic",
+          "Star Wars VII"
+        ],
         "correctIndex": 0
       }
     ],
     "createdAt": "2099-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "TLH9FH",
+    "name": "Mode test",
+    "hostId": null,
+    "status": "waiting",
+    "currentQuestion": -1,
+    "roundEndsAt": null,
+    "finishedAt": null,
+    "deleteAfter": null,
+    "config": {
+      "categories": [
+        "sport"
+      ],
+      "questionCount": 8,
+      "requestedQuestionCount": 8,
+      "availableQuestionCount": 50,
+      "minQuestionCount": 5,
+      "timePerQuestion": 30,
+      "bonusTimer": true,
+      "themeId": "neon",
+      "themeName": "Néon Pop",
+      "modeId": "world-cup-2026",
+      "modeName": "World Cup 2026",
+      "mode": {
+        "id": "world-cup-2026",
+        "name": "World Cup 2026",
+        "label": "Ambiance stade et clutch",
+        "scoreMultiplier": 1.2,
+        "shuffleAnswers": false
+      },
+      "customQuestionCount": 0
+    },
+    "players": [],
+    "answers": [],
+    "customQuestions": [],
+    "questions": [
+      {
+        "id": "q10",
+        "category": "sport",
+        "text": "Quel tournoi de tennis se joue sur gazon à Londres ?",
+        "answers": [
+          "Roland-Garros",
+          "US Open",
+          "Wimbledon",
+          "Open d’Australie"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "id": "q5",
+        "category": "sport",
+        "text": "Combien de joueurs une équipe de football aligne-t-elle au coup d’envoi ?",
+        "answers": [
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "id": "q5-repeat-3",
+        "category": "sport",
+        "text": "Combien de joueurs une équipe de football aligne-t-elle au coup d’envoi ?",
+        "answers": [
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "id": "q10-repeat-4",
+        "category": "sport",
+        "text": "Quel tournoi de tennis se joue sur gazon à Londres ?",
+        "answers": [
+          "Roland-Garros",
+          "US Open",
+          "Wimbledon",
+          "Open d’Australie"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "id": "q10-repeat-5",
+        "category": "sport",
+        "text": "Quel tournoi de tennis se joue sur gazon à Londres ?",
+        "answers": [
+          "Roland-Garros",
+          "US Open",
+          "Wimbledon",
+          "Open d’Australie"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "id": "q5-repeat-6",
+        "category": "sport",
+        "text": "Combien de joueurs une équipe de football aligne-t-elle au coup d’envoi ?",
+        "answers": [
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "id": "q5-repeat-7",
+        "category": "sport",
+        "text": "Combien de joueurs une équipe de football aligne-t-elle au coup d’envoi ?",
+        "answers": [
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "id": "q10-repeat-8",
+        "category": "sport",
+        "text": "Quel tournoi de tennis se joue sur gazon à Londres ?",
+        "answers": [
+          "Roland-Garros",
+          "US Open",
+          "Wimbledon",
+          "Open d’Australie"
+        ],
+        "correctIndex": 2
+      }
+    ],
+    "createdAt": "2026-06-30T09:58:04.980Z"
+  },
+  {
+    "id": "ZXLHZA",
+    "name": "Blindtest Rap FR",
+    "hostId": null,
+    "status": "waiting",
+    "currentQuestion": -1,
+    "roundEndsAt": null,
+    "finishedAt": null,
+    "deleteAfter": null,
+    "config": {
+      "categories": [],
+      "questionCount": 8,
+      "requestedQuestionCount": 8,
+      "availableQuestionCount": 8,
+      "minQuestionCount": 1,
+      "timePerQuestion": 20,
+      "bonusTimer": true,
+      "themeId": "arcade",
+      "themeName": "Arcade Volt",
+      "modeId": "classic",
+      "modeName": "Quiz classique",
+      "mode": {
+        "id": "classic",
+        "name": "Quiz classique",
+        "label": "Quiz net, rapide, efficace",
+        "scoreMultiplier": 1,
+        "shuffleAnswers": false
+      },
+      "customQuestionCount": 8
+    },
+    "players": [],
+    "answers": [],
+    "customQuestions": [
+      {
+        "id": "rap-fr-blindtest-001",
+        "category": "rap_fr",
+        "text": "Quel rappeur marseillais est associe au titre Bande organisee ?",
+        "answers": [
+          "SCH",
+          "Ninho",
+          "Orelsan",
+          "Nekfeu"
+        ],
+        "correctIndex": 0,
+        "difficulty": "easy",
+        "audio": "https://assets.mixkit.co/sfx/preview/mixkit-hip-hop-logo-738.mp3",
+        "audioLabel": "Ambiance rap FR"
+      },
+      {
+        "id": "rap-fr-blindtest-002",
+        "category": "rap_fr",
+        "text": "Quel groupe a sorti l album Deux freres ?",
+        "answers": [
+          "PNL",
+          "IAM",
+          "NTM",
+          "Casseurs Flowters"
+        ],
+        "correctIndex": 0,
+        "difficulty": "easy",
+        "audio": "https://assets.mixkit.co/sfx/preview/mixkit-hip-hop-logo-738.mp3",
+        "audioLabel": "Ambiance rap FR"
+      },
+      {
+        "id": "rap-fr-blindtest-003",
+        "category": "rap_fr",
+        "text": "Quel artiste chante La terre est ronde ?",
+        "answers": [
+          "Orelsan",
+          "Damso",
+          "Booba",
+          "Jul"
+        ],
+        "correctIndex": 0,
+        "difficulty": "easy",
+        "audio": "https://assets.mixkit.co/sfx/preview/mixkit-hip-hop-logo-738.mp3",
+        "audioLabel": "Ambiance rap FR"
+      },
+      {
+        "id": "rap-fr-blindtest-004",
+        "category": "rap_fr",
+        "text": "Quel rappeur belge a sorti l album Batterie faible ?",
+        "answers": [
+          "Damso",
+          "Hamza",
+          "Caballero",
+          "Rom?o Elvis"
+        ],
+        "correctIndex": 0,
+        "difficulty": "medium",
+        "audio": "https://assets.mixkit.co/sfx/preview/mixkit-hip-hop-logo-738.mp3",
+        "audioLabel": "Ambiance rap francophone"
+      },
+      {
+        "id": "rap-fr-blindtest-005",
+        "category": "rap_fr",
+        "text": "Quel rappeur est surnomme le Duc de Boulogne ?",
+        "answers": [
+          "Booba",
+          "Kaaris",
+          "Rohff",
+          "Lacrim"
+        ],
+        "correctIndex": 0,
+        "difficulty": "easy",
+        "audio": "https://assets.mixkit.co/sfx/preview/mixkit-hip-hop-logo-738.mp3",
+        "audioLabel": "Ambiance rap FR"
+      },
+      {
+        "id": "rap-fr-blindtest-006",
+        "category": "rap_fr",
+        "text": "Quel artiste est associe au morceau Jefe ?",
+        "answers": [
+          "Ninho",
+          "Niska",
+          "Gazo",
+          "Tiakola"
+        ],
+        "correctIndex": 0,
+        "difficulty": "medium",
+        "audio": "https://assets.mixkit.co/sfx/preview/mixkit-hip-hop-logo-738.mp3",
+        "audioLabel": "Ambiance rap FR"
+      },
+      {
+        "id": "rap-fr-blindtest-007",
+        "category": "rap_fr",
+        "text": "Quel rappeur a sorti l album Feu ?",
+        "answers": [
+          "Nekfeu",
+          "Vald",
+          "Lomepal",
+          "Josman"
+        ],
+        "correctIndex": 0,
+        "difficulty": "easy",
+        "audio": "https://assets.mixkit.co/sfx/preview/mixkit-hip-hop-logo-738.mp3",
+        "audioLabel": "Ambiance rap FR"
+      },
+      {
+        "id": "rap-fr-blindtest-008",
+        "category": "rap_fr",
+        "text": "Quel groupe culte est associe au titre Seine-Saint-Denis Style ?",
+        "answers": [
+          "NTM",
+          "IAM",
+          "Fonky Family",
+          "Sniper"
+        ],
+        "correctIndex": 0,
+        "difficulty": "medium",
+        "audio": "https://assets.mixkit.co/sfx/preview/mixkit-hip-hop-logo-738.mp3",
+        "audioLabel": "Ambiance old school"
+      }
+    ],
+    "questions": [
+      {
+        "id": "rap-fr-blindtest-001",
+        "category": "rap_fr",
+        "text": "Quel rappeur marseillais est associe au titre Bande organisee ?",
+        "answers": [
+          "SCH",
+          "Ninho",
+          "Orelsan",
+          "Nekfeu"
+        ],
+        "correctIndex": 0,
+        "difficulty": "easy",
+        "audio": "https://assets.mixkit.co/sfx/preview/mixkit-hip-hop-logo-738.mp3",
+        "audioLabel": "Ambiance rap FR"
+      },
+      {
+        "id": "rap-fr-blindtest-002",
+        "category": "rap_fr",
+        "text": "Quel groupe a sorti l album Deux freres ?",
+        "answers": [
+          "PNL",
+          "IAM",
+          "NTM",
+          "Casseurs Flowters"
+        ],
+        "correctIndex": 0,
+        "difficulty": "easy",
+        "audio": "https://assets.mixkit.co/sfx/preview/mixkit-hip-hop-logo-738.mp3",
+        "audioLabel": "Ambiance rap FR"
+      },
+      {
+        "id": "rap-fr-blindtest-006",
+        "category": "rap_fr",
+        "text": "Quel artiste est associe au morceau Jefe ?",
+        "answers": [
+          "Ninho",
+          "Niska",
+          "Gazo",
+          "Tiakola"
+        ],
+        "correctIndex": 0,
+        "difficulty": "medium",
+        "audio": "https://assets.mixkit.co/sfx/preview/mixkit-hip-hop-logo-738.mp3",
+        "audioLabel": "Ambiance rap FR"
+      },
+      {
+        "id": "rap-fr-blindtest-007",
+        "category": "rap_fr",
+        "text": "Quel rappeur a sorti l album Feu ?",
+        "answers": [
+          "Nekfeu",
+          "Vald",
+          "Lomepal",
+          "Josman"
+        ],
+        "correctIndex": 0,
+        "difficulty": "easy",
+        "audio": "https://assets.mixkit.co/sfx/preview/mixkit-hip-hop-logo-738.mp3",
+        "audioLabel": "Ambiance rap FR"
+      },
+      {
+        "id": "rap-fr-blindtest-003",
+        "category": "rap_fr",
+        "text": "Quel artiste chante La terre est ronde ?",
+        "answers": [
+          "Orelsan",
+          "Damso",
+          "Booba",
+          "Jul"
+        ],
+        "correctIndex": 0,
+        "difficulty": "easy",
+        "audio": "https://assets.mixkit.co/sfx/preview/mixkit-hip-hop-logo-738.mp3",
+        "audioLabel": "Ambiance rap FR"
+      },
+      {
+        "id": "rap-fr-blindtest-004",
+        "category": "rap_fr",
+        "text": "Quel rappeur belge a sorti l album Batterie faible ?",
+        "answers": [
+          "Damso",
+          "Hamza",
+          "Caballero",
+          "Rom?o Elvis"
+        ],
+        "correctIndex": 0,
+        "difficulty": "medium",
+        "audio": "https://assets.mixkit.co/sfx/preview/mixkit-hip-hop-logo-738.mp3",
+        "audioLabel": "Ambiance rap francophone"
+      },
+      {
+        "id": "rap-fr-blindtest-005",
+        "category": "rap_fr",
+        "text": "Quel rappeur est surnomme le Duc de Boulogne ?",
+        "answers": [
+          "Booba",
+          "Kaaris",
+          "Rohff",
+          "Lacrim"
+        ],
+        "correctIndex": 0,
+        "difficulty": "easy",
+        "audio": "https://assets.mixkit.co/sfx/preview/mixkit-hip-hop-logo-738.mp3",
+        "audioLabel": "Ambiance rap FR"
+      },
+      {
+        "id": "rap-fr-blindtest-008",
+        "category": "rap_fr",
+        "text": "Quel groupe culte est associe au titre Seine-Saint-Denis Style ?",
+        "answers": [
+          "NTM",
+          "IAM",
+          "Fonky Family",
+          "Sniper"
+        ],
+        "correctIndex": 0,
+        "difficulty": "medium",
+        "audio": "https://assets.mixkit.co/sfx/preview/mixkit-hip-hop-logo-738.mp3",
+        "audioLabel": "Ambiance old school"
+      }
+    ],
+    "createdAt": "2026-06-30T18:21:42.394Z"
   }
 ]
