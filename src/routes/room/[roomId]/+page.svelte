@@ -50,8 +50,15 @@
   $: currentQuestionIcon = currentQuestion ? getSeasonIcon(currentQuestion.category) : '';
   $: shareUrl = typeof location === 'undefined' ? '' : `${location.origin}/room/${room.id}`;
   $: isHost = player && room.hostId === player.id;
-  $: canStart = Boolean(isHost && room.players.length >= 2 && !countdownActive);
-  $: answeredCount = room.answers?.length || 0;
+  $: activePlayers = (room.players || []).filter((item) => item.connected !== false);
+  $: activePlayerIds = new Set(activePlayers.map((item) => item.id));
+  $: activePlayerCount = activePlayers.length;
+  $: answeredCount = new Set(
+    (room.answers || [])
+      .filter((answer) => activePlayerIds.has(answer.playerId))
+      .map((answer) => answer.playerId)
+  ).size;
+  $: canStart = Boolean(isHost && activePlayerCount >= 2 && !countdownActive);
   $: lobbyQuestionCount = Number(room.config.requestedQuestionCount || room.config.questionCount || room.questions.length || 1);
   $: lobbyQuestionMin = Number(room.config.minQuestionCount || 1);
   $: lobbyQuestionMax = Number(
@@ -59,7 +66,7 @@
   );
   $: canDecreaseQuestions = Boolean(isHost && !questionCountUpdating && lobbyQuestionCount > lobbyQuestionMin);
   $: canIncreaseQuestions = Boolean(isHost && !questionCountUpdating && lobbyQuestionCount < lobbyQuestionMax);
-  $: allAnswered = Boolean(room.status === 'playing' && room.players.length > 0 && answeredCount >= room.players.length);
+  $: allAnswered = Boolean(room.status === 'playing' && activePlayerCount > 0 && answeredCount >= activePlayerCount);
   $: title = pageTitle(`${room.name} - Salon quiz`);
   $: description = `Rejoins le salon ${room.name} sur ${siteMeta.name} et réponds au quiz en direct, sans compte.`;
   $: progressText =
@@ -70,7 +77,7 @@
   $: mixLabel = customOnly
     ? `${room.config.customQuestionCount} question${room.config.customQuestionCount > 1 ? 's' : ''} perso`
     : `${room.config.categories?.length || 0} sujet${(room.config.categories?.length || 0) > 1 ? 's' : ''}`;
-  $: lobbyStatus = room.players.length < 2 ? 'En attente de joueurs' : 'Prêt à jouer';
+  $: lobbyStatus = activePlayerCount < 2 ? 'En attente de joueurs' : 'Prêt à jouer';
 
   function getDisplayName() {
     return (playerName || '').trim() || 'Joueur';
@@ -119,7 +126,13 @@
 
     const author = nextRoom.players.find((item) => item.id === latest.playerId);
     const title = latest.playerId === player?.id ? 'Ta réponse est notée' : `${author?.name || 'Un joueur'} a répondu`;
-    addNotice(title, `${nextRoom.answers.length}/${nextRoom.players.length} réponses`, 'answer');
+    const nextActiveIds = new Set((nextRoom.players || []).filter((item) => item.connected !== false).map((item) => item.id));
+    const activeAnswerCount = new Set(
+      (nextRoom.answers || [])
+        .filter((answer) => nextActiveIds.has(answer.playerId))
+        .map((answer) => answer.playerId)
+    ).size;
+    addNotice(title, `${activeAnswerCount}/${nextActiveIds.size} réponses`, 'answer');
   }
 
   function getRemainingSeconds(nextRoom) {
@@ -350,7 +363,7 @@
       timer_tick: handleTimerTick,
       user_joined: (payload) => {
         if (joined && payload.id !== player?.id) {
-          addNotice(`${payload.name} est entré`, `${room.players.length + 1} joueurs connectés`, 'join');
+          addNotice(`${payload.name} est entré`, `${activePlayerCount + 1} joueurs connectés`, 'join');
           playSound('join');
         }
       },
@@ -542,7 +555,7 @@
             <Button variant="secondary" onclick={copyLink}>Inviter</Button>
           </div>
 
-          {#if isHost && room.players.length < 2}
+          {#if isHost && activePlayerCount < 2}
             <EmptyState
               icon="H"
               eyebrow="Host"
@@ -576,7 +589,7 @@
                 <img class="hud-season-icon ql-float" src={currentQuestionIcon} alt="" aria-hidden="true" loading="lazy" />
               {/if}
               <span class="mono">Question {progressText}</span>
-              <strong>{answeredCount}/{room.players.length} réponses</strong>
+              <strong>{answeredCount}/{activePlayerCount} réponses</strong>
             </div>
             <TimerCircle {remaining} total={room.config.timePerQuestion} />
           </div>

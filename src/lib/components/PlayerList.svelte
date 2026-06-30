@@ -6,7 +6,11 @@
   export let maskScores = false;
   export let title = 'Joueurs';
 
-  $: rankedPlayers = [...players].sort((a, b) => b.score - a.score);
+  $: connectedCount = players.filter((player) => player.connected !== false).length;
+  $: rankedPlayers = [...players].sort((a, b) => {
+    if ((a.connected !== false) !== (b.connected !== false)) return a.connected === false ? 1 : -1;
+    return b.score - a.score;
+  });
 
   function rankLabel(index) {
     if (index === 0) return '1er';
@@ -19,7 +23,7 @@
 <section class="card players" aria-label="Joueurs">
   <div class="heading">
     <h2>{title}</h2>
-    <span class="count mono">{players.length}</span>
+    <span class="count mono">{connectedCount}/{players.length}</span>
   </div>
 
   {#if players.length}
@@ -41,7 +45,11 @@
             <em>{badge.label}</em>
           </span>
           {#if maskScores}<span class="sr-only">Pseudo masqué</span>{/if}
-          {#if player.id === hostId}<small>Host</small>{/if}
+          {#if player.connected === false}
+            <small class="offline">Hors ligne</small>
+          {:else if player.id === hostId}
+            <small>Host</small>
+          {/if}
           <span class:masked={maskScores} class="score mono" aria-hidden={maskScores}>
             {maskScores ? '---' : player.score}
           </span>
@@ -198,6 +206,12 @@
     padding: 0 8px;
     font-weight: 900;
     font-size: 12px;
+  }
+
+  .offline {
+    border-color: rgba(230, 232, 239, 0.18);
+    background: rgba(230, 232, 239, 0.08);
+    color: rgba(230, 232, 239, 0.62);
   }
 
   .score {

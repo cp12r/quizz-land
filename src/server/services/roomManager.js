@@ -14,16 +14,21 @@ import { log } from './logger.js';
 const dataFile = join(process.cwd(), 'data', 'rooms.json');
 const backupFile = join(process.cwd(), 'data', 'rooms.backup.json');
 const resultsFile = join(process.cwd(), 'data', 'results.json');
-const rooms = new Map();
-let writeQueue = Promise.resolve();
-let resultWriteQueue = Promise.resolve();
-let hydrated = false;
-let hydrateQueue = null;
-let persistTimer = null;
-let lastPersistLogAt = 0;
-let lastPersistRoomCount = null;
+const roomState = globalThis.__QUIZZ_LAND_ROOM_STATE__ ||= {
+  rooms: new Map(),
+  writeQueue: Promise.resolve(),
+  resultWriteQueue: Promise.resolve(),
+  hydrated: false,
+  hydrateQueue: null,
+  persistTimer: null,
+  lastPersistLogAt: 0,
+  lastPersistRoomCount: null
+};
+const rooms = roomState.rooms;
 const DEFAULT_CATEGORIES = ['culture', 'science', 'web'];
 const QUESTION_MAX = 50;
+const TIME_MIN_SECONDS = 10;
+const TIME_MAX_SECONDS = 120;
 const ALL_ANSWERED_DELAY_MS = 5000;
 export const ROOM_CLOSE_DELAY_MS = 4800;
 
@@ -64,7 +69,7 @@ function shouldKeepRoom(room, now = Date.now()) {
 
 async function readJsonArray(file) {
   const raw = await readFile(file, 'utf8');
-  const parsed = JSON.parse(raw);
+  const parsed = JSON.parse(raw.replace(/^\uFEFF/, ''));
   return Array.isArray(parsed) ? parsed : [];
 }
 
@@ -111,10 +116,10 @@ async function writeRoomsAtomically() {
     await writeFile(tmpFile, JSON.stringify([...rooms.values()], null, 2));
     await rename(tmpFile, dataFile);
     const now = Date.now();
-    const shouldLog = rooms.size !== lastPersistRoomCount || now - lastPersistLogAt > 30_000;
+    const shouldLog = rooms.size !== roomState.lastPersistRoomCount || now - roomState.lastPersistLogAt > 30_000;
     log(shouldLog ? 'success' : 'debug', 'rooms persisted', { activeRooms: rooms.size });
-    lastPersistLogAt = now;
-    lastPersistRoomCount = rooms.size;
+    roomState.lastPersistLogAt = now;
+    roomState.lastPersistRoomCount = rooms.size;
   } catch (error) {
     try {
       await unlink(tmpFile);
@@ -126,22 +131,22 @@ async function writeRoomsAtomically() {
 }
 
 async function flushPersist() {
-  persistTimer = null;
+  roomState.persistTimer = null;
 
-  writeQueue = writeQueue.catch((error) => {
+  roomState.writeQueue = roomState.writeQueue.catch((error) => {
     log('error', 'rooms storage write queue recovered', { error: error.message });
   }).then(writeRoomsAtomically);
 
   try {
-    await writeQueue;
+    await roomState.writeQueue;
   } catch (error) {
     log('error', 'rooms storage write failed', { error: error.message });
   }
 }
 
 async function persist() {
-  if (persistTimer) clearTimeout(persistTimer);
-  persistTimer = setTimeout(() => {
+  if (roomState.persistTimer) clearTimeout(roomState.persistTimer);
+  roomState.persistTimer = setTimeout(() => {
     flushPersist();
   }, serverConfig.PERSIST_DEBOUNCE_MS);
 }
@@ -149,7 +154,7 @@ async function persist() {
 async function readResultSnapshots() {
   try {
     const raw = await readFile(resultsFile, 'utf8');
-    const saved = JSON.parse(raw);
+    const saved = JSON.parse(raw.replace(/^\uFEFF/, ''));
     return Array.isArray(saved) ? saved : [];
   } catch (error) {
     if (error.code !== 'ENOENT') {
@@ -160,13 +165,13 @@ async function readResultSnapshots() {
 }
 
 async function persistResultSnapshots(snapshots) {
-  resultWriteQueue = resultWriteQueue.catch((error) => {
+  roomState.resultWriteQueue = roomState.resultWriteQueue.catch((error) => {
     log('error', 'results_storage_write_queue_recovered', { error: error.message });
   }).then(async () => {
     await mkdir(dirname(resultsFile), { recursive: true });
     await writeFile(resultsFile, JSON.stringify(snapshots, null, 2));
   });
-  return resultWriteQueue;
+  return roomState.resultWriteQueue;
 }
 
 async function archiveResult(room) {
@@ -283,21 +288,39 @@ function activePlayerCount(room) {
   return room.players.filter((player) => player.connected !== false).length;
 }
 
+function connectedPlayers(room) {
+  return room.players.filter((player) => player.connected !== false);
+}
+
+function clampTimePerQuestion(value) {
+  const requested = Number(value);
+  const normalized = Number.isFinite(requested) ? Math.round(requested) : 30;
+  return Math.min(TIME_MAX_SECONDS, Math.max(TIME_MIN_SECONDS, normalized));
+}
+
+function normalizeAnswerIndex(value, question) {
+  const index = Number(value);
+  if (!Number.isInteger(index) || index < 0 || index >= question.answers.length) return null;
+  return index;
+}
+
 function hasEveryActivePlayerAnswered(room, questionId) {
+  const activePlayerIds = new Set(connectedPlayers(room).map((player) => player.id));
   const answeredPlayerIds = new Set(
     room.answers
       .filter((answer) => answer.questionId === questionId)
+      .filter((answer) => activePlayerIds.has(answer.playerId))
       .map((answer) => answer.playerId)
   );
 
-  return activePlayerCount(room) > 0 && answeredPlayerIds.size >= activePlayerCount(room);
+  return activePlayerIds.size > 0 && answeredPlayerIds.size >= activePlayerIds.size;
 }
 
 export async function hydrateRooms(force = false) {
-  if (hydrated && !force) return;
-  if (hydrateQueue) return hydrateQueue;
+  if (roomState.hydrated && !force) return;
+  if (roomState.hydrateQueue) return roomState.hydrateQueue;
 
-  hydrateQueue = (async () => {
+  roomState.hydrateQueue = (async () => {
     const saved = await readRoomsFromDisk();
     rooms.clear();
 
@@ -305,13 +328,13 @@ export async function hydrateRooms(force = false) {
       if (shouldKeepRoom(room)) rooms.set(room.id, room);
     }
 
-    hydrated = true;
+    roomState.hydrated = true;
     await persist();
   })().finally(() => {
-    hydrateQueue = null;
+    roomState.hydrateQueue = null;
   });
 
-  return hydrateQueue;
+  return roomState.hydrateQueue;
 }
 
 async function ensureRoomLoaded(id) {
@@ -322,15 +345,16 @@ async function ensureRoomLoaded(id) {
 
 export async function createRoom(config = {}) {
   await hydrateRooms();
-  const id = roomCode();
+  let id = roomCode();
+  while (rooms.has(id)) id = roomCode();
   const customQuestions = normalizeQuestions(config.customQuestions);
   const mode = normalizeGameMode(config.modeId);
   const modeCategories = Array.isArray(mode.categories) ? mode.categories : null;
   const selectedCategories = Array.isArray(config.categories)
     ? config.categories.map(normalizeCategory).filter(Boolean)
     : modeCategories || DEFAULT_CATEGORIES;
-  const effectiveCategories = modeCategories || selectedCategories;
-  const customOnly = selectedCategories.length === 0 && customQuestions.length > 0;
+  const effectiveCategories = modeCategories || (selectedCategories.length || customQuestions.length ? selectedCategories : DEFAULT_CATEGORIES);
+  const customOnly = effectiveCategories.length === 0 && customQuestions.length > 0;
   const questionCount = customOnly
     ? customQuestions.length
     : clampQuestionCount(config.questionCount || mode.questionCount || 8, effectiveCategories, customQuestions);
@@ -352,7 +376,7 @@ export async function createRoom(config = {}) {
       requestedQuestionCount: questionCount,
       availableQuestionCount: max,
       minQuestionCount: minQuestionCount(effectiveCategories),
-      timePerQuestion: Number(config.timePerQuestion || mode.timePerQuestion || 30),
+      timePerQuestion: clampTimePerQuestion(config.timePerQuestion || mode.timePerQuestion || 30),
       bonusTimer: config.bonusTimer === undefined ? Boolean(mode.bonusTimer) : Boolean(config.bonusTimer),
       themeId: theme.id,
       themeName: theme.name,
@@ -399,8 +423,16 @@ export async function getResultSnapshot(id) {
 
 export async function joinRoom(roomId, playerName, playerId = crypto.randomUUID()) {
   const room = await ensureRoomLoaded(roomId);
-  if (!room || room.status === 'closing') return null;
+  if (!room || room.status === 'closing' || room.status === 'finished') return null;
   let player = room.players.find((item) => item.id === playerId);
+
+  if (!player) {
+    if (room.status !== 'waiting') return null;
+    if (connectedPlayers(room).length >= serverConfig.MAX_PLAYERS_PER_ROOM) return null;
+  } else if (player.connected === false && room.status === 'waiting' && connectedPlayers(room).length >= serverConfig.MAX_PLAYERS_PER_ROOM) {
+    return null;
+  }
+
   if (!player) {
     player = { id: playerId, name: playerName || 'Joueur', score: 0, ready: true, connected: true };
     room.players.push(player);
@@ -414,10 +446,29 @@ export async function joinRoom(roomId, playerName, playerId = crypto.randomUUID(
   return { room: publicRoom(room), player };
 }
 
+export async function markPlayerDisconnected(roomId, playerId) {
+  const room = await ensureRoomLoaded(roomId);
+  if (!room || !playerId) return null;
+  const player = room.players.find((item) => item.id === playerId);
+  if (!player) return publicRoom(room);
+
+  player.connected = false;
+  if (room.hostId === playerId) {
+    room.hostId = connectedPlayers(room)[0]?.id || room.hostId;
+  }
+  const question = room.status === 'playing' ? room.questions[room.currentQuestion] : null;
+  if (question && hasEveryActivePlayerAnswered(room, question.id)) {
+    const nextDeadline = Date.now() + ALL_ANSWERED_DELAY_MS;
+    room.roundEndsAt = room.roundEndsAt ? Math.min(room.roundEndsAt, nextDeadline) : nextDeadline;
+  }
+  await persist();
+  return publicRoom(room);
+}
+
 export async function startGame(roomId, playerId) {
   const room = await ensureRoomLoaded(roomId);
-  const connectedPlayers = room?.players.filter((player) => player.connected !== false) || [];
-  if (!room || room.status !== 'waiting' || room.hostId !== playerId || connectedPlayers.length < 2) return null;
+  const livePlayers = room ? connectedPlayers(room) : [];
+  if (!room || room.status !== 'waiting' || room.hostId !== playerId || livePlayers.length < 2) return null;
   room.status = 'playing';
   room.currentQuestion = 0;
   room.roundEndsAt = Date.now() + room.config.timePerQuestion * 1000;
@@ -470,10 +521,17 @@ export async function submitAnswer(roomId, playerId, answerIndex) {
   }
 
   const question = room.questions[room.currentQuestion];
+  if (!question) return null;
+  const player = room.players.find((item) => item.id === playerId);
+  if (!player || player.connected === false) return null;
+
+  const normalizedAnswerIndex = normalizeAnswerIndex(answerIndex, question);
+  if (normalizedAnswerIndex === null) return null;
+
   const already = room.answers.find((answer) => answer.playerId === playerId && answer.questionId === question.id);
   if (already) return { room: publicRoom(room), feedback: null };
 
-  const correct = Number(answerIndex) === question.correctIndex;
+  const correct = normalizedAnswerIndex === question.correctIndex;
   const remaining = Math.max(0, room.roundEndsAt - now);
   const basePoints = 100 + Math.round(remaining / 1000);
   const points = correct ? Math.round(basePoints * scoreMultiplier(room)) : 0;
@@ -482,11 +540,11 @@ export async function submitAnswer(roomId, playerId, answerIndex) {
     questionId: question.id,
     correct,
     points,
-    answerIndex: Number(answerIndex)
+    answerIndex: normalizedAnswerIndex,
+    correctIndex: question.correctIndex
   };
 
   room.answers.push({ ...feedback, ms: now });
-  const player = room.players.find((item) => item.id === playerId);
   if (player) player.score += points;
 
   if (hasEveryActivePlayerAnswered(room, question.id)) {

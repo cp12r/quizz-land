@@ -30,8 +30,8 @@ export function validateQuestion(item, index = 0) {
   const explanation = cleanString(item.explanation, config.MAX_EXPLANATION_LENGTH);
   const difficulty = cleanString(item.difficulty, 16);
 
-  if (!Array.isArray(answers) || answers.length !== 4) return null;
-  if (!Number.isInteger(correctIndex) || correctIndex < 0 || correctIndex > 3) return null;
+  if (!Array.isArray(answers) || answers.length < 2 || answers.length > 4) return null;
+  if (!Number.isInteger(correctIndex) || correctIndex < 0 || correctIndex >= answers.length) return null;
   if (!isSafeRelativeImage(image)) return null;
 
   const normalized = {
@@ -73,4 +73,3 @@ export function validateQuestionPack(input = [], label = 'questions') {
 
   return { questions, invalid };
 }
-

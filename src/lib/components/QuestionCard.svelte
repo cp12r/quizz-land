@@ -11,6 +11,7 @@
   $: categoryIcon = question ? getSeasonIcon(question.category) : '';
   $: categoryFrame = question ? getSeasonFrame(question.category) : '';
   $: categoryLabel = question ? getSeasonAssetLabel(question.category) : 'Quiz';
+  $: revealedCorrectIndex = feedback?.correctIndex ?? question?.correctIndex;
 </script>
 
 <section class="card question-card">
@@ -35,7 +36,7 @@
         <button
           type="button"
           class:selected={selected === index}
-          class:correctAnswer={locked && question.correctIndex === index}
+          class:correctAnswer={locked && revealedCorrectIndex === index}
           class:wrongAnswer={feedback && selected === index && !feedback.correct}
           disabled={locked}
           on:click={() => onAnswer(index)}

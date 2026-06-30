@@ -8,6 +8,7 @@ import {
   deleteRoom,
   getRoom,
   joinRoom,
+  markPlayerDisconnected,
   startGame,
   submitAnswer,
   updateQuestionCount
@@ -73,13 +74,17 @@ async function closeSmallRoomIfNeeded(client) {
   );
   if (stillConnected) return;
 
+  const disconnectedRoom = await markPlayerDisconnected(client.roomId, client.playerId);
+  if (disconnectedRoom) broadcast(client.roomId, 'room_state', disconnectedRoom);
+
   const room = await getRoom(client.roomId);
   const livePlayerIds = new Set(
     [...clients.values()].filter((item) => item.roomId === client.roomId).map((item) => item.playerId)
   );
 
   if (!room || room.status === 'finished' || room.status === 'closing') return;
-  if (room.players.length !== 2 || livePlayerIds.size !== 1) return;
+  const shouldClose = livePlayerIds.size === 1 && (room.players.length === 2 || room.status === 'playing');
+  if (!shouldClose) return;
 
   const closingRoom = await closeRoom(client.roomId, 'player_left', ROOM_CLOSE_DELAY_MS);
   if (!closingRoom) return;
@@ -119,7 +124,7 @@ wss.on('connection', (ws) => {
       const { type, payload } = JSON.parse(raw.toString());
       if (type === 'join_room') {
         const joined = await joinRoom(payload.roomId, payload.name, payload.playerId);
-        if (!joined) return send(ws, 'error', { message: 'Salon introuvable.' });
+        if (!joined) return send(ws, 'error', { message: 'Salon introuvable, complet ou déjà lancé.' });
         clients.set(ws, { roomId: payload.roomId, playerId: joined.player.id });
         send(ws, 'player_joined', joined);
         broadcast(payload.roomId, 'user_joined', joined.player);
