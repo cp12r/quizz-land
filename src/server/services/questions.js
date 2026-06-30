@@ -46,28 +46,32 @@ export const quizThemes = [
 export const categories = ['culture', 'science', 'web', 'cinéma', 'sport'];
 
 const categoryMediaAssets = {
-  anime: mediaImage('https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80', 'Illustration anime depuis Unsplash', '/assets/quiz/images/categories/anime.svg'),
-  blindtest: mediaImage('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80', 'Guitare et ambiance musicale depuis Unsplash', '/assets/quiz/images/categories/musique.svg'),
-  cinema: mediaImage('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80', 'Salle de cinéma depuis Unsplash', '/assets/quiz/images/categories/cinema.svg'),
-  'cinéma': mediaImage('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80', 'Salle de cinéma depuis Unsplash', '/assets/quiz/images/categories/cinema.svg'),
+  anime: mediaMedia('https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80', 'Illustration anime depuis Unsplash', '/assets/quiz/images/categories/anime.svg', 'https://assets.mixkit.co/sfx/preview/mixkit-fast-rocket-whoosh-1714.mp3', 'Effet sonore anime'),
+  blindtest: mediaMedia('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80', 'Guitare et ambiance musicale depuis Unsplash', '/assets/quiz/images/categories/musique.svg', 'https://assets.mixkit.co/sfx/preview/mixkit-guitar-chord-2328.mp3', 'Accord de guitare'),
+  cinema: mediaMedia('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80', 'Salle de cinéma depuis Unsplash', '/assets/quiz/images/categories/cinema.svg', 'https://assets.mixkit.co/sfx/preview/mixkit-cinematic-transition-sweep-491.mp3', 'Transition cinéma'),
+  'cinéma': mediaMedia('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80', 'Salle de cinéma depuis Unsplash', '/assets/quiz/images/categories/cinema.svg', 'https://assets.mixkit.co/sfx/preview/mixkit-cinematic-transition-sweep-491.mp3', 'Transition cinéma'),
   drapeaux: mediaImage('https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=1200&q=80', 'Carte et repères de voyage depuis Unsplash', '/assets/quiz/images/categories/drapeaux.svg'),
-  gaming: mediaImage('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80', 'Manette de jeu vidéo depuis Unsplash', '/assets/quiz/images/categories/gaming.svg'),
+  gaming: mediaMedia('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80', 'Manette de jeu vidéo depuis Unsplash', '/assets/quiz/images/categories/gaming.svg', 'https://assets.mixkit.co/sfx/preview/mixkit-arcade-retro-game-over-213.mp3', 'Effet arcade rétro'),
   geographie: mediaImage('https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1200&q=80', 'Carte du monde depuis Unsplash', '/assets/quiz/images/categories/geographie.svg'),
   'géographie': mediaImage('https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1200&q=80', 'Carte du monde depuis Unsplash', '/assets/quiz/images/categories/geographie.svg'),
   histoire: mediaImage('https://images.unsplash.com/photo-1461360370896-922624d12aa1?auto=format&fit=crop&w=1200&q=80', 'Livres et archives depuis Unsplash', '/assets/quiz/images/categories/histoire.svg'),
-  internet: mediaImage('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80', 'Circuit électronique depuis Unsplash', '/assets/quiz/images/categories/internet.svg'),
+  internet: mediaMedia('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80', 'Circuit électronique depuis Unsplash', '/assets/quiz/images/categories/internet.svg', 'https://assets.mixkit.co/sfx/preview/mixkit-interface-click-1126.mp3', 'Clic interface'),
   logos: mediaImage('https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&w=1200&q=80', 'Travail de design graphique depuis Unsplash', '/assets/quiz/images/categories/logos.svg'),
-  musique: mediaImage('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80', 'Guitare et ambiance musicale depuis Unsplash', '/assets/quiz/images/categories/musique.svg'),
-  rap_fr: mediaImage('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80', 'Micro de concert depuis Unsplash', '/assets/quiz/images/categories/musique.svg'),
-  rap_us: mediaImage('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80', 'Micro de concert depuis Unsplash', '/assets/quiz/images/categories/musique.svg'),
-  science: mediaImage('https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1200&q=80', 'Laboratoire scientifique depuis Unsplash', '/assets/quiz/images/categories/science.svg'),
-  sport: mediaImage('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1200&q=80', 'Stade de football depuis Unsplash', '/assets/quiz/images/categories/sport.svg'),
-  'world-cup-2026': mediaImage('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1200&q=80', 'Stade de football depuis Unsplash', '/assets/quiz/images/categories/sport.svg'),
-  web: mediaImage('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80', 'Circuit électronique depuis Unsplash', '/assets/quiz/images/categories/internet.svg')
+  musique: mediaMedia('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80', 'Guitare et ambiance musicale depuis Unsplash', '/assets/quiz/images/categories/musique.svg', 'https://assets.mixkit.co/sfx/preview/mixkit-guitar-chord-2328.mp3', 'Accord de guitare'),
+  rap_fr: mediaMedia('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80', 'Micro de concert depuis Unsplash', '/assets/quiz/images/categories/musique.svg', 'https://assets.mixkit.co/sfx/preview/mixkit-hip-hop-logo-738.mp3', 'Jingle hip-hop'),
+  rap_us: mediaMedia('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80', 'Micro de concert depuis Unsplash', '/assets/quiz/images/categories/musique.svg', 'https://assets.mixkit.co/sfx/preview/mixkit-hip-hop-logo-738.mp3', 'Jingle hip-hop'),
+  science: mediaMedia('https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1200&q=80', 'Laboratoire scientifique depuis Unsplash', '/assets/quiz/images/categories/science.svg', 'https://assets.mixkit.co/sfx/preview/mixkit-sci-fi-click-900.mp3', 'Clic science-fiction'),
+  sport: mediaMedia('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1200&q=80', 'Stade de football depuis Unsplash', '/assets/quiz/images/categories/sport.svg', 'https://assets.mixkit.co/sfx/preview/mixkit-sports-crowd-cheer-463.mp3', 'Ambiance de stade'),
+  'world-cup-2026': mediaMedia('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1200&q=80', 'Stade de football depuis Unsplash', '/assets/quiz/images/categories/sport.svg', 'https://assets.mixkit.co/sfx/preview/mixkit-sports-crowd-cheer-463.mp3', 'Ambiance de stade'),
+  web: mediaMedia('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80', 'Circuit électronique depuis Unsplash', '/assets/quiz/images/categories/internet.svg', 'https://assets.mixkit.co/sfx/preview/mixkit-interface-click-1126.mp3', 'Clic interface')
 };
 
 function mediaImage(image, imageAlt, imageFallback) {
   return { image, imageAlt, imageFallback };
+}
+
+function mediaMedia(image, imageAlt, imageFallback, audio, audioLabel) {
+  return { ...mediaImage(image, imageAlt, imageFallback), audio, audioLabel };
 }
 
 export const gameModes = [
@@ -243,9 +247,17 @@ export function normalizeTheme(themeId) {
 }
 
 function enrichQuestionMedia(question) {
-  if (question.image || question.audio) return question;
   const media = categoryMediaAssets[normalizeCategory(question.category)];
-  return media ? { ...question, ...media } : question;
+  if (!media) return question;
+
+  return {
+    ...question,
+    ...(!question.image && media.image ? { image: media.image } : {}),
+    ...(!question.imageAlt && media.imageAlt ? { imageAlt: media.imageAlt } : {}),
+    ...(!question.imageFallback && media.imageFallback ? { imageFallback: media.imageFallback } : {}),
+    ...(!question.audio && media.audio ? { audio: media.audio } : {}),
+    ...(!question.audioLabel && media.audioLabel ? { audioLabel: media.audioLabel } : {})
+  };
 }
 
 export const { questions } = validateQuestionPack(rawQuestions.map(enrichQuestionMedia), 'builtin');

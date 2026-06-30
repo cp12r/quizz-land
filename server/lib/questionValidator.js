@@ -10,6 +10,7 @@ const mediaRoot = '/assets/quiz';
 const imageExtensions = new Set(['.avif', '.gif', '.jpg', '.jpeg', '.png', '.svg', '.webp']);
 const audioExtensions = new Set(['.aac', '.m4a', '.mp3', '.ogg', '.wav', '.webm']);
 const externalImageHosts = new Set(['images.unsplash.com']);
+const externalAudioHosts = new Set(['assets.mixkit.co']);
 
 function cleanString(value, maxLength) {
   const text = String(value ?? '').trim();
@@ -41,9 +42,12 @@ function isExistingStaticAsset(path) {
 function isSafeMedia(value, kind) {
   if (!value) return true;
   if (isExternalUrl(value)) {
-    if (kind !== 'image') return false;
-    const host = new URL(value).hostname.toLowerCase();
-    return config.ALLOW_EXTERNAL_IMAGES || externalImageHosts.has(host);
+    const url = new URL(value);
+    const host = url.hostname.toLowerCase();
+    const extension = extname(url.pathname).toLowerCase();
+
+    if (kind === 'image') return config.ALLOW_EXTERNAL_IMAGES || externalImageHosts.has(host);
+    return externalAudioHosts.has(host) && audioExtensions.has(extension);
   }
   if (value.includes('..') || value.includes('\\')) return false;
 

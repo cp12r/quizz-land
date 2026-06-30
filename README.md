@@ -40,8 +40,12 @@ Structure publique recommandée :
 - JSON : `quizzland-content/*.json`
 - Thèmes UI : `static/season-1/...`
 
-Les catégories enrichies automatiquement utilisent une banque gratuite servie par CDN via `https://images.unsplash.com/...`.
-Le validateur autorise ce domaine par défaut et garde les SVG locaux comme fallback avec `imageFallback`.
+Les catégories enrichies automatiquement utilisent :
+
+- Images CDN gratuites : `https://images.unsplash.com/...`
+- Sons CDN gratuits : `https://assets.mixkit.co/sfx/preview/...`
+
+Le validateur autorise ces domaines par défaut et garde les SVG locaux comme fallback avec `imageFallback`.
 
 Dans un JSON, référence un fichier public avec un chemin absolu simple ou une image Unsplash CDN :
 
@@ -65,7 +69,7 @@ Audio :
 {
   "id": "blindtest-queen-001",
   "category": "blindtest",
-  "audio": "/assets/quiz/audio/blindtest/queen-riff.mp3",
+  "audio": "https://assets.mixkit.co/sfx/preview/mixkit-guitar-chord-2328.mp3",
   "audioLabel": "Extrait à identifier",
   "answers": ["Queen", "Muse", "Oasis", "Nirvana"],
   "correctIndex": 0
@@ -90,6 +94,7 @@ Validation :
 - `audio` accepte `.aac`, `.m4a`, `.mp3`, `.ogg`, `.wav`, `.webm`.
 - Les fichiers locaux doivent exister sous `static/assets/quiz/images` ou `static/assets/quiz/audio`.
 - Les images CDN sont limitées à `images.unsplash.com` par défaut.
+- Les sons CDN sont limités à `assets.mixkit.co` par défaut.
 - Les chemins avec `..`, antislash ou dossier inattendu sont refusés.
 - Si un média ne charge pas dans le navigateur, la partie continue et affiche un fallback.
 
