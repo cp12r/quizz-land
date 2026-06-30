@@ -10,7 +10,7 @@ const mediaRoot = '/assets/quiz';
 const imageExtensions = new Set(['.avif', '.gif', '.jpg', '.jpeg', '.png', '.svg', '.webp']);
 const audioExtensions = new Set(['.aac', '.m4a', '.mp3', '.ogg', '.wav', '.webm']);
 const externalImageHosts = new Set(['images.unsplash.com']);
-const externalAudioHosts = new Set(['assets.mixkit.co']);
+const externalAudioHosts = new Set(['audio-ssl.itunes.apple.com']);
 
 function cleanString(value, maxLength) {
   const text = String(value ?? '').trim();
@@ -69,6 +69,8 @@ export function validateQuestion(item, index = 0) {
   const image = normalizeAssetPath(item.image ?? item.imageUrl);
   const imageFallback = normalizeAssetPath(item.imageFallback ?? item.fallbackImage);
   const audio = normalizeAssetPath(item.audio ?? item.audioUrl ?? item.sound ?? item.soundUrl);
+  const audioStart = Number(item.audioStart ?? item.soundStart ?? 0);
+  const audioDuration = Number(item.audioDuration ?? item.soundDuration ?? 8);
   const explanation = cleanString(item.explanation, config.MAX_EXPLANATION_LENGTH);
   const difficulty = cleanString(item.difficulty, 16);
 
@@ -93,6 +95,8 @@ export function validateQuestion(item, index = 0) {
   if (image) normalized.image = image;
   if (imageFallback) normalized.imageFallback = imageFallback;
   if (audio) normalized.audio = audio;
+  if (audio && Number.isFinite(audioStart)) normalized.audioStart = Math.max(0, Math.min(60, audioStart));
+  if (audio && Number.isFinite(audioDuration)) normalized.audioDuration = Math.max(3, Math.min(15, audioDuration));
 
   const imageAlt = cleanString(item.imageAlt ?? item.alt, 140);
   if (imageAlt) normalized.imageAlt = imageAlt;

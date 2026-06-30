@@ -15,6 +15,7 @@
   let imageLoaded = false;
   let audioFailed = false;
   let audioPlaying = false;
+  let audioStopTimer = null;
 
   $: media = questionMedia(question);
   $: displayImage = imageFailed && media.imageFallback ? media.imageFallback : media.image;
@@ -32,7 +33,7 @@
     audioFailed = false;
     audioPlaying = false;
     if (audioEl) {
-      audioEl.pause();
+      stopAudio();
       audioEl.currentTime = 0;
       audioEl.load();
     }
@@ -41,17 +42,50 @@
   function toggleAudio() {
     if (!audioEl || audioFailed) return;
     if (audioEl.paused) {
-      audioEl.play().catch(() => {
+      playAudioExcerpt();
+    } else {
+      stopAudio();
+    }
+  }
+
+  function stopAudio() {
+    if (audioStopTimer) {
+      clearTimeout(audioStopTimer);
+      audioStopTimer = null;
+    }
+    audioEl?.pause();
+    audioPlaying = false;
+  }
+
+  function playAudioExcerpt() {
+    stopAudio();
+    const start = Number.isFinite(media.audioStart) ? media.audioStart : 0;
+    const duration = Number.isFinite(media.audioDuration) ? media.audioDuration : 8;
+
+    function begin() {
+      try {
+        audioEl.currentTime = Math.max(0, start);
+      } catch {
+        // Some streams only allow seeking after enough metadata is available.
+      }
+
+      audioEl.play().then(() => {
+        audioStopTimer = setTimeout(stopAudio, Math.max(3, Math.min(15, duration)) * 1000);
+      }).catch(() => {
         audioFailed = true;
       });
-    } else {
-      audioEl.pause();
+    }
+
+    if (audioEl.readyState >= 1) begin();
+    else {
+      audioEl.load();
+      audioEl.addEventListener('loadedmetadata', begin, { once: true });
     }
   }
 
   onDestroy(() => {
+    stopAudio();
     if (!audioEl) return;
-    audioEl.pause();
     audioEl.src = '';
   });
 </script>

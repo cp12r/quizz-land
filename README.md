@@ -43,7 +43,7 @@ Structure publique recommandée :
 Les catégories enrichies automatiquement utilisent :
 
 - Images CDN gratuites : `https://images.unsplash.com/...`
-- Sons CDN gratuits : `https://assets.mixkit.co/sfx/preview/...`
+- Extraits musicaux publics : `https://audio-ssl.itunes.apple.com/...`
 
 Le validateur autorise ces domaines par défaut et garde les SVG locaux comme fallback avec `imageFallback`.
 
@@ -69,8 +69,10 @@ Audio :
 {
   "id": "blindtest-queen-001",
   "category": "blindtest",
-  "audio": "https://assets.mixkit.co/sfx/preview/mixkit-guitar-chord-2328.mp3",
+  "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/04/ab/0e/04ab0e10-727e-4825-8189-b67b8450abba/mzaf_11490815668358717707.plus.aac.p.m4a",
   "audioLabel": "Extrait à identifier",
+  "audioStart": 0,
+  "audioDuration": 8,
   "answers": ["Queen", "Muse", "Oasis", "Nirvana"],
   "correctIndex": 0
 }
@@ -94,7 +96,8 @@ Validation :
 - `audio` accepte `.aac`, `.m4a`, `.mp3`, `.ogg`, `.wav`, `.webm`.
 - Les fichiers locaux doivent exister sous `static/assets/quiz/images` ou `static/assets/quiz/audio`.
 - Les images CDN sont limitées à `images.unsplash.com` par défaut.
-- Les sons CDN sont limités à `assets.mixkit.co` par défaut.
+- Les extraits musicaux CDN sont limités à `audio-ssl.itunes.apple.com` par défaut.
+- `audioStart` et `audioDuration` permettent de jouer seulement quelques secondes de preview.
 - Les chemins avec `..`, antislash ou dossier inattendu sont refusés.
 - Si un média ne charge pas dans le navigateur, la partie continue et affiche un fallback.
 

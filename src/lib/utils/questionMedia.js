@@ -5,6 +5,8 @@ export function questionMedia(question) {
     image: question?.image || '',
     imageFallback: question?.imageFallback || '',
     audio: question?.audio || '',
+    audioStart: Number(question?.audioStart || 0),
+    audioDuration: Number(question?.audioDuration || 8),
     imageAlt: question?.imageAlt || question?.text || 'Illustration de la question',
     audioLabel: question?.audioLabel || 'Extrait audio de la question'
   };
