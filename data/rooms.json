@@ -1432,5 +1432,1101 @@
       }
     ],
     "createdAt": "2026-06-30T18:46:01.403Z"
+  },
+  {
+    "id": "ZL4HV1",
+    "name": "Blindtest Werenoi",
+    "hostId": null,
+    "status": "waiting",
+    "currentQuestion": -1,
+    "roundEndsAt": null,
+    "finishedAt": null,
+    "deleteAfter": null,
+    "config": {
+      "categories": [],
+      "questionCount": 15,
+      "requestedQuestionCount": 15,
+      "availableQuestionCount": 15,
+      "minQuestionCount": 1,
+      "timePerQuestion": 20,
+      "bonusTimer": true,
+      "themeId": "studio",
+      "themeName": "Studio Dark",
+      "modeId": "classic",
+      "modeName": "Quiz classique",
+      "mode": {
+        "id": "classic",
+        "name": "Quiz classique",
+        "label": "Quiz net, rapide, efficace",
+        "scoreMultiplier": 1,
+        "shuffleAnswers": false
+      },
+      "customQuestionCount": 15
+    },
+    "players": [],
+    "answers": [],
+    "customQuestions": [
+      {
+        "id": "werenoi-blindtest-001",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "Dispense",
+          "Poney",
+          "First",
+          "Balmain"
+        ],
+        "correctIndex": 1,
+        "difficulty": "easy",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b0/97/0f/b0970f74-ded7-6b94-975c-34984e80f3d7/mzaf_830622631638347091.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-002",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "Ordinateur",
+          "Scarface",
+          "Balmain",
+          "Solitaire"
+        ],
+        "correctIndex": 2,
+        "difficulty": "easy",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/8b/49/a8/8b49a8eb-bdbf-cd02-db25-3d5877766423/mzaf_16706365060505971674.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-003",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "Chemin d?or",
+          "3 singes",
+          "Escorte",
+          "Ordinateur"
+        ],
+        "correctIndex": 3,
+        "difficulty": "easy",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/3f/27/d4/3f27d4d4-2db8-c90d-a1aa-3372bcba434b/mzaf_11019135313440997974.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-004",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "3 singes",
+          "Ciao",
+          "Laboratoire",
+          "Carr?"
+        ],
+        "correctIndex": 0,
+        "difficulty": "easy",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/64/d8/9d/64d89d20-9ff8-a016-e9cc-a72087c0125b/mzaf_6356201640423524840.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-005",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "Boussole",
+          "Chemin d?or",
+          "Millionnaire",
+          "Salaire"
+        ],
+        "correctIndex": 1,
+        "difficulty": "easy",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/6f/7a/e3/6f7ae36a-dad8-99f9-4795-1de195c630e7/mzaf_7297461041176033071.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-006",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "Virus",
+          "Grisaille",
+          "Laboratoire",
+          "Figaro"
+        ],
+        "correctIndex": 2,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/f3/aa/1a/f3aa1a95-397c-b5b3-ee16-61911b6433b7/mzaf_6277890520917395144.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-007",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "Vroum Vroum",
+          "Satan 2",
+          "Rude Boy",
+          "Escorte"
+        ],
+        "correctIndex": 3,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/ed/e0/e7/ede0e78e-8e18-49a0-6df1-2d75a3aee79e/mzaf_17367083932170504293.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-008",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "Piano",
+          "Boss",
+          "Triple V",
+          "Diamant Noir"
+        ],
+        "correctIndex": 0,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/3b/1c/a3/3b1ca3e8-b7d5-5f69-5ca6-a65d11319110/mzaf_13846331723812627541.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-009",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "Gulfstream",
+          "Triple V",
+          "FTR",
+          "Clair de Lune"
+        ],
+        "correctIndex": 1,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/64/3a/b5/643ab504-473b-8e70-19be-5000316e1490/mzaf_6741688499453237794.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-010",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "Riri",
+          "Faillite",
+          "Diamant Noir",
+          "Industry Plant"
+        ],
+        "correctIndex": 2,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/2b/5d/4c/2b5d4c13-ae23-9885-a384-3c88c41512a0/mzaf_7686638146892292383.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-011",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "Maison hant?e",
+          "Figaro",
+          "Grisaille",
+          "Ciao"
+        ],
+        "correctIndex": 3,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/cf/29/50/cf295092-c86e-49ea-ddff-f908d2a60570/mzaf_9036787458282002993.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-012",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "P?tunias",
+          "Emelyne",
+          "Malus",
+          "Balkans"
+        ],
+        "correctIndex": 0,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/91/87/83/91878399-9004-2bcf-93eb-f5648d4e2fde/mzaf_4865689613293308219.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-013",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "C63",
+          "La famine",
+          "Moteur br?lant",
+          "Vermine"
+        ],
+        "correctIndex": 1,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/84/e3/e8/84e3e858-1270-062d-4b95-080eedeb5888/mzaf_10270587546546644490.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-014",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "6 ?toiles",
+          "L?or et la pierre",
+          "5 ?toiles",
+          "Alpha"
+        ],
+        "correctIndex": 2,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/20/d0/13/20d01341-eb65-bf90-e23e-c6a906dc7e91/mzaf_3021503101322435016.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-015",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "L?ancien",
+          "Boussole",
+          "Rude Boy",
+          "Tout seul"
+        ],
+        "correctIndex": 3,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/ee/95/c8/ee95c884-564c-8500-2055-f80d349c709c/mzaf_8475750021434075741.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      }
+    ],
+    "questions": [
+      {
+        "id": "werenoi-blindtest-014",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "6 ?toiles",
+          "L?or et la pierre",
+          "5 ?toiles",
+          "Alpha"
+        ],
+        "correctIndex": 2,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/20/d0/13/20d01341-eb65-bf90-e23e-c6a906dc7e91/mzaf_3021503101322435016.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-009",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "Gulfstream",
+          "Triple V",
+          "FTR",
+          "Clair de Lune"
+        ],
+        "correctIndex": 1,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/64/3a/b5/643ab504-473b-8e70-19be-5000316e1490/mzaf_6741688499453237794.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-011",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "Maison hant?e",
+          "Figaro",
+          "Grisaille",
+          "Ciao"
+        ],
+        "correctIndex": 3,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/cf/29/50/cf295092-c86e-49ea-ddff-f908d2a60570/mzaf_9036787458282002993.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-001",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "Dispense",
+          "Poney",
+          "First",
+          "Balmain"
+        ],
+        "correctIndex": 1,
+        "difficulty": "easy",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b0/97/0f/b0970f74-ded7-6b94-975c-34984e80f3d7/mzaf_830622631638347091.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-013",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "C63",
+          "La famine",
+          "Moteur br?lant",
+          "Vermine"
+        ],
+        "correctIndex": 1,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/84/e3/e8/84e3e858-1270-062d-4b95-080eedeb5888/mzaf_10270587546546644490.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-002",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "Ordinateur",
+          "Scarface",
+          "Balmain",
+          "Solitaire"
+        ],
+        "correctIndex": 2,
+        "difficulty": "easy",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/8b/49/a8/8b49a8eb-bdbf-cd02-db25-3d5877766423/mzaf_16706365060505971674.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-010",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "Riri",
+          "Faillite",
+          "Diamant Noir",
+          "Industry Plant"
+        ],
+        "correctIndex": 2,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/2b/5d/4c/2b5d4c13-ae23-9885-a384-3c88c41512a0/mzaf_7686638146892292383.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-015",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "L?ancien",
+          "Boussole",
+          "Rude Boy",
+          "Tout seul"
+        ],
+        "correctIndex": 3,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/ee/95/c8/ee95c884-564c-8500-2055-f80d349c709c/mzaf_8475750021434075741.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-012",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "P?tunias",
+          "Emelyne",
+          "Malus",
+          "Balkans"
+        ],
+        "correctIndex": 0,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/91/87/83/91878399-9004-2bcf-93eb-f5648d4e2fde/mzaf_4865689613293308219.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-006",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "Virus",
+          "Grisaille",
+          "Laboratoire",
+          "Figaro"
+        ],
+        "correctIndex": 2,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/f3/aa/1a/f3aa1a95-397c-b5b3-ee16-61911b6433b7/mzaf_6277890520917395144.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-003",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "Chemin d?or",
+          "3 singes",
+          "Escorte",
+          "Ordinateur"
+        ],
+        "correctIndex": 3,
+        "difficulty": "easy",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/3f/27/d4/3f27d4d4-2db8-c90d-a1aa-3372bcba434b/mzaf_11019135313440997974.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-008",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "Piano",
+          "Boss",
+          "Triple V",
+          "Diamant Noir"
+        ],
+        "correctIndex": 0,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/3b/1c/a3/3b1ca3e8-b7d5-5f69-5ca6-a65d11319110/mzaf_13846331723812627541.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-007",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "Vroum Vroum",
+          "Satan 2",
+          "Rude Boy",
+          "Escorte"
+        ],
+        "correctIndex": 3,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/ed/e0/e7/ede0e78e-8e18-49a0-6df1-2d75a3aee79e/mzaf_17367083932170504293.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-005",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "Boussole",
+          "Chemin d?or",
+          "Millionnaire",
+          "Salaire"
+        ],
+        "correctIndex": 1,
+        "difficulty": "easy",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/6f/7a/e3/6f7ae36a-dad8-99f9-4795-1de195c630e7/mzaf_7297461041176033071.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-blindtest-004",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait de Werenoi ?",
+        "answers": [
+          "3 singes",
+          "Ciao",
+          "Laboratoire",
+          "Carr?"
+        ],
+        "correctIndex": 0,
+        "difficulty": "easy",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/64/d8/9d/64d89d20-9ff8-a016-e9cc-a72087c0125b/mzaf_6356201640423524840.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      }
+    ],
+    "createdAt": "2026-06-30T21:33:00.808Z"
+  },
+  {
+    "id": "QETOI2",
+    "name": "Blindtest Werenoi Exclus",
+    "hostId": null,
+    "status": "waiting",
+    "currentQuestion": -1,
+    "roundEndsAt": null,
+    "finishedAt": null,
+    "deleteAfter": null,
+    "config": {
+      "categories": [],
+      "questionCount": 15,
+      "requestedQuestionCount": 15,
+      "availableQuestionCount": 15,
+      "minQuestionCount": 1,
+      "timePerQuestion": 20,
+      "bonusTimer": true,
+      "themeId": "studio",
+      "themeName": "Studio Dark",
+      "modeId": "classic",
+      "modeName": "Quiz classique",
+      "mode": {
+        "id": "classic",
+        "name": "Quiz classique",
+        "label": "Quiz net, rapide, efficace",
+        "scoreMultiplier": 1,
+        "shuffleAnswers": false
+      },
+      "customQuestionCount": 15
+    },
+    "players": [],
+    "answers": [],
+    "customQuestions": [
+      {
+        "id": "werenoi-exclus-001",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Faillite",
+          "Riri",
+          "Titanic",
+          "Boussole"
+        ],
+        "correctIndex": 1,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/af/59/c2/af59c244-6d55-6d60-3d51-d79b7e06f6df/mzaf_12745877669236189602.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-002",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Clair de Lune",
+          "Industry Plant",
+          "FTR",
+          "Triple V"
+        ],
+        "correctIndex": 2,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/01/e2/ab/01e2abb7-9b52-e9b5-7a3b-c2286d607c8c/mzaf_16140195305725430439.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-003",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Alpha",
+          "Vermine",
+          "C63",
+          "11.04.2025"
+        ],
+        "correctIndex": 3,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/31/12/c7/3112c7fc-f7cd-cc28-4556-486911f9977f/mzaf_115146133931574159.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-004",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Clair de Lune",
+          "Balkans",
+          "L?or et la pierre",
+          "6 ?toiles"
+        ],
+        "correctIndex": 0,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/91/1d/54/911d54bd-e459-ef1d-19e4-a0c91d8fbd03/mzaf_11790448681705517230.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-005",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Diamant Noir",
+          "Industry Plant",
+          "Colis?e",
+          "Rude Boy"
+        ],
+        "correctIndex": 1,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/48/e8/67/48e867fa-b2c2-2604-b4d7-97b056dde960/mzaf_9352401254238042028.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-006",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Poney",
+          "Dispense",
+          "Titanic",
+          "First"
+        ],
+        "correctIndex": 2,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/9b/d1/aa/9bd1aa4d-078d-4aa5-b424-24bbd4e2fdae/mzaf_10235907576910725239.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-007",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Maison hant?e",
+          "Figaro",
+          "Grisaille",
+          "Intro Rolex"
+        ],
+        "correctIndex": 3,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/68/c1/8c/68c18ca0-5c37-45bf-17b6-300328338388/mzaf_12380288421505376742.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-008",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Virus",
+          "Laboratoire",
+          "Satan 2",
+          "L?ancien"
+        ],
+        "correctIndex": 0,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/d5/4f/e3/d54fe3a0-603d-5391-3436-0fb2c1dc84d8/mzaf_9648583684160416489.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-009",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Vroum Vroum",
+          "L?ancien",
+          "Salaire",
+          "Rude Boy"
+        ],
+        "correctIndex": 1,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/e5/ad/8c/e5ad8cf1-6b26-8fe5-8794-8ee8ec50abf9/mzaf_8449330006535714259.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-010",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Boussole",
+          "Escorte",
+          "Satan 2",
+          "10.03.2023"
+        ],
+        "correctIndex": 2,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/d5/27/48/d52748ea-2cea-0194-b37e-92a76d987881/mzaf_11443295908053587329.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-011",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Chemin d?or",
+          "Millionnaire",
+          "Rude Boy",
+          "Boussole"
+        ],
+        "correctIndex": 3,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/b6/38/d7/b638d767-ea24-c8a3-07b1-215f7fbcff53/mzaf_13086759681852583008.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-012",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Alpha",
+          "Vermine",
+          "Malus",
+          "Emelyne"
+        ],
+        "correctIndex": 0,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b9/de/45/b9de45ff-3d6e-86f7-0193-d96dddc2a3a8/mzaf_15751923119890787480.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-013",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "C63",
+          "Moteur br?lant",
+          "Vermine",
+          "P?tunias"
+        ],
+        "correctIndex": 2,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/17/5d/45/175d4536-d27f-2655-3dd9-7c098867d935/mzaf_10352523420206462494.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-014",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Balkans",
+          "L?or et la pierre",
+          "5 ?toiles",
+          "6 ?toiles"
+        ],
+        "correctIndex": 1,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b1/8e/1f/b18e1ff2-ca5e-86e2-aed8-157f6428b03a/mzaf_12363996677044060858.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-015",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "La famine",
+          "C63",
+          "Balkans",
+          "Moteur br?lant"
+        ],
+        "correctIndex": 2,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/1c/d7/58/1cd75881-4397-3f7b-1bba-30ee692849ae/mzaf_14462479536435418170.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      }
+    ],
+    "questions": [
+      {
+        "id": "werenoi-exclus-015",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "La famine",
+          "C63",
+          "Balkans",
+          "Moteur br?lant"
+        ],
+        "correctIndex": 2,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/1c/d7/58/1cd75881-4397-3f7b-1bba-30ee692849ae/mzaf_14462479536435418170.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-007",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Maison hant?e",
+          "Figaro",
+          "Grisaille",
+          "Intro Rolex"
+        ],
+        "correctIndex": 3,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/68/c1/8c/68c18ca0-5c37-45bf-17b6-300328338388/mzaf_12380288421505376742.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-013",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "C63",
+          "Moteur br?lant",
+          "Vermine",
+          "P?tunias"
+        ],
+        "correctIndex": 2,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/17/5d/45/175d4536-d27f-2655-3dd9-7c098867d935/mzaf_10352523420206462494.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-011",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Chemin d?or",
+          "Millionnaire",
+          "Rude Boy",
+          "Boussole"
+        ],
+        "correctIndex": 3,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/b6/38/d7/b638d767-ea24-c8a3-07b1-215f7fbcff53/mzaf_13086759681852583008.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-005",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Diamant Noir",
+          "Industry Plant",
+          "Colis?e",
+          "Rude Boy"
+        ],
+        "correctIndex": 1,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/48/e8/67/48e867fa-b2c2-2604-b4d7-97b056dde960/mzaf_9352401254238042028.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-002",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Clair de Lune",
+          "Industry Plant",
+          "FTR",
+          "Triple V"
+        ],
+        "correctIndex": 2,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/01/e2/ab/01e2abb7-9b52-e9b5-7a3b-c2286d607c8c/mzaf_16140195305725430439.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-008",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Virus",
+          "Laboratoire",
+          "Satan 2",
+          "L?ancien"
+        ],
+        "correctIndex": 0,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/d5/4f/e3/d54fe3a0-603d-5391-3436-0fb2c1dc84d8/mzaf_9648583684160416489.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-004",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Clair de Lune",
+          "Balkans",
+          "L?or et la pierre",
+          "6 ?toiles"
+        ],
+        "correctIndex": 0,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/91/1d/54/911d54bd-e459-ef1d-19e4-a0c91d8fbd03/mzaf_11790448681705517230.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-010",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Boussole",
+          "Escorte",
+          "Satan 2",
+          "10.03.2023"
+        ],
+        "correctIndex": 2,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/d5/27/48/d52748ea-2cea-0194-b37e-92a76d987881/mzaf_11443295908053587329.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-001",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Faillite",
+          "Riri",
+          "Titanic",
+          "Boussole"
+        ],
+        "correctIndex": 1,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/af/59/c2/af59c244-6d55-6d60-3d51-d79b7e06f6df/mzaf_12745877669236189602.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-012",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Alpha",
+          "Vermine",
+          "Malus",
+          "Emelyne"
+        ],
+        "correctIndex": 0,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b9/de/45/b9de45ff-3d6e-86f7-0193-d96dddc2a3a8/mzaf_15751923119890787480.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-003",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Alpha",
+          "Vermine",
+          "C63",
+          "11.04.2025"
+        ],
+        "correctIndex": 3,
+        "difficulty": "medium",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/31/12/c7/3112c7fc-f7cd-cc28-4556-486911f9977f/mzaf_115146133931574159.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-014",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Balkans",
+          "L?or et la pierre",
+          "5 ?toiles",
+          "6 ?toiles"
+        ],
+        "correctIndex": 1,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b1/8e/1f/b18e1ff2-ca5e-86e2-aed8-157f6428b03a/mzaf_12363996677044060858.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-006",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Poney",
+          "Dispense",
+          "Titanic",
+          "First"
+        ],
+        "correctIndex": 2,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/9b/d1/aa/9bd1aa4d-078d-4aa5-b424-24bbd4e2fdae/mzaf_10235907576910725239.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      },
+      {
+        "id": "werenoi-exclus-009",
+        "category": "rap_fr",
+        "text": "Quel est le titre de cet extrait rare/deep cut de Werenoi ?",
+        "answers": [
+          "Vroum Vroum",
+          "L?ancien",
+          "Salaire",
+          "Rude Boy"
+        ],
+        "correctIndex": 1,
+        "difficulty": "hard",
+        "audio": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/e5/ad/8c/e5ad8cf1-6b26-8fe5-8794-8ee8ec50abf9/mzaf_8449330006535714259.plus.aac.p.m4a",
+        "audioStart": 0,
+        "audioDuration": 8,
+        "audioLabel": "Extrait officiel Apple Music / iTunes - Werenoi"
+      }
+    ],
+    "createdAt": "2026-06-30T21:36:47.343Z"
   }
 ]
