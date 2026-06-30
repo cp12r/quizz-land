@@ -1,6 +1,7 @@
 ﻿<script>
   import { onMount } from 'svelte';
   import { pageTitle, siteMeta } from '$lib/config/site.js';
+  import FloatingLogo3D from '$lib/components/FloatingLogo3D.svelte';
   import SceneBackground3D from '$lib/components/SceneBackground3D.svelte';
   import ThemePicker from '$lib/components/ThemePicker.svelte';
   import { createRoom } from '$lib/utils/api.js';
@@ -418,6 +419,8 @@
       </div>
 
       <div class="launch-pod">
+        <FloatingLogo3D />
+
         <button
           type="button"
           class="sound-puck"

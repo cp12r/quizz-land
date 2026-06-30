@@ -67,6 +67,35 @@
       return texture;
     }
 
+    function setTextureColor(texture) {
+      if (THREE.SRGBColorSpace) texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = lowPower ? 1 : 4;
+      return texture;
+    }
+
+    function wordmarkSvg() {
+      return `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 120">
+          <defs>
+            <linearGradient id="word" x1="35" y1="16" x2="480" y2="104" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#fff7d2"/>
+              <stop offset=".45" stop-color="#ffd54a"/>
+              <stop offset="1" stop-color="#ff4f79"/>
+            </linearGradient>
+            <filter id="glow" x="-20%" y="-50%" width="140%" height="200%">
+              <feGaussianBlur stdDeviation="5" result="blur"/>
+              <feColorMatrix in="blur" type="matrix" values="1 0 0 0 1  0 1 0 0 .38  0 0 1 0 .16  0 0 0 .74 0"/>
+              <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <rect width="520" height="120" rx="26" fill="#071127" opacity=".16"/>
+          <text x="260" y="79" text-anchor="middle" filter="url(#glow)"
+            font-family="Sora, Inter, Arial, sans-serif" font-size="64" font-weight="950"
+            letter-spacing="0" fill="url(#word)">QuizzLand</text>
+        </svg>
+      `;
+    }
+
     function iconSvg(type, color, glow) {
       const base = `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
@@ -130,6 +159,43 @@
       group.add(mesh);
     }
 
+    let brandGroup = null;
+    const brandTextures = [];
+    if (variant === 'creator') {
+      brandGroup = new THREE.Group();
+      brandGroup.position.set(2.08, 1.05, -0.34);
+      brandGroup.rotation.set(-0.1, -0.36, 0.08);
+      brandGroup.scale.setScalar(lowPower ? 0.6 : 0.72);
+
+      const logoTexture = setTextureColor(new THREE.TextureLoader().load('/brand/quizzland-logo.svg'));
+      const wordTexture = svgTexture(wordmarkSvg());
+      brandTextures.push(logoTexture, wordTexture);
+
+      const logoMaterial = new THREE.MeshBasicMaterial({
+        map: logoTexture,
+        transparent: true,
+        opacity: lowPower ? 0.72 : 0.84,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        toneMapped: false
+      });
+      const wordMaterial = new THREE.MeshBasicMaterial({
+        map: wordTexture,
+        transparent: true,
+        opacity: lowPower ? 0.68 : 0.8,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        toneMapped: false
+      });
+
+      const logoMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.85, 1.85), logoMaterial);
+      const wordMesh = new THREE.Mesh(new THREE.PlaneGeometry(2.55, 0.58), wordMaterial);
+      logoMesh.position.set(0, 0.2, 0);
+      wordMesh.position.set(0, -0.98, 0.03);
+      brandGroup.add(logoMesh, wordMesh);
+      scene.add(brandGroup);
+    }
+
     const particleCount = lowPower ? 52 : 118;
     const positions = new Float32Array(particleCount * 3);
     for (let index = 0; index < particleCount; index += 1) {
@@ -163,6 +229,13 @@
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
+
+      if (brandGroup) {
+        const wide = width / height > 1.05;
+        brandGroup.position.x = wide ? 2.08 : 0.92;
+        brandGroup.position.y = wide ? 1.05 : 1.72;
+        brandGroup.scale.setScalar(wide ? (lowPower ? 0.6 : 0.72) : 0.54);
+      }
     }
 
     function onPointerMove(event) {
@@ -177,6 +250,14 @@
       group.rotation.y = target.x + Math.sin(time * 0.00018) * 0.08;
       group.rotation.x = -target.y * 0.35;
       particles.rotation.z = time * 0.000025;
+
+      if (brandGroup) {
+        const baseY = camera.aspect > 1.05 ? 1.05 : 1.72;
+        brandGroup.position.y = baseY + Math.sin(time * 0.001) * 0.12;
+        brandGroup.rotation.y = -0.36 + Math.sin(time * 0.0007) * 0.18 + target.x * 0.25;
+        brandGroup.rotation.x = -0.1 - target.y * 0.16;
+        brandGroup.rotation.z = 0.08 + Math.sin(time * 0.0009) * 0.035;
+      }
 
       group.children.forEach((mesh, index) => {
         mesh.rotation.x += mesh.userData.speed * 0.006;
@@ -204,6 +285,7 @@
       particleMaterial.dispose();
       iconGeometry.dispose();
       iconTextures.forEach((texture) => texture.dispose());
+      brandTextures.forEach((texture) => texture.dispose());
       renderer.dispose();
       renderer.domElement.remove();
     };
@@ -242,6 +324,11 @@
     display: block;
     width: 100%;
     height: 100%;
+  }
+
+  .scene3d-creator {
+    position: fixed;
+    height: 100svh;
   }
 
   .scene3d.fallback::before,
