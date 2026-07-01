@@ -1,6 +1,14 @@
 <script>
   import { onDestroy, onMount } from 'svelte';
-  import { disposeObject, isLowPowerDevice, loadThree, prefersReducedMotion, supportsWebGL } from '$lib/utils/webgl.js';
+  import {
+    createAnimationLoop,
+    disposeObject,
+    isLowPowerDevice,
+    loadThree,
+    prefersReducedMotion,
+    supportsWebGL,
+    watchRendererResize
+  } from '$lib/utils/webgl.js';
 
   let host;
   let fallback = false;
@@ -126,7 +134,6 @@
       powerPreference: 'low-power'
     });
     renderer.setClearColor(0x000000, 0);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, lowPower ? 1 : 1.5));
     host.appendChild(renderer.domElement);
 
     const texture = createLogoTexture(THREE);
@@ -157,15 +164,8 @@
     group.add(glow, logo);
     scene.add(group);
 
-    let frame = 0;
-    function resize() {
-      if (!host) return;
-      const width = Math.max(1, host.clientWidth);
-      const height = Math.max(1, host.clientHeight);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height, false);
-    }
+    let stopLoop = () => {};
+    let stopResize = () => {};
 
     function animate(time = 0) {
       group.position.y = Math.sin(time * 0.0013) * 0.12;
@@ -174,17 +174,15 @@
       group.rotation.z = Math.sin(time * 0.0011) * 0.035;
       glow.scale.setScalar(1 + Math.sin(time * 0.002) * 0.045);
       renderer.render(scene, camera);
-      frame = requestAnimationFrame(animate);
     }
 
-    window.addEventListener('resize', resize);
-    resize();
+    stopResize = watchRendererResize(host, renderer, camera, { maxPixelRatio: 1.35 });
     ready = true;
-    frame = requestAnimationFrame(animate);
+    stopLoop = createAnimationLoop(animate);
 
     cleanup = () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('resize', resize);
+      stopLoop();
+      stopResize();
       disposeObject(scene);
       texture.dispose();
       renderer.dispose();

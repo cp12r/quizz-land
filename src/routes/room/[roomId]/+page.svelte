@@ -6,8 +6,10 @@
   import EmptyState from '$lib/components/EmptyState.svelte';
   import PlayerList from '$lib/components/PlayerList.svelte';
   import QuestionCard from '$lib/components/QuestionCard.svelte';
+  import RoomOrb3D from '$lib/components/RoomOrb3D.svelte';
   import SceneBackground3D from '$lib/components/SceneBackground3D.svelte';
   import TimerCircle from '$lib/components/TimerCircle.svelte';
+  import TimerRing3D from '$lib/components/TimerRing3D.svelte';
   import { getPlayerId } from '$lib/stores/user.js';
   import { getSeasonIcon } from '$lib/utils/seasonAssets.js';
   import { preloadUpcomingQuestionMedia } from '$lib/utils/questionMedia.js';
@@ -82,6 +84,7 @@
   $: canDecreaseQuestions = Boolean(isHost && !questionCountUpdating && lobbyQuestionCount > lobbyQuestionMin);
   $: canIncreaseQuestions = Boolean(isHost && !questionCountUpdating && lobbyQuestionCount < lobbyQuestionMax);
   $: allAnswered = Boolean(room.status === 'playing' && activePlayerCount > 0 && answeredCount >= activePlayerCount);
+  $: lobbyReady = activePlayerCount >= 2;
   $: answerProgress = activePlayerCount ? Math.min(100, Math.round((answeredCount / activePlayerCount) * 100)) : 0;
   $: waitingLine = WAITING_LINES[(room.id?.charCodeAt(0) || activePlayerCount) % WAITING_LINES.length];
   $: roundLine = ROUND_LINES[Math.max(0, room.currentQuestion) % ROUND_LINES.length];
@@ -528,6 +531,8 @@
     {:else if room.status === 'waiting'}
       <section class="grid">
         <div class="card lobby">
+          <RoomOrb3D playerCount={activePlayerCount} ready={lobbyReady} countdown={countdownActive} />
+
           <div class="lobby-header">
             <div class="panel-head">
               <p class="mono">Salon</p>
@@ -675,7 +680,8 @@
           {/if}
 
           <div class="question-stage">
-            <AnswerImpactEffect feedback={answerFeedback} {selected} />
+            <TimerRing3D {remaining} total={room.config.timePerQuestion} active={room.status === 'playing'} complete={allAnswered} />
+            <AnswerImpactEffect feedback={answerFeedback} {selected} questionKey={currentQuestion?.id || room.currentQuestion} />
             <QuestionCard question={currentQuestion} {selected} feedback={answerFeedback} locked={selected !== null} onAnswer={answer} />
           </div>
         </div>
@@ -867,6 +873,23 @@
   .join {
     width: min(520px, 100%);
     margin: 0 auto;
+  }
+
+  .lobby {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .lobby-header,
+  .room-code,
+  .config-row,
+  .room-preview,
+  .lobby-line,
+  .host-panel,
+  .actions,
+  .lobby :global(.empty-state) {
+    position: relative;
+    z-index: 1;
   }
 
   .error {
@@ -1201,7 +1224,20 @@
 
   .question-stage {
     position: relative;
+    isolation: isolate;
     perspective: 1000px;
+  }
+
+  .question-stage :global(.timer-ring3d) {
+    z-index: 0;
+  }
+
+  .question-stage :global(.question-card) {
+    z-index: 1;
+  }
+
+  .question-stage :global(.answer-impact) {
+    z-index: 2;
   }
 
   @keyframes notice-in {

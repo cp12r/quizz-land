@@ -1,6 +1,15 @@
 <script>
   import { onDestroy, onMount } from 'svelte';
-  import { disposeObject, getCssColor, isLowPowerDevice, loadThree, prefersReducedMotion, supportsWebGL } from '$lib/utils/webgl.js';
+  import {
+    createAnimationLoop,
+    disposeObject,
+    getCssColor,
+    isLowPowerDevice,
+    loadThree,
+    prefersReducedMotion,
+    supportsWebGL,
+    watchRendererResize
+  } from '$lib/utils/webgl.js';
 
   export let variant = 'party';
   export let intensity = 0.55;
@@ -43,7 +52,6 @@
       powerPreference: 'low-power'
     });
     renderer.setClearColor(0x000000, 0);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, lowPower ? 1 : 1.35));
     host.appendChild(renderer.domElement);
 
     const hot = getCssColor('--color-accent', '#e53935');
@@ -217,19 +225,13 @@
     const particles = new THREE.Points(particleGeometry, particleMaterial);
     scene.add(particles);
 
-    let frame = 0;
+    let stopLoop = () => {};
+    let stopResize = () => {};
     let pointerX = 0;
     let pointerY = 0;
     const target = { x: 0, y: 0 };
 
-    function resize() {
-      if (!host) return;
-      const width = Math.max(1, host.clientWidth);
-      const height = Math.max(1, host.clientHeight);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height, false);
-
+    function afterResize({ width, height }) {
       if (brandGroup) {
         const wide = width / height > 1.05;
         brandGroup.position.x = wide ? 2.08 : 0.92;
@@ -267,18 +269,16 @@
       });
 
       renderer.render(scene, camera);
-      frame = requestAnimationFrame(animate);
     }
 
-    window.addEventListener('resize', resize);
+    stopResize = watchRendererResize(host, renderer, camera, { maxPixelRatio: 1.35, afterResize });
     window.addEventListener('pointermove', onPointerMove, { passive: true });
-    resize();
     ready = true;
-    frame = requestAnimationFrame(animate);
+    stopLoop = createAnimationLoop(animate);
 
     cleanup = () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('resize', resize);
+      stopLoop();
+      stopResize();
       window.removeEventListener('pointermove', onPointerMove);
       disposeObject(scene);
       particleGeometry.dispose();

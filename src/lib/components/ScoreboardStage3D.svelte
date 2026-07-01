@@ -1,6 +1,15 @@
 <script>
   import { onDestroy, onMount } from 'svelte';
-  import { disposeObject, getCssColor, isLowPowerDevice, loadThree, prefersReducedMotion, supportsWebGL } from '$lib/utils/webgl.js';
+  import {
+    createAnimationLoop,
+    disposeObject,
+    getCssColor,
+    isLowPowerDevice,
+    loadThree,
+    prefersReducedMotion,
+    supportsWebGL,
+    watchRendererResize
+  } from '$lib/utils/webgl.js';
 
   export let results = [];
   export let revealed = false;
@@ -48,7 +57,6 @@
       powerPreference: 'low-power'
     });
     renderer.setClearColor(0x000000, 0);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, lowPower ? 1 : 1.28));
     if (THREE.SRGBColorSpace) renderer.outputColorSpace = THREE.SRGBColorSpace;
     if (!lowPower) {
       renderer.shadowMap.enabled = true;
@@ -110,6 +118,41 @@
       if (THREE.SRGBColorSpace) texture.colorSpace = THREE.SRGBColorSpace;
       texture.anisotropy = lowPower ? 1 : 4;
       textures.push(texture);
+      return texture;
+    }
+
+    function makePlayerLabelTexture(player, rank, color, accent) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 180;
+      const ctx = canvas.getContext('2d');
+      const name = String(player?.name || `Joueur ${rank}`).slice(0, 18);
+      const score = Number(player?.score || 0);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'rgba(11, 16, 32, 0.64)';
+      ctx.roundRect(18, 22, 476, 136, 26);
+      ctx.fill();
+      ctx.strokeStyle = color;
+      ctx.globalAlpha = 0.72;
+      ctx.lineWidth = 7;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = accent;
+      ctx.font = '900 28px JetBrains Mono, Arial, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(`#${rank}`, 46, 70);
+      ctx.fillStyle = '#e6e8ef';
+      ctx.font = '900 46px Sora, Arial, sans-serif';
+      ctx.fillText(name, 46, 120);
+      ctx.fillStyle = color;
+      ctx.font = '900 30px JetBrains Mono, Arial, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(`${score} pts`, 466, 72);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      if (THREE.SRGBColorSpace) texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = lowPower ? 1 : 4;
       return texture;
     }
 
@@ -300,6 +343,7 @@
     ];
 
     const plaqueGeometry = new THREE.PlaneGeometry(0.86, 0.43);
+    const playerLabelGeometry = new THREE.PlaneGeometry(1.12, 0.4);
     const podiumGlyphGeometry = new THREE.PlaneGeometry(1.05, 0.46);
     const sideMedalGeometry = new THREE.PlaneGeometry(0.34, 0.42);
     const starGeometry = new THREE.PlaneGeometry(0.18, 0.18);
@@ -391,6 +435,17 @@
       plaque.scale.setScalar(layout.rank === 1 ? 1.1 : 0.96);
       group.add(plaque);
 
+      const playerLabelMaterial = new THREE.MeshBasicMaterial({
+        transparent: true,
+        opacity: 0,
+        depthWrite: false,
+        toneMapped: false
+      });
+      const playerLabel = new THREE.Mesh(playerLabelGeometry, playerLabelMaterial);
+      playerLabel.position.set(0, layout.height * 0.18, layout.depth / 2 + 0.052);
+      playerLabel.scale.set(layout.rank === 1 ? 1.08 : 0.92, layout.rank === 1 ? 1 : 0.86, 1);
+      group.add(playerLabel);
+
       const rankIcon = new THREE.Group();
       rankIcon.position.set(0, layout.height + 0.36, layout.depth / 2 + 0.08);
 
@@ -477,7 +532,7 @@
       }
 
       stage.add(group);
-      return { ...layout, group, rankIcon, block };
+      return { ...layout, group, rankIcon, block, playerLabel, playerLabelMaterial, playerLabelTexture: null };
     });
 
     const trophy = new THREE.Group();
@@ -595,18 +650,24 @@
     const motes = new THREE.Points(moteGeometry, moteMaterial);
     scene.add(motes);
 
-    let frame = 0;
+    let stopLoop = () => {};
+    let stopResize = () => {};
     let isRevealed = false;
     let revealStartedAt = 0;
     let confettiResetKey = 0;
+    let baseCameraY = 2.25;
+    let baseCameraZ = lowPower ? 9.7 : 8.8;
 
-    function resize() {
-      if (!host) return;
-      const width = Math.max(1, host.clientWidth);
-      const height = Math.max(1, host.clientHeight);
-      camera.aspect = width / height;
+    function afterResize({ width, height, aspect }) {
+      const portrait = aspect < 0.82;
+      const compact = width < 620;
+      camera.fov = portrait ? 40 : 34;
+      baseCameraZ = lowPower ? (portrait ? 11.4 : 9.8) : portrait ? 10.6 : 8.8;
+      baseCameraY = portrait ? 2.55 : 2.25;
+      camera.position.z = baseCameraZ;
+      camera.position.y = baseCameraY;
       camera.updateProjectionMatrix();
-      renderer.setSize(width, height, false);
+      stage.scale.setScalar(compact ? 0.88 : 1);
     }
 
     function resetConfetti() {
@@ -619,7 +680,21 @@
 
     function update(players, nextRevealed) {
       podiums.forEach((podium) => {
-        podium.group.userData.hasPlayer = Boolean(players[podium.resultIndex]);
+        const player = players[podium.resultIndex];
+        podium.group.userData.hasPlayer = Boolean(player);
+        podium.playerLabel.visible = Boolean(player);
+
+        if (player) {
+          const labelKey = `${player.id || player.name}:${player.name}:${player.score}`;
+          if (podium.playerLabelKey !== labelKey) {
+            podium.playerLabelTexture?.dispose?.();
+            podium.playerLabelTexture = makePlayerLabelTexture(player, podium.rank, podium.color, podium.accent);
+            podium.playerLabelMaterial.map = podium.playerLabelTexture;
+            podium.playerLabelMaterial.needsUpdate = true;
+            podium.playerLabelKey = labelKey;
+          }
+          podium.playerLabelMaterial.opacity = nextRevealed ? 0.92 : 0;
+        }
       });
       challengerCards.forEach((card) => {
         card.group.visible = Boolean(players[card.resultIndex]);
@@ -649,7 +724,8 @@
       stage.position.y = idle;
 
       camera.position.x = Math.sin(time * 0.00018) * (lowPower ? 0.05 : 0.11);
-      camera.position.y = 2.24 + Math.sin(time * 0.00024) * (lowPower ? 0.015 : 0.035);
+      camera.position.y = baseCameraY + Math.sin(time * 0.00024) * (lowPower ? 0.015 : 0.035);
+      camera.position.z = baseCameraZ;
       camera.lookAt(0, 0.42, 0);
 
       podiums.forEach((podium, index) => {
@@ -663,6 +739,7 @@
         podium.group.rotation.y = Math.sin(time * 0.001 + index) * 0.025;
         podium.rankIcon.position.y = podium.height + 0.36 + Math.sin(time * 0.002 + index) * (podium.rank === 1 ? 0.055 : 0.035);
         podium.rankIcon.rotation.z = Math.sin(time * 0.0014 + index) * (podium.rank === 1 ? 0.055 : 0.035);
+        podium.playerLabelMaterial.opacity += ((isRevealed && podium.group.userData.hasPlayer ? 0.92 : 0) - podium.playerLabelMaterial.opacity) * 0.08;
       });
 
       const trophyProgress = revealProgress(time, 360);
@@ -698,20 +775,19 @@
       glowRing.material.opacity = lowPower ? 0.08 : 0.12 + Math.sin(time * 0.0015) * 0.025;
 
       renderer.render(scene, camera);
-      frame = requestAnimationFrame(animate);
     }
 
-    window.addEventListener('resize', resize);
-    resize();
+    stopResize = watchRendererResize(host, renderer, camera, { maxPixelRatio: 1.2, afterResize });
     api = { update };
     api.update(topPlayers, revealed);
-    frame = requestAnimationFrame(animate);
+    stopLoop = createAnimationLoop(animate);
 
     cleanup = () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('resize', resize);
+      stopLoop();
+      stopResize();
       disposeObject(scene);
       plaqueGeometry.dispose();
+      playerLabelGeometry.dispose();
       podiumGlyphGeometry.dispose();
       sideMedalGeometry.dispose();
       starGeometry.dispose();
@@ -723,6 +799,7 @@
       moteGeometry.dispose();
       moteMaterial.dispose();
       textures.forEach((texture) => texture.dispose());
+      podiums.forEach((podium) => podium.playerLabelTexture?.dispose?.());
       renderer.dispose();
       renderer.domElement.remove();
       api = null;
@@ -794,12 +871,14 @@
   .score-canvas {
     position: absolute;
     inset: 0;
+    pointer-events: none;
   }
 
   .score-canvas :global(canvas) {
     display: block;
     width: 100%;
     height: 100%;
+    pointer-events: none;
   }
 
   .fallback-podium {
