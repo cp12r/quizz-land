@@ -18,6 +18,18 @@
   export let data;
 
   const CLOSE_FALLBACK_MS = 4800;
+  const WAITING_LINES = [
+    'Pose les verres, le quiz chauffe.',
+    'Un dernier joueur et ça part.',
+    'La room est prête, manque juste la bande.',
+    'Prépare ton meilleur mauvais choix.'
+  ];
+  const ROUND_LINES = [
+    'Les cerveaux transpirent.',
+    'Les reponses arrivent.',
+    'Ca sent le clutch.',
+    'Quelqu un prepare une masterclass.'
+  ];
 
   let room = data.room;
   let player = null;
@@ -70,6 +82,9 @@
   $: canDecreaseQuestions = Boolean(isHost && !questionCountUpdating && lobbyQuestionCount > lobbyQuestionMin);
   $: canIncreaseQuestions = Boolean(isHost && !questionCountUpdating && lobbyQuestionCount < lobbyQuestionMax);
   $: allAnswered = Boolean(room.status === 'playing' && activePlayerCount > 0 && answeredCount >= activePlayerCount);
+  $: answerProgress = activePlayerCount ? Math.min(100, Math.round((answeredCount / activePlayerCount) * 100)) : 0;
+  $: waitingLine = WAITING_LINES[(room.id?.charCodeAt(0) || activePlayerCount) % WAITING_LINES.length];
+  $: roundLine = ROUND_LINES[Math.max(0, room.currentQuestion) % ROUND_LINES.length];
   $: meta = roomMeta(room);
   $: title = meta.title;
   $: description = meta.description;
@@ -335,6 +350,22 @@
     }, 1400);
   }
 
+  async function shareRoom() {
+    const payload = {
+      title: title || 'Quizz Land',
+      text: `${room.name} t'attend sur Quizz Land (${room.id}).`,
+      url: shareUrl
+    };
+
+    if (navigator.share) {
+      await navigator.share(payload).catch(() => {});
+      playSound('ui');
+      return;
+    }
+
+    await copyLink();
+  }
+
   onMount(() => {
     initSound();
     playerName = localStorage.getItem('quizz-player-name') || '';
@@ -523,6 +554,23 @@
             <span>{room.config.themeName}</span>
           </div>
 
+          <div class="room-preview" aria-label="Apercu de la partie">
+            <div>
+              <span class="mono">Mode</span>
+              <strong>{room.config.modeName || room.config.mode?.name || 'Quiz'}</strong>
+            </div>
+            <div>
+              <span class="mono">Joueurs</span>
+              <strong>{activePlayerCount}/{room.players.length || 1}</strong>
+            </div>
+            <div>
+              <span class="mono">Duree</span>
+              <strong>{Math.max(1, Math.ceil((room.config.questionCount * room.config.timePerQuestion) / 60))} min</strong>
+            </div>
+          </div>
+
+          <p class="lobby-line">{waitingLine}</p>
+
           {#if isHost}
             <div class="host-panel">
               <label class="field countdown">
@@ -569,6 +617,7 @@
             </Button>
 
             <Button variant="secondary" onclick={copyLink}>Inviter les potes</Button>
+            <Button variant="ghost" onclick={shareRoom}>Partage rapide</Button>
           </div>
 
           {#if isHost && activePlayerCount < 2}
@@ -606,14 +655,23 @@
               {/if}
               <span class="mono">Question {progressText}</span>
               <strong>{answeredCount}/{activePlayerCount} réponses</strong>
+              <div
+                class="answer-meter"
+                style={`--answer-progress:${answerProgress}%;`}
+                aria-label={`${answeredCount} reponses sur ${activePlayerCount}`}
+              >
+                <span></span>
+              </div>
             </div>
             <TimerCircle {remaining} total={room.config.timePerQuestion} />
           </div>
 
           {#if allAnswered && remaining <= 5 && remaining > 0}
-            <div class="suspense mono" role="status" aria-live="polite">Nouvelle manche dans {remaining}s</div>
+            <div class="suspense all-answered mono" role="status" aria-live="polite">Tout le monde a repondu - prochaine manche dans {remaining}s</div>
           {:else if remaining <= 3 && remaining > 0}
             <div class="suspense mono" role="status" aria-live="polite">Le reveal arrive</div>
+          {:else}
+            <div class="round-line mono" role="status">{roundLine}</div>
           {/if}
 
           <div class="question-stage">
@@ -885,6 +943,48 @@
     text-transform: uppercase;
   }
 
+  .room-preview {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .room-preview div {
+    display: grid;
+    gap: 4px;
+    min-height: 70px;
+    align-content: center;
+    border: 1px solid rgba(57, 213, 255, 0.16);
+    border-radius: 8px;
+    padding: 10px 12px;
+    background:
+      linear-gradient(135deg, rgba(57, 213, 255, 0.1), rgba(255, 213, 74, 0.06)),
+      rgba(230, 232, 239, 0.045);
+  }
+
+  .room-preview span {
+    color: var(--color-cyan);
+    font-size: 0.68rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .room-preview strong {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    color: var(--paper);
+    font-size: 1rem;
+    line-height: 1.1;
+  }
+
+  .lobby-line {
+    margin: -2px 0 0;
+    border-left: 3px solid var(--yellow);
+    padding-left: 10px;
+    color: var(--paper-dim);
+    font-weight: 900;
+  }
+
   .host-panel {
     display: grid;
     gap: 10px;
@@ -1051,6 +1151,24 @@
     color: var(--paper-dim);
   }
 
+  .answer-meter {
+    width: min(220px, 100%);
+    height: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(230, 232, 239, 0.16);
+    border-radius: 999px;
+    background: rgba(230, 232, 239, 0.08);
+  }
+
+  .answer-meter span {
+    display: block;
+    width: var(--answer-progress);
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--cyan), var(--lime));
+    transition: width 240ms ease;
+  }
+
   .suspense {
     justify-self: start;
     border: 1px solid rgba(255, 213, 74, 0.26);
@@ -1061,6 +1179,24 @@
     font-size: 12px;
     font-weight: 900;
     animation: pulse-ring 800ms ease-out infinite;
+  }
+
+  .suspense.all-answered {
+    border-color: rgba(54, 210, 124, 0.34);
+    background: rgba(54, 210, 124, 0.11);
+    color: var(--lime);
+  }
+
+  .round-line {
+    justify-self: start;
+    border: 1px solid rgba(57, 213, 255, 0.18);
+    border-radius: 8px;
+    background: rgba(57, 213, 255, 0.08);
+    color: var(--cyan);
+    padding: 7px 10px;
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
   }
 
   .question-stage {
@@ -1120,7 +1256,8 @@
 
     .lobby-header,
     .hud,
-    .config-row {
+    .config-row,
+    .room-preview {
       grid-template-columns: 1fr;
       display: grid;
     }

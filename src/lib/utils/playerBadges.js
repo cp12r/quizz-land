@@ -1,13 +1,13 @@
 const BADGES = [
-  { id: 'rookie', label: 'Rookie', icon: 'R', tone: '#39d5ff' },
-  { id: 'supporter', label: 'Supporter', icon: 'S', tone: '#36d27c' },
-  { id: 'tryhard', label: 'Déterminé', icon: 'D', tone: '#ffd54a' },
-  { id: 'goat', label: 'GOAT', icon: 'G', tone: '#ff5a5f' },
-  { id: 'invincible', label: 'Invincible', icon: 'I', tone: '#e6e8ef' },
+  { id: 'rookie', label: 'Echauffement', icon: 'E', tone: '#39d5ff' },
+  { id: 'supporter', label: 'Zero stress', icon: 'Z', tone: '#36d27c' },
+  { id: 'tryhard', label: 'Meilleur streak', icon: 'S', tone: '#ffd54a' },
+  { id: 'goat', label: 'Boss du canape', icon: 'B', tone: '#ff5a5f' },
+  { id: 'invincible', label: 'Inarretable', icon: 'I', tone: '#e6e8ef' },
   { id: 'clutch', label: 'Clutch', icon: 'C', tone: '#7c5cff' },
-  { id: 'no-brain', label: 'Instinctif', icon: 'I', tone: '#ff8f3d' },
-  { id: 'speed-demon', label: 'Rapide', icon: 'V', tone: '#39d5ff' },
-  { id: 'comeback-king', label: 'Retour gagnant', icon: 'R', tone: '#36d27c' },
+  { id: 'no-brain', label: 'Mode freestyle', icon: 'F', tone: '#ff8f3d' },
+  { id: 'speed-demon', label: 'Reponse eclair', icon: 'V', tone: '#39d5ff' },
+  { id: 'comeback-king', label: 'Comeback', icon: 'R', tone: '#36d27c' },
   { id: 'champion', label: 'Champion', icon: '1', tone: '#ffd54a' }
 ];
 

@@ -7,6 +7,7 @@
   export let title = 'Joueurs';
 
   $: connectedCount = players.filter((player) => player.connected !== false).length;
+  $: waitingSlots = Math.max(0, 2 - connectedCount);
   $: rankedPlayers = [...players].sort((a, b) => {
     if ((a.connected !== false) !== (b.connected !== false)) return a.connected === false ? 1 : -1;
     return b.score - a.score;
@@ -39,6 +40,7 @@
             {rankLabel(index)}
           </span>
           <span class="avatar" aria-hidden="true">{player.name?.slice(0, 1) || '?'}</span>
+          <span class:online={player.connected !== false} class="status-dot" aria-hidden="true"></span>
           {#if maskScores}<span class="sr-only">Rang masqué</span>{/if}
           <span class="player-copy">
             <strong class:masked={maskScores} aria-hidden={maskScores}>{player.name}</strong>
@@ -58,7 +60,14 @@
       {/each}
     </ol>
   {:else}
-    <p>Personne pour l'instant.</p>
+    <div class="empty-list" role="status">
+      <strong>Salon prêt</strong>
+      <span>Invite les joueurs, le show démarre dès que vous êtes au moins 2.</span>
+    </div>
+  {/if}
+
+  {#if waitingSlots > 0}
+    <p class="waiting mono">Encore {waitingSlots} joueur{waitingSlots > 1 ? 's' : ''} pour lancer</p>
   {/if}
 </section>
 
@@ -111,6 +120,7 @@
   }
 
   li {
+    position: relative;
     display: grid;
     grid-template-columns: 42px 38px minmax(0, 1fr) auto auto;
     align-items: center;
@@ -167,6 +177,22 @@
     color: #0b1020;
     font-weight: 950;
     text-transform: uppercase;
+  }
+
+  .status-dot {
+    position: absolute;
+    left: 58px;
+    bottom: 10px;
+    width: 10px;
+    aspect-ratio: 1;
+    border: 2px solid #171e31;
+    border-radius: 50%;
+    background: rgba(230, 232, 239, 0.52);
+  }
+
+  .status-dot.online {
+    background: var(--color-mint);
+    box-shadow: 0 0 12px rgba(54, 210, 124, 0.54);
   }
 
   .player-copy {
@@ -230,10 +256,36 @@
     user-select: none;
   }
 
-  p {
+  p,
+  .empty-list {
     margin: 0;
     color: var(--color-muted);
     font-weight: 800;
+  }
+
+  .empty-list {
+    display: grid;
+    gap: 4px;
+    border: 1px dashed rgba(255, 213, 74, 0.28);
+    border-radius: 8px;
+    padding: 14px;
+    background: rgba(255, 213, 74, 0.08);
+  }
+
+  .empty-list strong {
+    color: var(--color-yellow);
+    text-transform: uppercase;
+  }
+
+  .waiting {
+    margin-top: 12px;
+    border: 1px solid rgba(57, 213, 255, 0.18);
+    border-radius: 8px;
+    padding: 9px 10px;
+    background: rgba(57, 213, 255, 0.08);
+    color: var(--color-cyan);
+    font-size: 0.72rem;
+    text-transform: uppercase;
   }
 
   @media (max-width: 520px) {
@@ -249,6 +301,10 @@
 
     .avatar {
       width: 34px;
+    }
+
+    .status-dot {
+      left: 49px;
     }
   }
 
